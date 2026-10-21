@@ -1,0 +1,16 @@
+# 统一换行符：仓库内一律存 LF，检出时按平台自动转换
+# 不加的话，Windows 上提交、Linux 上改动会导致 diff 显示整个文件被重写
+* text=auto
+
+# 二进制文件，禁止做任何换行符/文本转换
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+*.woff binary
+*.woff2 binary
+*.wasm binary
+*.node binary
+*.db   binary

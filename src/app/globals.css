@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #05070d;
+  --foreground: #e9edf5;
+  /* 三色霓虹主色：电光青 / 酸性荧光绿 / 品红 */
+  --neon-cyan: #22d3ee;
+  --neon-lime: #a3e635;
+  --neon-magenta: #e879f9;
 }
 
 @theme inline {
@@ -12,15 +16,103 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  /* 深黑底 + 三色霓虹光晕，营造赛博氛围 */
+  background-image:
+    radial-gradient(1100px 620px at 12% -10%, rgba(34, 211, 238, 0.18), transparent 60%),
+    radial-gradient(950px 560px at 88% -6%, rgba(232, 121, 249, 0.15), transparent 55%),
+    radial-gradient(820px 520px at 50% 112%, rgba(163, 230, 53, 0.08), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* 卡片入场：错峰淡入上移 */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-enter {
+  animation: rise-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* 标题里的霓虹渐变文字 */
+.gradient-text {
+  background: linear-gradient(115deg, #22d3ee 0%, #a3e635 42%, #e879f9 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.35));
+}
+
+/* 榜首项目：霓虹渐变边框 + 发光（突出重点的核心） */
+.neon-card {
+  position: relative;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(10, 15, 24, 0.92), rgba(10, 15, 24, 0.92)) padding-box,
+    linear-gradient(140deg, #22d3ee, #a3e635 50%, #e879f9) border-box;
+  box-shadow:
+    0 0 45px -10px rgba(34, 211, 238, 0.5),
+    0 0 70px -22px rgba(232, 121, 249, 0.45),
+    0 18px 50px -20px rgba(0, 0, 0, 0.7);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.neon-card:hover {
+  box-shadow:
+    0 0 60px -8px rgba(34, 211, 238, 0.65),
+    0 0 90px -18px rgba(232, 121, 249, 0.6),
+    0 22px 60px -20px rgba(0, 0, 0, 0.8);
+}
+
+/* 普通卡片的彩色发光 hover */
+.glow-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, transform 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 40px -12px rgba(34, 211, 238, 0.4);
+}
+
+/* 荧光数字 / 徽标用的发光文字 */
+.glow-lime {
+  text-shadow: 0 0 14px rgba(163, 230, 53, 0.55);
+}
+
+.glow-cyan {
+  text-shadow: 0 0 14px rgba(34, 211, 238, 0.55);
+}
+
+/* 细网格纹理背景（卡片区可选装饰） */
+.grid-texture {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* 下拉框选项：Windows/Chrome 会用系统白底渲染 option，显式改成深底浅字才看得清 */
+select option,
+select optgroup {
+  background-color: #18181b;
+  color: #f4f4f5;
+}
+
+::selection {
+  background: rgba(163, 230, 53, 0.35);
+  color: #fff;
 }

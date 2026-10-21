@@ -1,0 +1,40 @@
+{
+  "version": "1.0.0",
+  "note": "筛选打分的可调配置。要改口味只改这里，别动 SKILL.md 正文。各 weights 之和应保持 100。",
+  "weights": {
+    "growth": 30,
+    "freshness": 20,
+    "novelty": 20,
+    "accessibility": 15,
+    "license": 15
+  },
+  "thresholds": {
+    "growth_weekly_stars": { "max": 2000, "high": 500, "mid": 100, "low": 30 },
+    "freshness_created_months": { "new": 3, "mid": 12, "old": 36 },
+    "novelty_total_stars": { "small": 5000, "mid": 20000, "mega": 50000 }
+  },
+  "license_scores": {
+    "mit": 15,
+    "apache-2.0": 15,
+    "bsd-2-clause": 15,
+    "bsd-3-clause": 15,
+    "isc": 15,
+    "unlicense": 15,
+    "cc0-1.0": 14,
+    "wtfpl": 12,
+    "mpl-2.0": 10,
+    "lgpl-2.1": 10,
+    "lgpl-3.0": 10,
+    "gpl-2.0": 7,
+    "gpl-3.0": 7,
+    "agpl-3.0": 7,
+    "cc-by-nc-4.0": 1,
+    "other": 8,
+    "none": 2
+  },
+  "dedup": {
+    "history_file": "data/recommended.json",
+    "policy": "exclude"
+  },
+  "default_top_n": 5
+}

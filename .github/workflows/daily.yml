@@ -1,0 +1,55 @@
+name: Daily GitHub Hot Picks
+
+on:
+  schedule:
+    # 每天 09:00 UTC（北京时间 17:00）自动跑一次，生成当天推荐
+    - cron: "0 9 * * *"
+  # 也支持在 GitHub 网页上手动点「Run workflow」
+  workflow_dispatch: {}
+
+# 需要写权限，才能把生成的快照提交回仓库
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup database (migrate)
+        run: npx prisma migrate deploy
+        env:
+          # CI 里用绝对路径，避免 CLI 与运行时对相对路径解析不一致
+          DATABASE_URL: "file:${{ github.workspace }}/prisma/dev.db"
+
+      - name: Run daily update (fetch → filter → generate)
+        run: npm run update:daily
+        env:
+          # 用 GitHub 自带 token 提高 API 限流额度
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATABASE_URL: "file:${{ github.workspace }}/prisma/dev.db"
+          # 硅基流动密钥：用于给每个项目自动生成小白教程
+          # 需要在仓库 Settings → Secrets and variables → Actions 里添加 SILICONFLOW_API_KEY
+          SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+          SILICONFLOW_BASE_URL: https://api.siliconflow.cn/v1
+
+      - name: Commit daily snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # 只提交生成的快照文件（站点前端通过它读取最新推荐）
+          git add public/data/latest.json
+          if git diff --cached --quiet; then
+            echo "没有内容变化，跳过提交"
+          else
+            git commit -m "chore: daily recommendation $(date +%F)"
+            git push
+          fi

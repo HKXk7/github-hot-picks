@@ -1,0 +1,7 @@
+node_modules/
+# 数据库是本地运行时缓存，不提交；每周稿子与去重历史要提交
+data/app.db
+data/app.db-shm
+data/app.db-wal
+*.log
+.env

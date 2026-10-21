@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-page-node-id="JpJWfyu5vbBPedtC6J4U0X">
+<head data-page-node-id="fxbFblZEqbmMAAfCzjTsvn">
+  <meta charset="UTF-8" data-page-node-id="A5AiIENtixNi7a1shl9SGd">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" data-page-node-id="wMJqDqzzyr6rApSEsydrun">
+  <title>GitHub 热门项目推荐</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col" data-page-node-id="OMqV9zTvJ9KCVzUdKSe8MB">
+  <header class="border-b bg-white" data-page-node-id="9tBRP30gLi60Twy4nccS6Q">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between" data-page-node-id="WU9QI3Is4yONHLq0TjLpDJ">
+      <a href="/" class="text-lg font-semibold text-gray-900" data-page-node-id="BGMRvFQ4QImCEAsIHmrH9B">GitHub 热门推荐</a>
+      <span class="text-sm text-gray-500" data-page-node-id="2xODt2260bNBBcJBnKUUxj">每周一期 · 自动生成</span>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-8 flex-1 w-full" data-page-node-id="ApQtO428BPB4hPcuS0g8KP">
+    <section class="mb-8" data-page-node-id="eniJJa6n2eObrfuxqPFWq3">
+      <h1 id="issue-title" class="text-2xl font-bold mb-2" data-page-node-id="YG4PdfxExjLJZzC9v2mqpb">加载中…</h1>
+      <p id="issue-summary" class="text-gray-600" data-page-node-id="54dEwzHEWBEgRmCWpaIMNf"></p>
+    </section>
+
+    <section id="list" class="grid gap-4 sm:grid-cols-2" data-page-node-id="YSFdBIxIzq99CVY5ZEXK8D"></section>
+
+    <p id="error" class="text-red-600 mt-4 hidden" data-page-node-id="Y9rFKcDfyO6I1iAY6595JV"></p>
+  </main>
+
+  <footer class="border-t mt-12 py-6 text-center text-sm text-gray-400" data-page-node-id="oen8TEzIceV9havfj9q7ZD">
+    数据来自 GitHub Search API · 由脚本每周自动生成
+  </footer>
+
+  <script>
+    function esc(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function card(item) {
+      var p = item;
+      var lang = p.language
+        ? '<span class="inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded">' + esc(p.language) + '</span>'
+        : '';
+      return (
+        '<article class="bg-white border rounded-xl p-5 flex flex-col gap-2 shadow-sm">' +
+          '<div class="flex items-start justify-between gap-2">' +
+            '<a href="' + esc(p.html_url) + '" target="_blank" rel="noopener" class="font-semibold text-blue-600 hover:underline break-all">' + esc(p.full_name) + '</a>' +
+            '<span class="text-xs font-bold text-gray-400 shrink-0">#' + Number(item.rank) + '</span>' +
+          '</div>' +
+          '<p class="text-sm text-gray-600 line-clamp-3">' + esc(p.description || '（无简介）') + '</p>' +
+          '<div class="flex items-center gap-3 text-xs text-gray-500 flex-wrap">' +
+            '<span>Stars: ' + Number(p.stars) + '</span>' +
+            '<span>Forks: ' + Number(p.forks) + '</span>' +
+            lang +
+          '</div>' +
+          '<p class="text-xs text-gray-500 leading-relaxed">推荐理由：' + esc(item.highlight) + '</p>' +
+        '</article>'
+      );
+    }
+
+    async function load() {
+      var err = document.getElementById('error');
+      try {
+        var issuesRes = await fetch('/api/issues?limit=1');
+        var issues = await issuesRes.json();
+        if (!issues.data || issues.data.length === 0) {
+          throw new Error('还没有生成任何一期推荐，请先运行 npm run build');
+        }
+        var latest = issues.data[0];
+        var detailRes = await fetch('/api/issues/' + encodeURIComponent(latest.week));
+        var detail = await detailRes.json();
+
+        document.getElementById('issue-title').textContent = detail.issue.title;
+        document.getElementById('issue-summary').textContent = detail.issue.summary || '';
+        document.getElementById('list').innerHTML = (detail.items || []).map(card).join('');
+      } catch (e) {
+        err.textContent = '加载失败：' + e.message;
+        err.classList.remove('hidden');
+      }
+    }
+
+    load();
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 1. 抓取到的 GitHub 项目
+model Repository {
+  id          String   @id @default(cuid())
+  githubId    Int      @unique
+  name        String
+  fullName    String   @unique
+  description String?
+  url         String
+  language    String?
+  stars       Int
+  forks       Int
+  fetchedAt   DateTime
+  createdAt   DateTime @default(now())
+  // AI 生成的小白教程（Markdown），教新手「它是什么 / 怎么装 / 怎么用」
+  tutorial    String?
+
+  recommendations Recommendation[]
+}
+
+// 2. 每周推荐稿
+model Article {
+  id          String   @id @default(cuid())
+  issue       Int      @unique
+  title       String
+  content     String
+  status      String   @default("draft")
+  weekStart   DateTime
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+
+  recommendations Recommendation[]
+}
+
+// 3. 推荐关系（稿子 ↔ 项目，多对多）
+model Recommendation {
+  id           String     @id @default(cuid())
+  article      Article    @relation(fields: [articleId], references: [id])
+  articleId    String
+  repository   Repository @relation(fields: [repositoryId], references: [id])
+  repositoryId String
+  reason       String?
+  category     String?
+  sortOrder    Int
+
+  @@unique([articleId, repositoryId])
+}
+
+// 4. 定时任务运行记录
+model JobRun {
+  id        String    @id @default(cuid())
+  jobType   String
+  status    String
+  log       String?
+  startedAt DateTime
+  endedAt   DateTime?
+  createdAt DateTime  @default(now())
+}
