@@ -24,6 +24,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma client
+        # generated/prisma 已被 .gitignore 忽略，CI checkout 后不存在，必须现生成。
+        # 注意：`migrate deploy` 只建表，不会生成客户端 —— 少了这步会报
+        # "Cannot find module '../generated/prisma/client'"
+        run: npx prisma generate
+
       - name: Setup database (migrate)
         run: npx prisma migrate deploy
         env:
