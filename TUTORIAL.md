@@ -210,6 +210,8 @@ git push -u origin main
 
 **（推荐）让云端也能生成小白教程**：打开仓库 → **Settings → Secrets and variables → Actions → New repository secret**，名字填 `SILICONFLOW_API_KEY`，值填你的硅基流动密钥。不配的话云端每天仍然会更新推荐，只是教程一栏会是空的（本地跑不受影响）。
 
+> 本项目仓库已配好这个 Secret。云端跑一次约 **1 分 45 秒**，日志里会逐条打印 `✍️ 生成教程 1/10 …`，最后一行是`✅ 已更新第 N 期（…），推荐 10 个项目，其中 10 个已生成教程`——看到这个就说明云端链路是通的。
+
 ### 10.3（可选）在线部署让全世界都能看
 
 代码推到 GitHub 后，可以用免费的 **Vercel** 一键部署（它专门为 Next.js 设计）：
