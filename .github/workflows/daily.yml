@@ -2,8 +2,8 @@ name: Daily GitHub Hot Picks
 
 on:
   schedule:
-    # 每天 09:00 UTC（北京时间 17:00）自动跑一次，生成当天推荐
-    - cron: "0 9 * * *"
+    # 每天 00:00 UTC（北京时间 08:00）自动跑一次，生成当天推荐
+    - cron: "0 0 * * *"
   # 也支持在 GitHub 网页上手动点「Run workflow」
   workflow_dispatch: {}
 

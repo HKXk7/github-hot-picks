@@ -185,6 +185,8 @@ export async function getLatestSiteIssue(): Promise<SiteIssue | null> {
   try {
     const [article, run] = await Promise.all([
       prisma.article.findFirst({
+        // 只展示已发布的文章（避免种子数据的草稿出现在首页）
+        where: { status: "published" },
         orderBy: { weekStart: "desc" },
         include: ARTICLE_INCLUDE,
       }),
@@ -220,6 +222,7 @@ export interface IssueListItem {
 export async function getIssueList(): Promise<IssueListItem[]> {
   try {
     const articles = await prisma.article.findMany({
+      where: { status: "published" },
       orderBy: { weekStart: "desc" },
       include: ARTICLE_INCLUDE,
     });
@@ -244,6 +247,7 @@ export async function getIssueByDate(dateKey: string): Promise<SiteIssue | null>
   try {
     const [articles, run] = await Promise.all([
       prisma.article.findMany({
+        where: { status: "published" },
         orderBy: { weekStart: "desc" },
         include: ARTICLE_INCLUDE,
       }),

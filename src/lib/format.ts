@@ -48,6 +48,7 @@ export function parseContent(content: string) {
     .map((line) => {
       if (line.startsWith("# ")) return { type: "h1" as const, text: line.slice(2) };
       if (line.startsWith("## ")) return { type: "h2" as const, text: line.slice(3) };
+      if (line.startsWith("### ")) return { type: "h3" as const, text: line.slice(4) };
       if (line.startsWith("- ")) return { type: "li" as const, text: line.slice(2) };
       if (line.startsWith("> ")) return { type: "quote" as const, text: line.slice(2) };
       return { type: "p" as const, text: line };
