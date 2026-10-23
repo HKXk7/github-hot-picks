@@ -35,8 +35,36 @@ jobs:
         # "Cannot find module '../generated/prisma/client'"
         run: npx prisma generate
 
+      # ── 数据库跨运行持久化 ──────────────────────────────────────────
+      # 否则每次 Actions 跑的都是全新空库：期号永远是第 1 期、
+      # 往期项目不去重（会重复推荐）、教程每天重新花钱生成。
+      # 做法：用 Actions 缓存存住 dev.db；任务结束时写回缓存。
+      - name: Restore history database
+        uses: actions/cache@v4
+        with:
+          path: prisma/db-cache
+          key: daily-db-${{ github.run_id }}
+          restore-keys: daily-db-
+
+      - name: Prepare database
+        run: |
+          if [ -f prisma/db-cache/dev.db ]; then
+            cp prisma/db-cache/dev.db prisma/dev.db
+            echo "✅ 缓存命中：已恢复历史数据库"
+          else
+            echo "ℹ️ 首次运行：从空库开始，迁移后导入仓库快照"
+          fi
+
       - name: Setup database (migrate)
         run: npx prisma migrate deploy
+
+      - name: Bootstrap from snapshot (first run only)
+        # 没有历史缓存时，把仓库里 public/data/latest.json 的上一期数据灌进库，
+        # 这样期号接着走、上一期项目也进的去重名单。
+        run: |
+          if [ ! -f prisma/db-cache/dev.db ]; then
+            node scripts/import-snapshot.js
+          fi
 
       - name: Run daily update (fetch → filter → generate)
         run: npm run update:daily
@@ -48,6 +76,13 @@ jobs:
           # 需要在仓库 Settings → Secrets and variables → Actions 里添加 SILICONFLOW_API_KEY
           SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
           SILICONFLOW_BASE_URL: https://api.siliconflow.cn/v1
+
+      - name: Save database to cache
+        # 先 checkpoint 把 WAL 里的数据落盘，再整库写回缓存目录（cache@v4 在任务结束时自动保存）
+        run: |
+          sqlite3 prisma/dev.db "PRAGMA wal_checkpoint(TRUNCATE);"
+          mkdir -p prisma/db-cache
+          cp prisma/dev.db prisma/db-cache/dev.db
 
       - name: Commit daily snapshot
         run: |

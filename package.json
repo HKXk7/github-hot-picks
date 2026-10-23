@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "prisma db seed",
+    "db:import": "node scripts/import-snapshot.js",
     "update:daily": "tsx scripts/update-daily.ts"
   },
   "dependencies": {
