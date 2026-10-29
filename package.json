@@ -10,7 +10,9 @@
     "db:seed": "prisma db seed",
     "db:import": "node scripts/import-snapshot.js",
     "update:daily": "tsx scripts/update-daily.ts",
-    "verify:tutorials": "tsx scripts/verify-tutorials.ts"
+    "verify:tutorials": "tsx scripts/verify-tutorials.ts",
+    "rag:build": "tsx scripts/build-rag-index.ts",
+    "eval:compare": "tsx scripts/eval-compare.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

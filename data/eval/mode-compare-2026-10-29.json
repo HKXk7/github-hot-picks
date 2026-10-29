@@ -1,0 +1,157 @@
+{
+  "at": "2026-10-29T11:45:37.593Z",
+  "rows": [
+    {
+      "fullName": "facebook/react",
+      "language": "JavaScript",
+      "mode": "plain",
+      "confidence": "medium",
+      "commands": 4,
+      "missing": 3,
+      "attempts": 1,
+      "toolCalls": 0,
+      "ms": 6955
+    },
+    {
+      "fullName": "facebook/react",
+      "language": "JavaScript",
+      "mode": "tools",
+      "confidence": "medium",
+      "commands": 3,
+      "missing": 4,
+      "attempts": 1,
+      "toolCalls": 3,
+      "ms": 13986
+    },
+    {
+      "fullName": "torvalds/linux",
+      "language": "C",
+      "mode": "plain",
+      "confidence": "medium",
+      "commands": 5,
+      "missing": 3,
+      "attempts": 1,
+      "toolCalls": 0,
+      "ms": 8019
+    },
+    {
+      "fullName": "torvalds/linux",
+      "language": "C",
+      "mode": "tools",
+      "confidence": "medium",
+      "commands": 5,
+      "missing": 3,
+      "attempts": 1,
+      "toolCalls": 2,
+      "ms": 11836
+    },
+    {
+      "fullName": "microsoft/vscode",
+      "language": "TypeScript",
+      "mode": "plain",
+      "confidence": "medium",
+      "commands": 3,
+      "missing": 3,
+      "attempts": 1,
+      "toolCalls": 0,
+      "ms": 6998
+    },
+    {
+      "fullName": "microsoft/vscode",
+      "language": "TypeScript",
+      "mode": "tools",
+      "confidence": "medium",
+      "commands": 5,
+      "missing": 3,
+      "attempts": 2,
+      "toolCalls": 4,
+      "ms": 21377
+    },
+    {
+      "fullName": "ollama/ollama",
+      "language": "Go",
+      "mode": "plain",
+      "confidence": "medium",
+      "commands": 5,
+      "missing": 3,
+      "attempts": 1,
+      "toolCalls": 0,
+      "ms": 7180
+    },
+    {
+      "fullName": "ollama/ollama",
+      "language": "Go",
+      "mode": "tools",
+      "confidence": "medium",
+      "commands": 6,
+      "missing": 4,
+      "attempts": 2,
+      "toolCalls": 4,
+      "ms": 20887
+    },
+    {
+      "fullName": "langchain-ai/langchain",
+      "language": "Python",
+      "mode": "plain",
+      "confidence": "medium",
+      "commands": 3,
+      "missing": 3,
+      "attempts": 1,
+      "toolCalls": 0,
+      "ms": 7213
+    },
+    {
+      "fullName": "langchain-ai/langchain",
+      "language": "Python",
+      "mode": "tools",
+      "confidence": "medium",
+      "commands": 3,
+      "missing": 4,
+      "attempts": 1,
+      "toolCalls": 3,
+      "ms": 13697
+    },
+    {
+      "fullName": "tauri-apps/tauri",
+      "language": "Rust",
+      "mode": "plain",
+      "confidence": "medium",
+      "commands": 5,
+      "missing": 3,
+      "attempts": 1,
+      "toolCalls": 0,
+      "ms": 7624
+    },
+    {
+      "fullName": "tauri-apps/tauri",
+      "language": "Rust",
+      "mode": "tools",
+      "confidence": "medium",
+      "commands": 4,
+      "missing": 4,
+      "attempts": 1,
+      "toolCalls": 4,
+      "ms": 13027
+    }
+  ],
+  "summary": [
+    {
+      "mode": "plain",
+      "success": "6/6",
+      "confidence": "high 0 / medium 6 / low 0",
+      "avgCommands": "4.17",
+      "avgMissing": "3.00",
+      "avgToolCalls": "0.00",
+      "avgMs": "7331.50"
+    },
+    {
+      "mode": "tools",
+      "success": "6/6",
+      "confidence": "high 0 / medium 6 / low 0",
+      "avgCommands": "4.33",
+      "avgMissing": "3.67",
+      "avgToolCalls": "3.33",
+      "avgMs": "15801.67"
+    }
+  ]
+}

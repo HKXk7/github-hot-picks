@@ -6,11 +6,19 @@ import { PrismaClient } from "../generated/prisma/client";
 import {
   generateStructuredTutorial,
   hasApiKey,
+  type GenerationMode,
   type TutorialMeta,
 } from "../src/lib/tutorial/generate";
 import { parseStructuredTutorial, toTutorialMarkdown } from "../src/lib/tutorial/schema";
+import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 
 const prisma = new PrismaClient();
+
+/**
+ * 教程生成模式。默认 tools（先取证再动笔，质量高但慢）；
+ * CI 里想省时间/配额就设 TUTORIAL_MODE=plain 退回单轮生成。
+ */
+const tutorialMode: GenerationMode = process.env.TUTORIAL_MODE === "plain" ? "plain" : "tools";
 
 // ================= 类型 =================
 interface RawRepo {
@@ -216,11 +224,15 @@ async function main() {
         if (!hasApiKey()) {
           console.warn(`  ⚠️ 未配置 SILICONFLOW_API_KEY，跳过教程生成：${r.full_name}`);
         } else {
-          console.log(`  ✍️ 生成教程 ${i + 1}/${top.length}：${r.full_name}`);
+          console.log(`  ✍️ 生成教程 ${i + 1}/${top.length}：${r.full_name}（模式 ${tutorialMode}）`);
           const result = await generateStructuredTutorial(toTutorialMeta(r), {
+            mode: tutorialMode,
             log: (msg) => console.log(msg),
           });
           for (const w of result.warnings) console.warn(`     ⚠️ ${w}`);
+          if (result.toolCalls?.length) {
+            console.log(`     🔧 取证 ${result.toolCalls.length} 次：${result.toolCalls.map((c) => c.name).join("、")}`);
+          }
           if (result.tutorial) {
             // 存结构化 JSON，渲染成 Markdown 是展示层的事
             tutorial = JSON.stringify(result.tutorial);
@@ -352,6 +364,18 @@ async function main() {
     const outDir = path.join(process.cwd(), "public", "data");
     await fs.mkdir(outDir, { recursive: true });
     await fs.writeFile(path.join(outDir, "latest.json"), JSON.stringify(snapshot, null, 2) + "\n", "utf8");
+
+    // 当天新增的教程要并进检索库，否则 search_knowledge 检索不到它们
+    if (hasApiKey()) {
+      try {
+        console.log("🔍 重建知识库索引…");
+        const stats = await buildKnowledgeIndex({ log: (m) => console.log(m) });
+        console.log(`   切片 ${stats.chunks} 条，新增向量 ${stats.embedded} 条`);
+      } catch (err) {
+        // 索引失败不影响今天的推荐内容，记一笔继续
+        console.warn(`   ⚠️ 索引构建失败：${err instanceof Error ? err.message : err}`);
+      }
+    }
 
     await prisma.jobRun.update({
       where: { id: jobRun.id },

@@ -58,6 +58,28 @@ model Recommendation {
   @@unique([articleId, repositoryId])
 }
 
+// 5. RAG 知识库切片
+// 把已有教程 / 项目简介切成可检索的片段，供 AI 检索（search_knowledge 工具）使用。
+// embedding 存的是 bge-m3 的 1024 维向量，序列化成 JSON 数组字符串
+// ——SQLite 没有原生向量类型，几百条数据用暴力余弦相似度完全够，
+// 不值得为此引入 pgvector / sqlite-vec 这类额外依赖。
+model KnowledgeChunk {
+  id           String   @id @default(cuid())
+  repoFullName String
+  // tutorial | description | readme
+  source       String
+  content      String
+  tokens       Int      @default(0)
+  embedding    String?
+  embeddedAt   DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // 同一个项目的同一种来源只保留一条，重建索引时是 upsert 而非无限堆积
+  @@unique([repoFullName, source])
+  @@index([repoFullName])
+}
+
 // 4. 定时任务运行记录
 model JobRun {
   id        String    @id @default(cuid())
