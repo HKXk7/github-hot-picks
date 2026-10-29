@@ -1,6 +1,7 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { prisma } from "@/lib/prisma";
+import { toTutorialMarkdown } from "@/lib/tutorial/schema";
 
 export interface SitePick {
   rank: number;
@@ -13,7 +14,9 @@ export interface SitePick {
   forks: number;
   category: string | null;
   reason: string | null;
-  // AI 生成的小白教程（Markdown），为 null 表示还没生成
+  // AI 生成的小白教程。数据库里存的是结构化 JSON，这里统一转成 Markdown 供前端渲染；
+  // 老数据本身就是 Markdown，toTutorialMarkdown 会原样返回，因此两种格式可以共存。
+  // 为 null 表示还没生成。
   tutorial: string | null;
 }
 
@@ -88,7 +91,10 @@ async function readSnapshot(): Promise<SiteIssue | null> {
       updatedAt: data.updatedAt,
       totalStars: data.totalStars,
       languageCount: data.languageCount,
-      picks: data.picks.map((p) => ({ ...p, tutorial: p.tutorial ?? null })),
+      picks: data.picks.map((p) => ({
+        ...p,
+        tutorial: toTutorialMarkdown(p.tutorial ?? null),
+      })),
       runStatus: data.runStatus ?? null,
     };
   } catch {
@@ -135,7 +141,7 @@ function toSiteIssue(
       forks: rec.repository.forks,
       category: rec.category,
       reason: rec.reason,
-      tutorial: rec.repository.tutorial,
+      tutorial: toTutorialMarkdown(rec.repository.tutorial),
     }))
     .map((pick, index) => ({ ...pick, rank: index + 1 }));
 

@@ -2,6 +2,13 @@ import "dotenv/config";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { PrismaClient } from "../generated/prisma/client";
+// 注意用相对路径：本文件由 tsx 直接执行，@/* 别名不保证生效
+import {
+  generateStructuredTutorial,
+  hasApiKey,
+  type TutorialMeta,
+} from "../src/lib/tutorial/generate";
+import { parseStructuredTutorial, toTutorialMarkdown } from "../src/lib/tutorial/schema";
 
 const prisma = new PrismaClient();
 
@@ -114,75 +121,20 @@ function guessCategory(r: RawRepo): string {
 }
 
 // ================= AI 生成小白教程 =================
-const SF_BASE = process.env.SILICONFLOW_BASE_URL ?? "https://api.siliconflow.cn/v1";
-const SF_KEY = process.env.SILICONFLOW_API_KEY ?? "";
-const TUTORIAL_MODEL = "deepseek-ai/DeepSeek-V4.1-Flash";
+// 生成逻辑已抽到共享模块，scripts 与 API 路由共用同一份，避免 prompt 两边不同步：
+//   src/lib/tutorial/generate.ts —— prompt 构建 + 调用 + 容错解析 + 校验重试
+//   src/lib/tutorial/schema.ts   —— Zod schema + Markdown 渲染
+// 数据库里存的是结构化 JSON 字符串，旧版 Markdown 数据可共存（靠能否 parse 区分）。
 
-async function generateTutorial(r: ScoredRepo): Promise<string | null> {
-  if (!SF_KEY) return null;
-
-  const meta = [
-    `项目名：${r.full_name}`,
-    r.description ? `简介：${r.description}` : null,
-    r.language ? `语言：${r.language}` : null,
-    `Star：${r.stargazers_count}`,
-    (r.topics ?? []).length ? `标签：${(r.topics ?? []).join("、")}` : null,
-    r.homepage ? `官网：${r.homepage}` : null,
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  const prompt = `你是面向编程新手的开源项目介绍写手。请为下面这个 GitHub 项目写一份「小白也能看懂」的上手教程，用中文，语气友好、分点清晰、可执行。
-
-${meta}
-
-请严格按照下面四个小标题输出（每个标题用 ## 开头），内容要具体、实用，不要空话：
-
-## 它是干什么的
-用 2~3 句大白话讲清这个项目解决什么问题、给谁用。
-
-## 怎么安装 / 快速开始
-给出最直接的上手方式（安装命令、依赖、或在线演示地址），命令用代码块包裹。
-
-## 核心功能怎么用
-列出 2~4 个最值得新手先尝试的功能，各用一句话说明怎么操作。
-
-## 适合谁 / 常见坑
-说明适合哪类人，以及新手最容易踩的 2~3 个坑。
-
-要求：
-- 全程中文，控制在 500 字以内；
-- 命令写在代码块里；
-- 不要编造具体的版本号、精确的 star 数或你无法确认的细节；
-- 如果信息不足以判断，基于项目类型给出合理、通用的建议，并标注「以官方 README 为准」。`;
-
-  try {
-    const res = await fetch(`${SF_BASE}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${SF_KEY}`,
-      },
-      body: JSON.stringify({
-        model: TUTORIAL_MODEL,
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: 1200,
-        thinking: { type: "disabled" },
-      }),
-    });
-    if (!res.ok) {
-      console.warn(`  ⚠️ 教程生成失败（HTTP ${res.status}）：${r.full_name}`);
-      return null;
-    }
-    const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-    const text = data.choices?.[0]?.message?.content?.trim();
-    return text && text.length > 20 ? text : null;
-  } catch (err) {
-    console.warn(
-      `  ⚠️ 教程生成异常：${r.full_name} - ${err instanceof Error ? err.message : String(err)}`,
-    );
-    return null;
-  }
+function toTutorialMeta(r: ScoredRepo): TutorialMeta {
+  return {
+    fullName: r.full_name,
+    description: r.description,
+    language: r.language,
+    stars: r.stargazers_count,
+    topics: r.topics ?? [],
+    homepage: r.homepage,
+  };
 }
 
 // 把教程嵌入每期 Markdown 稿：教程内部的 ## 降级为 ###，避免和项目标题层级冲突
@@ -261,8 +213,21 @@ async function main() {
       const existing = await prisma.repository.findUnique({ where: { githubId: r.id } });
       let tutorial = existing?.tutorial ?? null;
       if (!tutorial) {
-        console.log(`  ✍️ 生成教程 ${i + 1}/${top.length}：${r.full_name}`);
-        tutorial = await generateTutorial(r);
+        if (!hasApiKey()) {
+          console.warn(`  ⚠️ 未配置 SILICONFLOW_API_KEY，跳过教程生成：${r.full_name}`);
+        } else {
+          console.log(`  ✍️ 生成教程 ${i + 1}/${top.length}：${r.full_name}`);
+          const result = await generateStructuredTutorial(toTutorialMeta(r), {
+            log: (msg) => console.log(msg),
+          });
+          for (const w of result.warnings) console.warn(`     ⚠️ ${w}`);
+          if (result.tutorial) {
+            // 存结构化 JSON，渲染成 Markdown 是展示层的事
+            tutorial = JSON.stringify(result.tutorial);
+          } else {
+            console.warn(`  ⚠️ 教程生成失败：${r.full_name} - ${result.error}`);
+          }
+        }
       } else {
         console.log(`  ♻️ 复用已有教程 ${i + 1}/${top.length}：${r.full_name}`);
       }
@@ -318,7 +283,7 @@ async function main() {
             `- Stars：${p.stars} | 语言：${p.language ?? "—"}\n` +
             `- 仓库：${p.url}\n` +
             `- 推荐理由：${p.reason}\n` +
-            renderTutorialInContent(p.tutorial),
+            renderTutorialInContent(toTutorialMarkdown(p.tutorial)),
         )
         .join("\n");
 
@@ -394,7 +359,10 @@ async function main() {
     });
 
     const withTutorial = picks.filter((p) => p.tutorial).length;
-    console.log(`✅ 已更新第 ${issue} 期（${title}），推荐 ${top.length} 个项目，其中 ${withTutorial} 个已生成教程`);
+    const structured = picks.filter((p) => parseStructuredTutorial(p.tutorial)).length;
+    console.log(
+      `✅ 已更新第 ${issue} 期（${title}），推荐 ${top.length} 个项目，其中 ${withTutorial} 个有教程（结构化 ${structured} 个）`,
+    );
     console.log(`   快照已写入 public/data/latest.json`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
