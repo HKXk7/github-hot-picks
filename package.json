@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "prisma db seed",
-    "db:import": "node scripts/import-snapshot.js",
+    "db:import": "tsx scripts/import-snapshot.ts",
     "update:daily": "tsx scripts/update-daily.ts",
     "verify:tutorials": "tsx scripts/verify-tutorials.ts",
     "rag:build": "tsx scripts/build-rag-index.ts",

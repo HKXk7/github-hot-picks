@@ -124,8 +124,14 @@ function showFile(sha, path) {
   }
 
   console.log(`\n🎉 已推送到 ${BRANCH}，最新 ${parentSha.slice(0, 8)}`);
-  // 让本地 origin/main 跟上，否则下次再跑会误判
-  git("update-ref", `refs/remotes/origin/${BRANCH}`, parentSha);
+  // 让本地 origin/main 跟上，否则下次再跑会误判。
+  // API 建的 commit 对象本地并不存在，update-ref 会报 nonexistent object——
+  // 这是预期内的，真正同步得靠一次能连通的 git fetch，这里忽略即可。
+  try {
+    git("update-ref", `refs/remotes/origin/${BRANCH}`, parentSha);
+  } catch {
+    console.log("（本地 origin/main 指针未能更新，下次推送前请先 git fetch）");
+  }
 })().catch((err) => {
   console.error("失败：", err.message);
   process.exit(1);

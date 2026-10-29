@@ -61,9 +61,11 @@ jobs:
       - name: Bootstrap from snapshot (first run only)
         # 没有历史缓存时，把仓库里 public/data/latest.json 的上一期数据灌进库，
         # 这样期号接着走、上一期项目也进的去重名单。
+        # 必须用 tsx 而不是 node：Prisma 客户端生成的是 generated/prisma/client.ts，
+        # 纯 node 的 require 解析不了 .ts 后缀（本地因为一直用 tsx 跑所以不会暴露）。
         run: |
           if [ ! -f prisma/db-cache/dev.db ]; then
-            node scripts/import-snapshot.js
+            npx tsx scripts/import-snapshot.ts
           fi
 
       - name: Run daily update (fetch → filter → generate)

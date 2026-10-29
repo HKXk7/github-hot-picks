@@ -58,6 +58,65 @@
 
 ---
 
+---
+
+## AI 层设计
+
+这个项目的 AI 部分不是「拼一段 prompt、拿回一段文字」，而是三层递进的约束机制。每一层解决一类不同的失败。
+
+### 第一层：结构化输出 + 自修复（解决「输出不可用」）
+
+模型天然爱自由发挥：多写一句开场白、少给一个字段，前端就没法渲染。所以用 [Zod](https://zod.dev) 定义教程 schema（`src/lib/tutorial/schema.ts`），拿到输出先校验，不过就把**具体的报错**拼回 prompt 让模型自己改，最多 3 轮。
+
+关键设计是让模型**自评把握度**：schema 里有 `confidence`（high / medium / low）和 `missingInfo`（承认自己不知道什么），并用跨字段规则兜底——没给安装命令、或列了未确认信息时，`confidence` 不许标 high。这比事后人工review便宜得多。
+
+> 数据库里用 `v: 2` 字段区分新旧格式，53 条改造前的纯 Markdown 教程原样兼容，没做数据迁移。
+
+### 第二层：工具调用 Agent（解决「输出不真实」）
+
+结构化只能保证格式对，保证不了内容真。模型写「`pip install wordcraft`」时往往只是照仓库名猜的——而包管理器上的 `wordcraft` 其实是另一个项目。
+
+所以把真实数据源挂成工具，让模型**先取证再动笔**（`src/lib/ai/`）：
+
+| 工具 | 作用 |
+|------|------|
+| `fetch_repo_meta` | GitHub 仓库权威元数据（star / 语言 / 协议 / 是否归档） |
+| `fetch_readme` | README 正文，自动剥掉徽章和图片 |
+| `fetch_package_info` | 核实 npm / PyPI / crates.io 上包名是否真实存在、最新版本、正确安装命令 |
+| `search_knowledge` | 检索站内已积累的教程语料 |
+
+循环形态是标准的 tool-calling loop：模型要工具 → 执行 → 结果作为观察回灌 → 再问模型，直到它不再要工具。**第一步强制调工具**（`tool_choice: required`）——实测用 `auto` 时模型有相当比例直接凭记忆作答，工具就白挂了。
+
+工具失败不抛异常，而是把「查不到」作为一条观察返回给模型，由它自己决定换参数重试还是如实写进 `missingInfo`。这是 agent 与普通函数调用的本质区别：工具失败不是系统失败，是给模型的一条信息。
+
+### 第三层：混合检索 RAG（解决「无从查起」）
+
+前三个工具解决「这个项目是什么」，`search_knowledge` 解决「我们站里已经有什么」——比如「推荐过哪些 Rust 项目」，光靠 GitHub API 答不出来。
+
+检索用 **BM25 + 向量双路召回，RRF 融合**（`src/lib/rag/`）：
+
+- **BM25**：字面精确匹配，查 `ripgrep` 这类专有名词一击命中。中文没有空格，用相邻二字组（bigram）分词。
+- **向量**：`BAAI/bge-m3`（1024 维，硅基流动免费）做语义匹配，应付「适合新手的 Rust 练手项目」这种一个词都对不上的问法。
+- **RRF 融合**：两路分数量纲完全不同，直接加权等于拿两把不同刻度的尺子相加；只按名次融合就绕开了归一化问题。
+
+向量存在 SQLite 的 `KnowledgeChunk` 表里（序列化成 JSON 数组）。SQLite 没有原生向量类型，但几百条数据用暴力余弦完全够，不值得为此引入 pgvector 之类依赖。**向量这一路是可选的**：embedding 接口挂了就退化成纯 BM25，绝不因为检索层把整个 agent 拖崩。
+
+### 效果对照
+
+同一批 6 个仓库，两版各跑一次（`npm run eval:compare`，报告落在 `data/eval/`）：
+
+| 指标 | plain（凭记忆） | tools（先取证） |
+|------|----------------|----------------|
+| 生成成功率 | 6/6 | 6/6 |
+| 平均安装命令数 | 4.17 | 4.33 |
+| 平均自述未知项 | 3.00 | 3.67 |
+| 平均工具调用 | 0 | 3.33 |
+| 平均耗时 | 7.3s | 15.8s |
+
+自述未知项变多不是退步：模型**承认自己不知道的东西变多了**，正是防幻觉想要的结果。中途还有一版数据里 tools 的平均命令数掉到 2.33（比 plain 还低），原因是模型查不到发布包就不敢给命令了——补上「源码构建命令也算安装命令」并强制首轮取证后才回到 4.33。
+
+---
+
 ## 技术栈
 
 ### 主项目（仓库根目录）
@@ -189,8 +248,13 @@ npm run dev
 | `npm run build` | 生产构建 |
 | `npm run start` | 生产模式启动（需先 build） |
 | `npm run lint` | 运行 ESLint 检查 |
-| `npm run update:daily` | 手动跑一次完整流程（抓取 → 筛选 → AI 生成教程 → 入库 → 写快照） |
+| `npm run update:daily` | 手动跑一次完整流程（抓取 → 筛选 → AI 生成教程 → 入库 → 写快照 → 重建检索索引） |
+| `npm run verify:tutorials` | 体检所有教程：统计结构化通过率、把握度分布、损坏条数 |
+| `npm run rag:build` | 重建 RAG 知识库索引（切片 + 生成向量，幂等） |
+| `npm run eval:compare [n]` | 对照实验：同一批项目分别用 plain / tools 两版生成并出报告 |
 | `npm run db:seed` | 填充种子数据 |
+
+> `update:daily` 默认用 tools 模式（先取证再动笔）。想省时间或配额，设环境变量 `TUTORIAL_MODE=plain` 退回单轮生成。
 
 ### Prisma 命令
 
@@ -225,14 +289,15 @@ npm run dev
 
 ## 数据模型
 
-`prisma/schema.prisma` 里定义了 4 张表：
+`prisma/schema.prisma` 里定义了 5 张表：
 
 | 模型 | 关键字段 | 作用 |
 |------|---------|------|
-| `Repository` | `fullName`、`stars`、`language`、`tutorial` | 抓取到的 GitHub 项目；`tutorial` 存 AI 生成的小白教程 |
+| `Repository` | `fullName`、`stars`、`language`、`tutorial` | 抓取到的 GitHub 项目；`tutorial` 存 AI 生成的小白教程（新版为结构化 JSON） |
 | `Article` | `issue`、`title`、`content`、`weekStart` | 每天一期的推荐稿 |
 | `Recommendation` | `sortOrder`、`reason`、`category` | 稿子 ↔ 项目的多对多关系（兼带排名和推荐理由） |
 | `JobRun` | `jobType`、`status`、`startedAt` | 定时任务运行记录，用于展示自动化状态 |
+| `KnowledgeChunk` | `repoFullName`、`source`、`content`、`embedding` | RAG 检索库的切片；`embedding` 存 bge-m3 向量的 JSON 序列化 |
 
 ---
 
