@@ -119,6 +119,8 @@ export async function POST(request: Request) {
       tutorial: renderTutorialToMarkdown(tutorial),
       cached: false,
       attempts: result.attempts,
+      // 取证了多少次、用了哪些工具。前端可以拿它说明「这份教程不是凭空编的」
+      evidence: result.toolCalls ?? [],
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
