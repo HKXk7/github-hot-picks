@@ -254,7 +254,7 @@ npm run dev
 | `npm run eval:compare [n]` | 对照实验：同一批项目分别用 plain / tools 两版生成并出报告 |
 | `npm run db:seed` | 填充种子数据 |
 
-> `update:daily` 默认用 tools 模式（先取证再动笔）。想省时间或配额，设环境变量 `TUTORIAL_MODE=plain` 退回单轮生成。
+> `update:daily` 默认用 plain 模式（单轮成稿，约 7s/篇）。想要「先取证再动笔」的高质量路径，设环境变量 `TUTORIAL_MODE=tools`，但实测慢一倍以上（约 16s/篇）且结构化完整度没更好。
 
 ### Prisma 命令
 

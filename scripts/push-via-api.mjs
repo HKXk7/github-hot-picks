@@ -58,17 +58,28 @@ function showFile(sha, path) {
 }
 
 (async () => {
-  // 本地缓存的远端位置就是重建起点（前提：它和真实远端一致，见下面的校验）
-  const remoteSha = git("rev-parse", `origin/${BRANCH}`);
-  const ahead = git("rev-list", "--reverse", `${remoteSha}..HEAD`).split("\n").filter(Boolean);
-
-  // 先确认远端确实停在我们以为的那个 commit 上，避免基于过期认知覆盖别人的提交
   const realRemote = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`);
-  if (realRemote.object.sha !== remoteSha) {
-    console.error(
-      `远端已变化：本地以为 ${remoteSha.slice(0, 8)}，实际 ${realRemote.object.sha.slice(0, 8)}。请先 git fetch 后再重试。`,
-    );
-    process.exit(1);
+  const remoteSha = realRemote.object.sha;
+
+  // 起点有两种给法：
+  //   1. 默认用本地的 origin/<branch>（前提是它没过期）
+  //   2. GH_BASE=<本地 sha>：git fetch 走不通、origin 指针已经落后时手动指定
+  //      「本地已经推到哪儿了」，推它之后的那些 commit。
+  let ahead;
+  if (process.env.GH_BASE) {
+    ahead = git("rev-list", "--reverse", `${process.env.GH_BASE}..HEAD`).split("\n").filter(Boolean);
+    console.log(`基准：本地 ${process.env.GH_BASE.slice(0, 8)}（远端 ${remoteSha.slice(0, 8)}）`);
+  } else {
+    const localRemote = git("rev-parse", `origin/${BRANCH}`);
+    // 本地以为的远端位置和真实远端不一致时拒绝继续，避免基于过期认知覆盖别人的提交
+    if (localRemote !== remoteSha) {
+      console.error(
+        `远端已变化：本地以为 ${localRemote.slice(0, 8)}，实际 ${remoteSha.slice(0, 8)}。\n` +
+          `请先 git fetch；若网络不通，用 GH_BASE=<本地已推送到的最后一个 commit> 显式指定起点。`,
+      );
+      process.exit(1);
+    }
+    ahead = git("rev-list", "--reverse", `${localRemote}..HEAD`).split("\n").filter(Boolean);
   }
 
   if (ahead.length === 0) {

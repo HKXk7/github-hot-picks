@@ -15,10 +15,15 @@ import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 const prisma = new PrismaClient();
 
 /**
- * 教程生成模式。默认 tools（先取证再动笔，质量高但慢）；
- * CI 里想省时间/配额就设 TUTORIAL_MODE=plain 退回单轮生成。
+ * 教程生成模式。默认 plain（单轮成稿，快且有评测支撑）；
+ * 想要「先取证再动笔」的高质量路径就设 TUTORIAL_MODE=tools，代价是慢一倍以上。
+ *
+ * 2026-10-29 的评测（data/eval/mode-compare-2026-10-29.json，6 个项目×2 模式）：
+ *   plain  平均 4.17 条命令 / 缺 3.00 项 / 7.3s  / 0 次工具调用
+ *   tools  平均 4.33 条命令 / 缺 3.67 项 / 15.8s / 3.33 次工具调用
+ * 结论：当前提示词下工具模式只增加了延迟，结构化完整度反而更差，故默认切回 plain。
  */
-const tutorialMode: GenerationMode = process.env.TUTORIAL_MODE === "plain" ? "plain" : "tools";
+const tutorialMode: GenerationMode = process.env.TUTORIAL_MODE === "tools" ? "tools" : "plain";
 
 // ================= 类型 =================
 interface RawRepo {

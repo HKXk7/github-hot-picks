@@ -51,3 +51,11 @@ next-env.d.ts
 
 # 本地 dev server 日志
 .next-dev.*.log
+
+# 本地草稿与一次性调试脚本（不进仓库）
+today-picks.md
+scripts/_probe_auth.py
+scripts/_reenable_plugin.py
+
+# DSH 插件属于本机 Harness 配置，不是本站代码
+/dsh-plugin/
