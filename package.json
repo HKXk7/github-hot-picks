@@ -12,7 +12,7 @@
     "update:daily": "tsx scripts/update-daily.ts",
     "verify:tutorials": "tsx scripts/verify-tutorials.ts",
     "rag:build": "tsx scripts/build-rag-index.ts",
-    "eval:compare": "tsx scripts/eval-compare.ts"
+    "eval": "tsx scripts/eval-run.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

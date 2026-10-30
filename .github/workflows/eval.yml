@@ -1,0 +1,67 @@
+name: Tutorial Quality Eval
+
+on:
+  # 不挂定时：评测每次要真调模型，按天跑不划算。
+  # 改了 prompt / schema / 工具之后手动点一下，或者在 PR 里触发，用来卡回归。
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: 抽样几个项目
+        required: false
+        default: "8"
+      mode:
+        description: tools / plain / both
+        required: false
+        default: "both"
+      judge:
+        description: 是否启用 LLM 评审（更慢）
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    env:
+      # prisma.config.ts 对 DATABASE_URL 是硬校验，任何 prisma CLI 都要求它在位
+      DATABASE_URL: "file:${{ github.workspace }}/prisma/dev.db"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        # generated/prisma 不在仓库里，必须现生成；且要用 tsx 跑脚本（客户端是 .ts）
+        run: npx prisma generate
+
+      - name: Setup database
+        run: npx prisma migrate deploy
+
+      - name: Seed repositories from snapshot
+        # 评测要从已有项目里抽样，空库跑不了
+        run: npx tsx scripts/import-snapshot.ts
+
+      - name: Run evaluation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
+          SILICONFLOW_BASE_URL: https://api.siliconflow.cn/v1
+        run: |
+          FLAGS="--limit ${{ github.event.inputs.samples || '8' }} --mode ${{ github.event.inputs.mode || 'both' }}"
+          if [ "${{ github.event.inputs.judge }}" = "true" ]; then FLAGS="$FLAGS --judge"; fi
+          npm run eval -- $FLAGS
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: data/eval/
