@@ -57,30 +57,52 @@ function showFile(sha, path) {
   }
 }
 
+/** 这个 SHA 在本地仓库里存在吗？远端重写过的 commit 本地是没有的 */
+function isLocalCommit(sha) {
+  try {
+    git("rev-parse", "--verify", `${sha}^{commit}`);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 (async () => {
   const realRemote = await gh(`/repos/${OWNER}/${REPO}/git/ref/heads/${BRANCH}`);
   const remoteSha = realRemote.object.sha;
 
   // 起点有两种给法：
-  //   1. 默认用本地的 origin/<branch>（前提是它没过期）
-  //   2. GH_BASE=<本地 sha>：git fetch 走不通、origin 指针已经落后时手动指定
-  //      「本地已经推到哪儿了」，推它之后的那些 commit。
-  let ahead;
-  if (process.env.GH_BASE) {
-    ahead = git("rev-list", "--reverse", `${process.env.GH_BASE}..HEAD`).split("\n").filter(Boolean);
-    console.log(`基准：本地 ${process.env.GH_BASE.slice(0, 8)}（远端 ${remoteSha.slice(0, 8)}）`);
-  } else {
+  //   1. GH_BASE=<本地 sha>：最常见。git fetch 走不通时用它告诉脚本「推它之后的那些 commit」。
+  //   2. GH_BASE=<远端 sha> + GH_LOCAL_BASE=<本地 sha>：远端历史被人重写过（commit 被重新
+  //      创建、SHA 变了），此时远端起点在本地不存在，两边要分开说。本地起点只用来枚举待推送的
+  //      commit，真正作为 API 里 parents / base_tree 的始终是远端真实的 SHA。
+  let localBase = null;
+  if (process.env.GH_BASE && isLocalCommit(process.env.GH_BASE)) {
+    localBase = process.env.GH_BASE;
+    console.log(`基准：本地 ${localBase.slice(0, 8)}（远端 ${remoteSha.slice(0, 8)}）`);
+  } else if (process.env.GH_BASE && process.env.GH_LOCAL_BASE && isLocalCommit(process.env.GH_LOCAL_BASE)) {
+    localBase = process.env.GH_LOCAL_BASE;
+    console.log(
+      `基准：远端 ${process.env.GH_BASE.slice(0, 8)}（本地对应 ${localBase.slice(0, 8)}，SHA 已被重写过）`,
+    );
+  } else if (!process.env.GH_BASE) {
     const localRemote = git("rev-parse", `origin/${BRANCH}`);
     // 本地以为的远端位置和真实远端不一致时拒绝继续，避免基于过期认知覆盖别人的提交
     if (localRemote !== remoteSha) {
       console.error(
         `远端已变化：本地以为 ${localRemote.slice(0, 8)}，实际 ${remoteSha.slice(0, 8)}。\n` +
-          `请先 git fetch；若网络不通，用 GH_BASE=<本地已推送到的最后一个 commit> 显式指定起点。`,
+          `请先 git fetch；若网络不通，用 GH_BASE=<本地已推送到的最后一个 commit> 显式指定起点；\n` +
+          `若远端历史被重写过（SHA 变了），再配 GH_LOCAL_BASE=<本地对应的那个 commit>。`,
       );
       process.exit(1);
     }
-    ahead = git("rev-list", "--reverse", `${localRemote}..HEAD`).split("\n").filter(Boolean);
+    localBase = localRemote;
+  } else {
+    console.error("指定的基准既不是本地存在的 commit，也没有配有效的 GH_LOCAL_BASE。");
+    process.exit(1);
   }
+
+  const ahead = git("rev-list", "--reverse", `${localBase}..HEAD`).split("\n").filter(Boolean);
 
   if (ahead.length === 0) {
     console.log("本地没有领先远端的提交，无需推送");
@@ -141,7 +163,9 @@ function showFile(sha, path) {
   try {
     git("update-ref", `refs/remotes/origin/${BRANCH}`, parentSha);
   } catch {
-    console.log("（本地 origin/main 指针未能更新，下次推送前请先 git fetch）");
+    // 用 GH_BASE / GH_LOCAL_BASE 推送时这是常态，不构成问题——本地 Sha 与实际内容无关，
+    // 下次显式给基准即可。别把它当成「推送失败」。
+    console.log("（本地 origin/main 指针未更新：属预期，下次推送显式给 GH_BASE 即可）");
   }
 })().catch((err) => {
   console.error("失败：", err.message);
