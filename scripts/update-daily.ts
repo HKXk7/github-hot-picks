@@ -15,15 +15,19 @@ import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 const prisma = new PrismaClient();
 
 /**
- * 教程生成模式。默认 plain（单轮成稿，快且有评测支撑）；
- * 想要「先取证再动笔」的高质量路径就设 TUTORIAL_MODE=tools，代价是慢一倍以上。
+ * 教程生成模式。日更管线默认走 tools（先取证再动笔），设 TUTORIAL_MODE=plain 可降级。
  *
- * 2026-10-29 的评测（data/eval/mode-compare-2026-10-29.json，6 个项目×2 模式）：
- *   plain  平均 4.17 条命令 / 缺 3.00 项 / 7.3s  / 0 次工具调用
- *   tools  平均 4.33 条命令 / 缺 3.67 项 / 15.8s / 3.33 次工具调用
- * 结论：当前提示词下工具模式只增加了延迟，结构化完整度反而更差，故默认切回 plain。
+ * 为什么管线用 tools 而前端点击用 plain：管线每天只跑一次、10 个项目合计多花约 2 分钟，
+ * 没人会感知这点延迟；而教程一旦写出不存在的安装命令，是直接坑到读者的硬错误。
+ * 前端是人在屏幕前等，22 秒体验很差，那边保留快的单轮（见 api/tutorial/route.ts）。
+ *
+ * 2026-10-29 分层随机评测（8 个样本×2 模式，data/eval/latest.json）：
+ *   plain  1.50 条命令 / 8.3s  / 0 次工具调用 / 37.5% 的样本给出可核验命令
+ *   tools  2.25 条命令 / 22.1s / 6.9 次工具调用 / 62.5% 的样本给出可核验命令
+ * 「可核验命令」指命令里的包名能在 npm / PyPI / crates.io 上查到——这是本项目要防的头号问题，
+ * 两版编造率都是 0%，但 tools 能给出可核验命令的项目数多了近七成。
  */
-const tutorialMode: GenerationMode = process.env.TUTORIAL_MODE === "tools" ? "tools" : "plain";
+const tutorialMode: GenerationMode = process.env.TUTORIAL_MODE === "plain" ? "plain" : "tools";
 
 // ================= 类型 =================
 interface RawRepo {

@@ -82,7 +82,9 @@ export async function POST(request: Request) {
       homepage: gh.homepage ?? null,
     };
 
-    const result = await generateStructuredTutorial(meta);
+    // 交互路径固定走 plain：用户在屏幕前等，评测里 tools 平均 22s 而 plain 只要 8s。
+    // 日更管线那条离线路径反过来默认 tools（见 scripts/update-daily.ts 的注释说明理由）。
+    const result = await generateStructuredTutorial(meta, { mode: "plain" });
     if (!result.tutorial) {
       return NextResponse.json(
         { error: `教程生成失败：${result.error ?? "未知原因"}` },

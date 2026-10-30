@@ -194,7 +194,7 @@ function tryParse(raw: string, finishReason: string | null): { tutorial: Tutoria
 
 // ================= 主入口 =================
 export interface GenerateOptions {
-  /** plain = 单轮凭知识作答（默认，快）；tools = 先工具取证再作答，可用 TUTORIAL_MODE=tools 打开 */
+  /** plain = 单轮凭知识作答（快）；tools = 先工具取证再作答。不传时看 TUTORIAL_MODE，再没有就 plain */
   mode?: GenerationMode;
   maxAttempts?: number;
   maxSteps?: number;
@@ -214,8 +214,8 @@ export async function generateStructuredTutorial(
   meta: TutorialMeta,
   options: GenerateOptions = {},
 ): Promise<GenerateResult> {
-  // 没有显式传入时看环境变量：TUTORIAL_MODE=tools 才走工具取证路径。
-  // 默认 plain：评测里 tools 多花一倍时间，缺字段反而更多（见 scripts/update-daily.ts 注释）。
+  // 没有显式传入时看环境变量，环境变量也没有时用 plain。
+  // 选哪条路由调用方决定：离线管线选 tools 换正确性，前端点击选 plain 换响应速度。
   const mode: GenerationMode = options.mode ?? (process.env.TUTORIAL_MODE === "tools" ? "tools" : "plain");
   const maxAttempts = options.maxAttempts ?? MAX_ATTEMPTS;
   const log = options.log ?? (() => {});
