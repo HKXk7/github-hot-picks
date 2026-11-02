@@ -1,6 +1,7 @@
 import type { Tool } from "./types";
 import { str } from "./types";
 import { formatRetrieved, searchKnowledge } from "../../rag/retrieve";
+import { sanitizeExternal } from "../sanitize";
 
 /**
  * 站内知识库检索工具。
@@ -32,7 +33,9 @@ export const knowledgeTool: Tool = {
     const topK = typeof args.topK === "number" ? Math.min(Math.max(Math.trunc(args.topK), 1), 5) : 3;
     try {
       const chunks = await searchKnowledge(query, topK);
-      return formatRetrieved(chunks);
+      // 知识库的内容来源就是别人的 README，所以它同样是不可信数据——
+      // 作者当年写进 README 的注入句，会跟着切片一路活到今天的检索结果里。
+      return sanitizeExternal("本站知识库片段", formatRetrieved(chunks), 4000).text;
     } catch (err) {
       return `检索失败：${err instanceof Error ? err.message : String(err)}`;
     }

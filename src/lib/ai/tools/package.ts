@@ -1,5 +1,6 @@
 import type { Tool } from "./types";
-import { str, truncate } from "./types";
+import { str } from "./types";
+import { sanitizeExternal } from "../sanitize";
 
 /**
  * 包管理器查询。
@@ -201,6 +202,7 @@ export const packageInfoTool: Tool = {
     const result = await lookupPackage(ecosystem, name);
     if (result.status === "missing") return renderNotFound(ecosystem, name);
     if (result.status === "error") return `查询失败：${result.message}`;
-    return truncate(renderFacts(result.facts, name), 1500);
+    // 包描述也是发布者自己填的自由文本，和 README 一样不可信
+    return sanitizeExternal(`${ecosystem} 包信息`, renderFacts(result.facts, name), 1500).text;
   },
 };
