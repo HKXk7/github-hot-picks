@@ -7,6 +7,8 @@ import {
 } from "@/lib/tutorial/generate";
 import { renderTutorialToMarkdown, toTutorialMarkdown } from "@/lib/tutorial/schema";
 import { checkRateLimit, clientIp, rateLimitHeaders } from "@/lib/rate-limit";
+// 副作用导入：这个接口会现场生成教程（烧钱），用量必须能查得到
+import "@/lib/ai/observability";
 
 // 尽力从 GitHub 补全 topics / homepage 等元数据（失败不影响，回退用数据库里的信息）
 async function fetchGithubMeta(fullName: string): Promise<Partial<TutorialMeta>> {
