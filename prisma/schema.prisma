@@ -80,6 +80,63 @@ model KnowledgeChunk {
   @@index([repoFullName])
 }
 
+// 6. 每一次 LLM 调用的用量与耗时
+// 没有这张表，「一次教程生成花多少钱 / 哪一步最慢 / 上游是不是开始报错」
+// 这三个问题就都只能靠猜。它是成本控制和线上排查的唯一依据，
+// 所以写入必须「尽力而为」——观测把主流程拖垮是最糟的失败模式。
+model LlmCall {
+  id               String   @id @default(cuid())
+  // 同一次生成/同一次对话里的多次调用共用一个 traceId，才能回答「哪一步最慢」
+  traceId          String
+  // tutorial | chat | embed | planner | eval
+  kind             String
+  // 具体是哪一步，例如 fetch_readme、self-repair
+  label            String?
+  model            String
+  promptTokens     Int      @default(0)
+  completionTokens Int      @default(0)
+  totalTokens      Int      @default(0)
+  // 按写入时的单价表折算，单价会变，所以存下来而不是事后重算
+  costCny          Float?
+  latencyMs        Int
+  ok               Boolean
+  error            String?
+  // 降级手段（如「该模型不支持 response_format」）的 JSON 数组
+  degraded         String?
+  createdAt        DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([traceId])
+  @@index([kind])
+}
+
+// 7. AI Buddy 的会话与消息
+// 之前会话只存在浏览器 localStorage 里：换个设备、清个缓存就没了，
+// 服务端也完全不知道用户问过什么。挪到库里才能做多轮记忆和滚动摘要。
+model ChatSession {
+  id        String   @id @default(cuid())
+  title     String?
+  // 较早那部分对话的滚动摘要：不这么做，上下文会随轮数无限增长，
+  // 迟早把 token 上限和额度一起吃掉
+  summary       String?
+  summarizedAt  DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  messages ChatMessage[]
+}
+
+model ChatMessage {
+  id        String      @id @default(cuid())
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+  role      String
+  content   String
+  createdAt DateTime    @default(now())
+
+  @@index([sessionId, createdAt])
+}
+
 // 4. 定时任务运行记录
 model JobRun {
   id        String    @id @default(cuid())
