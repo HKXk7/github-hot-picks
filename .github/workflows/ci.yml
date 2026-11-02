@@ -28,6 +28,12 @@ jobs:
         # generated/prisma 不在仓库里，typecheck 之前必须先生成
         run: npx prisma generate
 
+      - name: Generate Next route types
+        # LayoutProps / PageProps 这类类型是 Next 生成的（.next/types），仓库里没有。
+        # 本地因为有 .next 目录才检查得过，CI 全新 checkout 会直接报
+        # "Cannot find name 'LayoutProps'"。next typegen 只生成类型，不用整编一遍。
+        run: npx next typegen
+
       - name: Typecheck
         run: npx tsc --noEmit
 

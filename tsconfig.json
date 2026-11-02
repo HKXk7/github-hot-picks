@@ -30,5 +30,8 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  // github-hot-recommend 是独立的 Express 子项目，有自己的 tsconfig 和依赖。
+  // 放在根目录的类型检查里会被扫到，而它的 node_modules 不在根 lockfile 里 ——
+  // 本地因为装过才不报错，CI 全新环境必然报 "Cannot find module 'express'"。
+  "exclude": ["node_modules", "github-hot-recommend"]
 }
