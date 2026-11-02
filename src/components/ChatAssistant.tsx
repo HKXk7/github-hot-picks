@@ -33,6 +33,11 @@ export default function ChatAssistant() {
   const [error, setError] = useState<string | null>(null);
   // 深度模式：先规划再逐步联网取证，慢但能回答需要多步查证的问题
   const [deep, setDeep] = useState(false);
+  // 会话现在由服务端保存（换设备、清缓存都还在），本地只存它给的 id。
+  // 首次发送时 id 为空，服务端会新建一个并通过响应头回传。
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const sessionRef = useRef<string | null>(null);
+  const loadedRef = useRef(false);
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -46,16 +51,32 @@ export default function ChatAssistant() {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) return;
-      const saved = JSON.parse(raw) as { model?: string; messages?: Msg[] };
+      const saved = JSON.parse(raw) as { model?: string; sessionId?: string };
       if (saved.model && MODELS.some((i) => i.id === saved.model)) setModel(saved.model);
-      if (Array.isArray(saved.messages)) setMessages(saved.messages.slice(-20));
+      if (typeof saved.sessionId === "string" && saved.sessionId) setSessionId(saved.sessionId);
     } catch { /* ignore */ }
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
-    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ model, messages: messages.slice(-20) })); } catch { /* ignore */ }
-  }, [messages, model]);
+    sessionRef.current = sessionId;
+    try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ model, sessionId })); } catch { /* ignore */ }
+  }, [model, sessionId]);
+
+  // 历史只在真正打开面板时才去取：挂着不点就不该发这个请求
+  useEffect(() => {
+    if (!open || loadedRef.current || !sessionId) return;
+    loadedRef.current = true;
+    void (async () => {
+      try {
+        const res = await fetch(`/api/chat?sessionId=${encodeURIComponent(sessionId)}`);
+        if (!res.ok) return;
+        const data = (await res.json()) as { messages?: Msg[]; sessionId?: string };
+        if (data.sessionId && data.sessionId !== sessionId) setSessionId(data.sessionId);
+        if (Array.isArray(data.messages) && data.messages.length > 0) setMessages(data.messages);
+      } catch { /* 取不到历史就当新会话，不影响使用 */ }
+    })();
+  }, [open, sessionId]);
 
   useEffect(() => {
     const openPanel = () => setOpen(true);
@@ -72,7 +93,10 @@ export default function ChatAssistant() {
     setMessages(history); setInput(""); setError(null); setLoading(true);
     const ac = new AbortController(); abortRef.current = ac;
     try {
-      const res = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: history, model, deep }), signal: ac.signal });
+      // 只发这一条新消息：历史由服务端从会话里取，不再每次都整段回传
+      const res = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ sessionId: sessionRef.current, message: text, model, deep }), signal: ac.signal });
+      const sid = res.headers.get("x-session-id");
+      if (sid && sid !== sessionRef.current) { sessionRef.current = sid; setSessionId(sid); }
       if (!res.ok || !res.body) {
         let msg = `请求失败（${res.status}）`;
         try { const j = await res.json(); if (j?.error) msg = j.error; } catch { /* ignore */ }
@@ -81,7 +105,11 @@ export default function ChatAssistant() {
 
       // 深度模式不流式：等它把计划跑完，一次性把答案和执行过的步骤给出来
       if (deep) {
-        const data = (await res.json()) as { answer?: string; plan?: string[] };
+        const data = (await res.json()) as { answer?: string; plan?: string[]; sessionId?: string };
+        if (data.sessionId && data.sessionId !== sessionRef.current) {
+          sessionRef.current = data.sessionId;
+          setSessionId(data.sessionId);
+        }
         setMessages((prev) => [
           ...prev,
           { role: "assistant", content: data.answer ?? "⚠️ 没有拿到结果", plan: data.plan ?? [] },
@@ -110,7 +138,14 @@ export default function ChatAssistant() {
   }
 
   function stop() { abortRef.current?.abort(); setLoading(false); }
-  function resetConversation() { abortRef.current?.abort(); setMessages([]); setInput(""); setError(null); setLoading(false); }
+  // 清空 = 换一个新会话，而不是把旧会话的历史从界面上抹掉却还留在库里
+  function resetConversation() {
+    abortRef.current?.abort();
+    sessionRef.current = null;
+    loadedRef.current = false;
+    setSessionId(null);
+    setMessages([]); setInput(""); setError(null); setLoading(false);
+  }
   // 名字不能带 use 前缀：它不是 hook，只是把示例问题填进输入框的普通函数，
   // 叫 useXxx 会让 react-hooks 规则误判成「在回调里调用 hook」。
   function applyPrompt(prompt: string) { setInput(prompt); setOpen(true); requestAnimationFrame(() => textareaRef.current?.focus()); }
