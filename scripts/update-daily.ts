@@ -11,6 +11,9 @@ import {
 } from "../src/lib/tutorial/generate";
 import { parseStructuredTutorial, toTutorialMarkdown } from "../src/lib/tutorial/schema";
 import { attachEvidence } from "../src/lib/tutorial/evidence";
+// 副作用导入：把 LLM 用量接到数据库上。少了这一行，跑完只知道「生成了」，
+// 不知道花了多少 token、哪一步慢。
+import "../src/lib/ai/observability";
 // 分类规则抽成纯函数（src/lib/picks.ts）：分类贴错了不会报错，只会安静地别扭一整期，
 // 所以要能被单测覆盖；放在脚本里就没法测（import 本文件会直接跑起整条管线）。
 import { categorize } from "../src/lib/picks";

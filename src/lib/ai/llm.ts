@@ -47,6 +47,10 @@ export interface ChatOptions {
   model: string;
   messages: ChatMessage[];
   tools?: ToolSpec[];
+  /** 这一步叫什么（如 fetch_readme / self-repair），用于事后看「哪一步最慢」 */
+  label?: string;
+  /** 显式指定调用链上下文；不传就用 AsyncLocalStorage 里当前的那个 */
+  trace?: TraceContext;
   /** "auto" | "none" | { type:"function", function:{name} } */
   toolChoice?: "auto" | "none" | "required" | { type: "function"; function: { name: string } };
   maxTokens?: number;
@@ -68,8 +72,13 @@ export type ChatOutcome =
       finishReason: string | null;
       /** 本次调用是否真的用了降级手段，供上层记录 */
       degraded: string[];
+      /** 上游报的 token 用量；流式/部分模型不给时是 0，不是错误 */
+      usage: TokenUsage;
     }
   | { ok: false; error: string; status?: number };
+
+import { currentTrace, emitCall, type TraceContext } from "./usage-sink";
+import { EMPTY_USAGE, extractUsage, type TokenUsage } from "./usage";
 
 function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -81,6 +90,7 @@ interface RawChatResponse {
     message?: { content?: string | null; tool_calls?: ToolCall[] };
     finish_reason?: string | null;
   }[];
+  usage?: Record<string, unknown>;
 }
 
 export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
@@ -101,6 +111,26 @@ export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
   if (!SF_KEY) return { ok: false, error: "未配置 SILICONFLOW_API_KEY" };
 
   const degraded: string[] = [];
+
+  const startedAt = performance.now();
+  const trace = opts.trace ?? currentTrace();
+  // 一次 chat() 内部可能有多次 HTTP 重试，但对上层来说就是「一次调用」，
+  // 所以只上报一条：耗时算整段（含退避等待），用量取最后一次成功的。
+  const emit = (ok: boolean, usage: TokenUsage, error?: string) => {
+    const label = opts.label ?? trace?.label;
+    emitCall({
+      traceId: trace?.id ?? "unknown",
+      kind: trace?.kind ?? "chat",
+      ...(label ? { label } : {}),
+      model,
+      usage,
+      latencyMs: Math.round(performance.now() - startedAt),
+      ok,
+      ...(error ? { error } : {}),
+      ...(degraded.length ? { degraded } : {}),
+    });
+  };
+
   // JSON 模式 / 思维链这两个开关都不是所有模型都吃，失败就剥掉重试，
   // 而不是直接判死——不同厂商的兼容层差异很大。
   let useJsonMode = jsonMode;
@@ -131,7 +161,10 @@ export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
       text = await res.text();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (attempt === maxRetries) return { ok: false, error: `网络异常：${msg}` };
+      if (attempt === maxRetries) {
+        emit(false, EMPTY_USAGE, `网络异常：${msg}`);
+        return { ok: false, error: `网络异常：${msg}` };
+      }
       const wait = 800 * 2 ** attempt;
       onRetry?.({ attempt: attempt + 1, reason: `网络异常 ${msg}`, waitMs: wait });
       await sleep(wait);
@@ -156,7 +189,9 @@ export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
       }
       const retryable = res.status === 429 || (res.status >= 500 && res.status < 600);
       if (!retryable || attempt === maxRetries) {
-        return { ok: false, error: `HTTP ${res.status} ${text.slice(0, 300)}`, status: res.status };
+        const error = `HTTP ${res.status} ${text.slice(0, 300)}`;
+        emit(false, EMPTY_USAGE, error);
+        return { ok: false, error, status: res.status };
       }
       const wait = 800 * 2 ** attempt + Math.floor(Math.random() * 300);
       onRetry?.({ attempt: attempt + 1, reason: `HTTP ${res.status}`, waitMs: wait });
@@ -168,12 +203,20 @@ export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
     try {
       data = JSON.parse(text) as RawChatResponse;
     } catch {
-      return { ok: false, error: `响应不是合法 JSON：${text.slice(0, 200)}` };
+      const error = `响应不是合法 JSON：${text.slice(0, 200)}`;
+      emit(false, EMPTY_USAGE, error);
+      return { ok: false, error };
     }
 
     const choice = data?.choices?.[0];
-    if (!choice) return { ok: false, error: `响应缺少 choices：${text.slice(0, 200)}` };
+    if (!choice) {
+      const error = `响应缺少 choices：${text.slice(0, 200)}`;
+      emit(false, EMPTY_USAGE, error);
+      return { ok: false, error };
+    }
 
+    const usage = extractUsage(data);
+    emit(true, usage);
     return {
       ok: true,
       message: {
@@ -183,9 +226,11 @@ export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
       },
       finishReason: choice?.finish_reason ?? null,
       degraded,
+      usage,
     };
   }
 
+  emit(false, EMPTY_USAGE, "重试耗尽");
   return { ok: false, error: "重试耗尽" };
 }
 
@@ -198,8 +243,29 @@ export const EMBEDDING_DIM = 1024;
  * 把一批文本转成向量。
  * 返回 null 表示失败（网络/额度），调用方要能退化到纯 BM25 检索，不能让主流程崩。
  */
+interface RawEmbedResponse {
+  data?: { embedding?: number[] }[];
+  usage?: Record<string, unknown>;
+}
+
 export async function embed(texts: string[]): Promise<number[][] | null> {
   if (!SF_KEY || texts.length === 0) return null;
+  const startedAt = performance.now();
+  const trace = currentTrace();
+  // embedding 也在烧额度（建一次索引几百条），不记就永远不知道它花了多少
+  const emit = (ok: boolean, usage: TokenUsage, error?: string) => {
+    emitCall({
+      traceId: trace?.id ?? "unknown",
+      kind: trace?.kind ?? "embed",
+      ...(trace?.label ? { label: trace.label } : {}),
+      model: EMBEDDING_MODEL,
+      usage,
+      latencyMs: Math.round(performance.now() - startedAt),
+      ok,
+      ...(error ? { error } : {}),
+    });
+  };
+
   try {
     const res = await fetch(`${SF_BASE}/embeddings`, {
       method: "POST",
@@ -207,11 +273,18 @@ export async function embed(texts: string[]): Promise<number[][] | null> {
       body: JSON.stringify({ model: EMBEDDING_MODEL, input: texts }),
       signal: AbortSignal.timeout(60_000),
     });
-    if (!res.ok) return null;
-    const data = (await res.json()) as { data?: { embedding?: number[] }[] };
+    if (!res.ok) {
+      emit(false, EMPTY_USAGE, `HTTP ${res.status}`);
+      return null;
+    }
+    const data = (await res.json()) as RawEmbedResponse;
     const vecs = (data.data ?? []).map((d) => d.embedding).filter((v): v is number[] => Array.isArray(v));
-    return vecs.length === texts.length ? vecs : null;
-  } catch {
+    const ok = vecs.length === texts.length;
+    // 只要请求发出去了就记用量：哪怕结果不合预期，token 也已经花了
+    emit(ok, extractUsage(data), ok ? undefined : "返回的向量数与输入不一致");
+    return ok ? vecs : null;
+  } catch (err) {
+    emit(false, EMPTY_USAGE, err instanceof Error ? err.message : String(err));
     return null;
   }
 }

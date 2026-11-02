@@ -79,6 +79,14 @@ jobs:
           SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
           SILICONFLOW_BASE_URL: https://api.siliconflow.cn/v1
 
+      - name: Purge expired chat sessions
+        # 会话里是用户真实问过的话，不该无限期留着
+        run: npm run cleanup:sessions
+
+      - name: Cost report
+        # 把今天这次生成花了多少 token 打进日志，成本异常时能第一时间看见
+        run: npm run usage -- --days 1
+
       - name: Save database to cache
         # 先 checkpoint 把 WAL 里的数据落盘，再整库写回缓存目录（cache@v4 在任务结束时自动保存）
         run: |

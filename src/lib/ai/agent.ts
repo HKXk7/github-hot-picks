@@ -34,6 +34,8 @@ export interface AgentOptions {
   requireToolOnFirstStep?: boolean;
   /** 步数用尽时，追加给模型的收尾指令 */
   finalInstruction?: string;
+  /** 这一步叫什么，会记进用量日志，用于事后看「哪一步最慢」 */
+  label?: string;
   onStep?: (rec: ToolCallRecord) => void;
   log?: (msg: string) => void;
 }
@@ -78,6 +80,7 @@ export async function runToolAgent(opts: AgentOptions): Promise<AgentResult> {
       temperature,
       // 带 tools 时禁用思维链，否则模型容易把推理过程写进正文字段
       disableThinking: true,
+      ...(opts.label ? { label: `${opts.label}·第${step}步` } : {}),
     });
     llmRounds++;
 
@@ -132,6 +135,7 @@ export async function runToolAgent(opts: AgentOptions): Promise<AgentResult> {
     maxTokens,
     temperature,
     disableThinking: true,
+    ...(opts.label ? { label: `${opts.label}·收尾` } : {}),
   });
   llmRounds++;
 
