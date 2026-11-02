@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getLatestSiteIssue, type SiteIssue } from "@/lib/site-data";
 import { langStyle, formatStars, formatTime, parseContent } from "@/lib/format";
 import ProjectTutorialModal from "@/components/ProjectTutorialModal";
@@ -49,9 +50,9 @@ function RecommendationSection({ issue }: { issue: SiteIssue | null }) {
             <a href="#today" className="btn-primary px-5 py-3 text-sm">
               查看今日推荐 →
             </a>
-            <a href="/history" className="btn-outline px-5 py-3 text-sm font-medium">
+            <Link href="/history" className="btn-outline px-5 py-3 text-sm font-medium">
               📚 往期回顾
-            </a>
+            </Link>
             <a href="#guide" className="btn-outline px-5 py-3 text-sm font-medium">
               新手教程
             </a>

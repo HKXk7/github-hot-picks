@@ -25,12 +25,15 @@ export function tokenize(text: string): string[] {
   const latin = text.toLowerCase().match(/[a-z0-9][a-z0-9._-]*/g);
   if (latin) tokens.push(...latin);
 
-  // 中文：先剥掉所有非汉字，再滑窗取 bigram
-  const cjk = text.replace(/[^\u4e00-\u9fa5]/g, "");
-  if (cjk.length === 1) {
-    tokens.push(cjk);
-  } else {
-    for (let i = 0; i + 1 < cjk.length; i++) tokens.push(cjk.slice(i, i + 2));
+  // 中文：按非汉字切成若干段，每段内部滑窗取 bigram。
+  // 注意不能先把非汉字全删掉再滑窗——那样 "用 Rust 写" 会被拼成 "用写"，
+  // 两个毫无关系的字粘成一个词，检索时既召回不到「用」也召回不到「写」。
+  for (const run of text.split(/[^\u4e00-\u9fa5]+/).filter(Boolean)) {
+    if (run.length === 1) {
+      tokens.push(run);
+      continue;
+    }
+    for (let i = 0; i + 1 < run.length; i++) tokens.push(run.slice(i, i + 2));
   }
 
   return tokens;

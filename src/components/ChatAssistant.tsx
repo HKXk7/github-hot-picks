@@ -17,7 +17,12 @@ const DEFAULT_PROMPTS = [
   "帮我规划一个 7 天的 GitHub 热门项目学习路线",
 ];
 
-interface Msg { role: "user" | "assistant"; content: string; }
+interface Msg {
+  role: "user" | "assistant";
+  content: string;
+  /** 深度模式下这条答案是按什么计划查出来的，展示出来让人知道它不是凭空写的 */
+  plan?: string[];
+}
 
 export default function ChatAssistant() {
   const [open, setOpen] = useState(false);
@@ -26,12 +31,17 @@ export default function ChatAssistant() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 深度模式：先规划再逐步联网取证，慢但能回答需要多步查证的问题
+  const [deep, setDeep] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => { listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: "smooth" }); }, [messages]);
 
+  // 恢复上次会话只能在挂载之后做：服务端渲染时根本没有 localStorage，
+  // 挪进 useState 的初始化函数会让首次渲染结果和客户端不一致（hydration 报错）。
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -41,6 +51,7 @@ export default function ChatAssistant() {
       if (Array.isArray(saved.messages)) setMessages(saved.messages.slice(-20));
     } catch { /* ignore */ }
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ model, messages: messages.slice(-20) })); } catch { /* ignore */ }
@@ -61,11 +72,21 @@ export default function ChatAssistant() {
     setMessages(history); setInput(""); setError(null); setLoading(true);
     const ac = new AbortController(); abortRef.current = ac;
     try {
-      const res = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: history, model }), signal: ac.signal });
+      const res = await fetch("/api/chat", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ messages: history, model, deep }), signal: ac.signal });
       if (!res.ok || !res.body) {
         let msg = `请求失败（${res.status}）`;
         try { const j = await res.json(); if (j?.error) msg = j.error; } catch { /* ignore */ }
         setMessages((prev) => [...prev, { role: "assistant", content: `⚠️ ${msg}` }]); setError(msg); return;
+      }
+
+      // 深度模式不流式：等它把计划跑完，一次性把答案和执行过的步骤给出来
+      if (deep) {
+        const data = (await res.json()) as { answer?: string; plan?: string[] };
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: data.answer ?? "⚠️ 没有拿到结果", plan: data.plan ?? [] },
+        ]);
+        return;
       }
       const reader = res.body.getReader(); const decoder = new TextDecoder();
       let buffer = ""; let acc = "";
@@ -90,7 +111,9 @@ export default function ChatAssistant() {
 
   function stop() { abortRef.current?.abort(); setLoading(false); }
   function resetConversation() { abortRef.current?.abort(); setMessages([]); setInput(""); setError(null); setLoading(false); }
-  function usePrompt(prompt: string) { setInput(prompt); setOpen(true); requestAnimationFrame(() => textareaRef.current?.focus()); }
+  // 名字不能带 use 前缀：它不是 hook，只是把示例问题填进输入框的普通函数，
+  // 叫 useXxx 会让 react-hooks 规则误判成「在回调里调用 hook」。
+  function applyPrompt(prompt: string) { setInput(prompt); setOpen(true); requestAnimationFrame(() => textareaRef.current?.focus()); }
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }
 
   return (
@@ -138,11 +161,16 @@ export default function ChatAssistant() {
                   {MODELS.map((item) => (<option key={item.id} value={item.id}>{item.label} · {item.tag}</option>))}
                 </select>
               </label>
-              <div className="min-w-[150px] max-w-[190px] rounded-2xl border border-cyan-200 bg-cyan-50 px-3 py-2">
-                <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-600">当前风格</div>
-                <div className="mt-1 text-sm font-bold text-slate-900">{MODELS.find((i) => i.id === model)?.tag}</div>
-                <div className="mt-0.5 text-[11px] leading-4 text-slate-500">{MODELS.find((i) => i.id === model)?.desc}</div>
-              </div>
+              <button type="button" onClick={() => setDeep((v) => !v)} title="深度模式会先拆分步骤、逐步联网查证，再综合成答案"
+                className={`min-w-[150px] max-w-[190px] rounded-2xl border px-3 py-2 text-left transition ${
+                  deep ? "border-fuchsia-300 bg-fuchsia-50" : "border-slate-200 bg-white hover:border-slate-300"
+                }`}>
+                <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-fuchsia-500">深度模式</div>
+                <div className="mt-1 text-sm font-bold text-slate-900">{deep ? "已开启" : "未开启"}</div>
+                <div className="mt-0.5 text-[11px] leading-4 text-slate-500">
+                  {deep ? "先规划再逐步取证，较慢" : "直接回答，最快"}
+                </div>
+              </button>
             </div>
           </div>
 
@@ -157,7 +185,7 @@ export default function ChatAssistant() {
                 <div className="space-y-2">
                   <div className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-500">可以点这些问题试试</div>
                   {DEFAULT_PROMPTS.map((prompt) => (
-                    <button key={prompt} type="button" onClick={() => usePrompt(prompt)}
+                    <button key={prompt} type="button" onClick={() => applyPrompt(prompt)}
                       className="w-full rounded-2xl border border-slate-100 bg-white px-4 py-3 text-left text-sm font-medium text-slate-600 transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-700">
                       {prompt}
                     </button>
@@ -172,7 +200,27 @@ export default function ChatAssistant() {
                     ? "rounded-br-md bg-gradient-to-br from-cyan-500 to-fuchsia-500 text-white font-medium"
                     : "rounded-bl-md border border-slate-100 bg-white text-slate-800"
                 }`}>
-                  {m.content || (loading && i === messages.length - 1 ? "正在整理回答…" : "")}
+                  {m.content ||
+                    (loading && i === messages.length - 1
+                      ? deep
+                        ? "正在拆分步骤并逐步取证，通常需要半分钟到一分钟…"
+                        : "正在整理回答…"
+                      : "")}
+                  {m.plan && m.plan.length > 0 ? (
+                    <div className="mt-3 border-t border-slate-100 pt-2.5">
+                      <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-fuchsia-500">
+                        执行计划（{m.plan.length} 步）
+                      </div>
+                      <ol className="mt-1.5 space-y-1">
+                        {m.plan.map((step, si) => (
+                          <li key={si} className="flex gap-2 text-[12px] leading-5 text-slate-600">
+                            <span className="shrink-0 font-bold text-fuchsia-400">{si + 1}.</span>
+                            <span>{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             ))}
@@ -185,7 +233,7 @@ export default function ChatAssistant() {
           <div className="border-t border-slate-100 bg-white px-4 py-4">
             <div className="mb-3 flex flex-wrap gap-2">
               {DEFAULT_PROMPTS.slice(0, 2).map((prompt) => (
-                <button key={prompt} type="button" onClick={() => usePrompt(prompt)}
+                <button key={prompt} type="button" onClick={() => applyPrompt(prompt)}
                   className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 transition hover:border-cyan-300 hover:bg-cyan-50 hover:text-cyan-600">
                   {prompt}
                 </button>

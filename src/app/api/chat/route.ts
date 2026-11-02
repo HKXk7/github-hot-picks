@@ -1,5 +1,9 @@
 import { NextRequest } from "next/server";
 import { buildAssistantContext, getLatestSiteIssue } from "@/lib/site-data";
+import { formatRetrieved, searchKnowledge } from "@/lib/rag/retrieve";
+import { runPlannedAgent } from "@/lib/ai/planner";
+import { BASE_TOOLS } from "@/lib/ai/tools";
+import { knowledgeTool } from "@/lib/ai/tools/knowledge";
 
 // 硅基流动（SiliconFlow）OpenAI 兼容接口
 const BASE_URL = process.env.SILICONFLOW_BASE_URL ?? "https://api.siliconflow.cn/v1";
@@ -41,6 +45,34 @@ interface ChatMessage {
   content: string;
 }
 
+/**
+ * 从站内知识库里捞和这个问题相关的资料。
+ *
+ * 没有这一步，AI Buddy 只能看见「最新一期」，问「上次那个做图表的库叫什么」它答不上来，
+ * 而知识库里其实躺着以往所有项目的教程切片和 README。
+ *
+ * 检索是尽力而为：知识库没建、embedding 挂了、或者超时，都只是少一段参考资料，
+ * 不能让整个对话失败——所以任何异常都吞掉，退化成「仅靠最新一期上下文」回答。
+ */
+async function retrieveContext(query: string): Promise<{ text: string; hits: number }> {
+  if (!query.trim()) return { text: "", hits: 0 };
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    const chunks = await Promise.race([
+      searchKnowledge(query, 5),
+      new Promise<null>((resolve) => {
+        timer = setTimeout(() => resolve(null), 4000);
+      }),
+    ]);
+    if (!chunks || chunks.length === 0) return { text: "", hits: 0 };
+    return { text: formatRetrieved(chunks), hits: chunks.length };
+  } catch {
+    return { text: "", hits: 0 };
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
+}
+
 export async function POST(req: NextRequest) {
   const apiKey = process.env.SILICONFLOW_API_KEY;
   if (!apiKey) {
@@ -50,7 +82,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { messages?: ChatMessage[]; model?: string };
+  let body: { messages?: ChatMessage[]; model?: string; deep?: boolean };
   try {
     body = await req.json();
   } catch {
@@ -80,8 +112,43 @@ export async function POST(req: NextRequest) {
   const model = MODEL_IDS.has(body.model ?? "") ? body.model! : AVAILABLE_MODELS[0].id;
 
   try {
-    const issue = await getLatestSiteIssue();
+    const lastUserText = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+    const [issue, knowledge] = await Promise.all([
+      getLatestSiteIssue(),
+      retrieveContext(lastUserText),
+    ]);
     const siteContext = buildAssistantContext(issue);
+
+    // 深度模式：问题需要拆成几步、每步查不同来源时，单轮回答会漏掉一半。
+    // 改成「先规划 → 逐步取证 → 反思补做 → 综合」，代价是不再流式、慢得多。
+    if (body.deep === true) {
+      const planned = await runPlannedAgent({
+        goal: lastUserText,
+        tools: [...BASE_TOOLS, knowledgeTool],
+        context: `${siteContext}${knowledge.text ? `\n\n知识库资料：\n${knowledge.text}` : ""}`,
+      });
+      return new Response(
+        JSON.stringify({
+          answer: planned.answer || "没能得出结论，请换一种问法试试。",
+          plan: planned.plan,
+          steps: planned.steps.map((s) => ({
+            goal: s.goal,
+            observation: s.observation,
+            tools: s.toolCalls.map((c) => ({ name: c.name, ok: c.ok })),
+          })),
+          warnings: planned.warnings,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+
+    // 知识库资料单独成段，并明确「冲突时以知识库为准」：
+    // 否则模型会拿自己的旧印象盖掉站内真实数据，RAG 就白接了。
+    const knowledgeBlock = knowledge.text
+      ? `\n\n以下是站内知识库中与用户问题相关的资料（来自以往推荐过的项目）：\n${knowledge.text}\n` +
+        `如果这些资料与问题相关，优先依据它们回答，并说明出自哪个项目；\n` +
+        `资料里没有的内容不要编造，可以直接说不知道。`
+      : "";
     const upstream = await fetch(`${BASE_URL}/chat/completions`, {
       method: "POST",
       headers: {
@@ -93,7 +160,7 @@ export async function POST(req: NextRequest) {
         messages: [
           {
             role: "system",
-            content: `${SYSTEM_PROMPT}\n\n以下是当前站点上下文，请优先基于它回答：\n${siteContext}`,
+            content: `${SYSTEM_PROMPT}\n\n以下是当前站点上下文，请优先基于它回答：\n${siteContext}${knowledgeBlock}`,
           },
           ...messages.slice(-12),
         ],
@@ -119,6 +186,8 @@ export async function POST(req: NextRequest) {
         "cache-control": "no-cache, no-transform",
         connection: "keep-alive",
         "x-accel-buffering": "no",
+        // 这条回答参考了几条知识库资料，便于排查「为什么答成这样」
+        "x-rag-hits": String(knowledge.hits),
       },
     });
   } catch (err) {

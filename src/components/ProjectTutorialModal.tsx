@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { toolLabel } from "@/lib/tutorial/evidence";
 
 interface TutorialPick {
   fullName: string;
@@ -10,6 +11,8 @@ interface TutorialPick {
   language: string | null;
   stars: number;
   tutorial: string | null;
+  /** 这份教程查过哪些来源；空表示当时没有联网取证 */
+  tutorialEvidence?: { tool: string; calls: number }[];
 }
 
 function renderMarkdown(md: string) {
@@ -73,12 +76,14 @@ type Phase = "idle" | "generating" | "error";
 
 export default function ProjectTutorialModal({ pick }: { pick: TutorialPick }) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [tutorial, setTutorial] = useState<string | null>(pick.tutorial);
+  const [evidence, setEvidence] = useState<{ tool: string; calls: number }[]>(
+    pick.tutorialEvidence ?? [],
+  );
   const [phase, setPhase] = useState<Phase>("idle");
   const [errorMsg, setErrorMsg] = useState("");
-
-  useEffect(() => { setMounted(true); }, []);
+  // 不再需要一个 mounted 标志：open 只可能由点击触发，那时一定已经在浏览器里，
+  // 用 state 标记挂载反而会触发 react-hooks 的 set-state-in-effect。
 
   // 弹窗打开时：锁定页面滚动 + 支持 Esc 关闭
   useEffect(() => {
@@ -98,9 +103,15 @@ export default function ProjectTutorialModal({ pick }: { pick: TutorialPick }) {
     setPhase("generating"); setErrorMsg("");
     try {
       const res = await fetch("/api/tutorial", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ fullName: pick.fullName }) });
-      const data = (await res.json()) as { tutorial?: string; error?: string };
+      const data = (await res.json()) as {
+        tutorial?: string;
+        error?: string;
+        evidence?: { tool: string; calls: number }[];
+      };
       if (!res.ok || !data.tutorial) throw new Error(data.error ?? `请求失败（${res.status}）`);
-      setTutorial(data.tutorial); setPhase("idle"); setOpen(true);
+      setTutorial(data.tutorial);
+      setEvidence(data.evidence ?? []);
+      setPhase("idle"); setOpen(true);
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : String(err)); setPhase("error");
     }
@@ -135,7 +146,7 @@ export default function ProjectTutorialModal({ pick }: { pick: TutorialPick }) {
       {/* 关键：用 Portal 挂到 body 上，脱离卡片的层叠上下文，
           否则 featured-card 的 animation/transform 会把 fixed 弹窗困住，
           后面的卡片就会盖在弹窗上面（图一的问题）。 */}
-      {open && tutorial && mounted
+      {open && tutorial
         ? createPortal(
             <div
               className="fixed inset-0 flex items-center justify-center p-4 sm:p-6"
@@ -174,6 +185,40 @@ export default function ProjectTutorialModal({ pick }: { pick: TutorialPick }) {
                   {pick.description ? (
                     <p className="mb-6 rounded-2xl border border-slate-100 bg-slate-50 p-4 text-sm leading-7 text-slate-600">{pick.description}</p>
                   ) : null}
+
+                  {evidence.length > 0 ? (
+                    <div className="mb-6 rounded-2xl border border-cyan-200 bg-cyan-50/60 p-4">
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-cyan-600">
+                        已联网核实来源
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {evidence.map((e) => (
+                          <span
+                            key={e.tool}
+                            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-700 ring-1 ring-cyan-200"
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
+                            {toolLabel(e.tool)}
+                            {e.calls > 1 ? <span className="text-slate-400">×{e.calls}</span> : null}
+                          </span>
+                        ))}
+                      </div>
+                      <p className="mt-2.5 text-[11px] leading-5 text-slate-500">
+                        写这份教程时 AI 实际查阅了以上 {evidence.reduce((s, e) => s + e.calls, 0)} 次来源，
+                        安装命令已对照注册表核对过。
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50/60 p-4">
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
+                        未经联网取证
+                      </p>
+                      <p className="mt-1.5 text-[11px] leading-5 text-slate-600">
+                        这份教程是 AI 依据已有知识快速生成的，没有实地查阅 README 与包管理器，
+                        命令与版本号请以项目官方 README 为准。
+                      </p>
+                    </div>
+                  )}
 
                   <div className="space-y-3">{renderMarkdown(tutorial)}</div>
 

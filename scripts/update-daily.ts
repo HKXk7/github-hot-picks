@@ -10,6 +10,7 @@ import {
   type TutorialMeta,
 } from "../src/lib/tutorial/generate";
 import { parseStructuredTutorial, toTutorialMarkdown } from "../src/lib/tutorial/schema";
+import { attachEvidence } from "../src/lib/tutorial/evidence";
 import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 
 const prisma = new PrismaClient();
@@ -243,8 +244,9 @@ async function main() {
             console.log(`     🔧 取证 ${result.toolCalls.length} 次：${result.toolCalls.map((c) => c.name).join("、")}`);
           }
           if (result.tutorial) {
-            // 存结构化 JSON，渲染成 Markdown 是展示层的事
-            tutorial = JSON.stringify(result.tutorial);
+            // 存结构化 JSON，渲染成 Markdown 是展示层的事。
+            // 顺带把取证痕迹记进去：读者得能看出这份教程是查过资料的还是凭记忆写的。
+            tutorial = JSON.stringify(attachEvidence(result.tutorial, result.toolCalls));
           } else {
             console.warn(`  ⚠️ 教程生成失败：${r.full_name} - ${result.error}`);
           }

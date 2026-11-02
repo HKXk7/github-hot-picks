@@ -35,6 +35,15 @@ export const TutorialSchema = z
     confidence: z.enum(["high", "medium", "low"]),
     /** 无法确认的信息（如具体版本号），留给自己承认不知道 */
     missingInfo: z.array(shortText(1, 100)).max(5).default([]),
+    /**
+     * 写这份教程时实际查过的工具（取证痕迹）。
+     * 可选且默认为空：老数据没有这个字段，plain 模式单轮生成的也没有——
+     * 那正是我们要如实区分的两种情况。
+     */
+    evidence: z
+      .array(z.object({ tool: z.string().min(1).max(40), calls: z.number().int().min(1).max(99) }))
+      .max(10)
+      .default([]),
   })
   .refine((t) => t.installCommands.length > 0 || t.confidence !== "high", {
     message: "没有给出安装命令时，confidence 不能是 high",

@@ -75,6 +75,14 @@ function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
+/** 上游 chat/completions 里我们真正会读的那几个字段 */
+interface RawChatResponse {
+  choices?: {
+    message?: { content?: string | null; tool_calls?: ToolCall[] };
+    finish_reason?: string | null;
+  }[];
+}
+
 export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
   const {
     model,
@@ -156,9 +164,9 @@ export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
       continue;
     }
 
-    let data: any;
+    let data: RawChatResponse;
     try {
-      data = JSON.parse(text);
+      data = JSON.parse(text) as RawChatResponse;
     } catch {
       return { ok: false, error: `响应不是合法 JSON：${text.slice(0, 200)}` };
     }

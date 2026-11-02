@@ -1,7 +1,13 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { prisma } from "@/lib/prisma";
-import { toTutorialMarkdown } from "@/lib/tutorial/schema";
+import { parseStructuredTutorial, toTutorialMarkdown } from "@/lib/tutorial/schema";
+import type { ToolEvidence } from "@/lib/tutorial/evidence";
+
+/** 从存库的教程里取出取证痕迹；旧版 Markdown 数据自然返回空 */
+function evidenceOf(raw: string | null): ToolEvidence[] {
+  return parseStructuredTutorial(raw)?.evidence ?? [];
+}
 
 export interface SitePick {
   rank: number;
@@ -18,6 +24,8 @@ export interface SitePick {
   // 老数据本身就是 Markdown，toTutorialMarkdown 会原样返回，因此两种格式可以共存。
   // 为 null 表示还没生成。
   tutorial: string | null;
+  /** 这份教程是 AI 查过哪些来源才写出来的；空数组表示当时没联网取证 */
+  tutorialEvidence: ToolEvidence[];
 }
 
 export interface SiteRunStatus {
@@ -94,6 +102,7 @@ async function readSnapshot(): Promise<SiteIssue | null> {
       picks: data.picks.map((p) => ({
         ...p,
         tutorial: toTutorialMarkdown(p.tutorial ?? null),
+        tutorialEvidence: evidenceOf(p.tutorial ?? null),
       })),
       runStatus: data.runStatus ?? null,
     };
@@ -141,7 +150,8 @@ function toSiteIssue(
       forks: rec.repository.forks,
       category: rec.category,
       reason: rec.reason,
-      tutorial: toTutorialMarkdown(rec.repository.tutorial),
+        tutorial: toTutorialMarkdown(rec.repository.tutorial),
+        tutorialEvidence: evidenceOf(rec.repository.tutorial),
     }))
     .map((pick, index) => ({ ...pick, rank: index + 1 }));
 
