@@ -4,6 +4,7 @@ import { formatRetrieved, searchKnowledge } from "@/lib/rag/retrieve";
 import { runPlannedAgent } from "@/lib/ai/planner";
 import { BASE_TOOLS } from "@/lib/ai/tools";
 import { knowledgeTool } from "@/lib/ai/tools/knowledge";
+import { checkRateLimit, clientIp, rateLimitHeaders } from "@/lib/rate-limit";
 
 // 硅基流动（SiliconFlow）OpenAI 兼容接口
 const BASE_URL = process.env.SILICONFLOW_BASE_URL ?? "https://api.siliconflow.cn/v1";
@@ -17,6 +18,17 @@ export const AVAILABLE_MODELS = [
 ] as const;
 
 const MODEL_IDS = new Set<string>(AVAILABLE_MODELS.map((m) => m.id));
+
+/**
+ * 这个接口每调一次就花一次上游的钱，必须对「次数」和「单次体积」都设上限：
+ * 只限次数的话，一条塞满 20 万字符的消息照样能一次烧掉一大截额度。
+ * 正常聊天远远碰不到这些值（一条 4000 字、一轮 20 条、总量 16000 字）。
+ */
+const MAX_MESSAGES = 20;
+const MAX_CHARS_PER_MESSAGE = 4000;
+const MAX_TOTAL_CHARS = 16_000;
+/** 每个 IP 每分钟几次对话。骂人式连点会撞线，正常聊天不会 */
+const RATE_LIMIT_PER_MIN = Number(process.env.CHAT_RATE_LIMIT ?? 20);
 
 // 关闭「思维链」，避免模型默认输出一大段 reasoning 消耗 token（见 siliconflow-eval-integration skill）
 function thinkingParam(model: string): Record<string, unknown> {
@@ -82,6 +94,23 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // 限流放在最前面：被刷的时候，连解析 body 都不该为它做
+  const limit = checkRateLimit(`chat:${clientIp(req.headers)}`, {
+    limit: Number.isFinite(RATE_LIMIT_PER_MIN) ? RATE_LIMIT_PER_MIN : 20,
+    windowMs: 60_000,
+  });
+  if (!limit.ok) {
+    return new Response(
+      JSON.stringify({
+        error: `提问太频繁了，请 ${Math.ceil(limit.retryAfterMs / 1000)} 秒后再试。`,
+      }),
+      {
+        status: 429,
+        headers: { "content-type": "application/json", ...rateLimitHeaders(limit) },
+      },
+    );
+  }
+
   let body: { messages?: ChatMessage[]; model?: string; deep?: boolean };
   try {
     body = await req.json();
@@ -106,6 +135,27 @@ export async function POST(req: NextRequest) {
       status: 400,
       headers: { "content-type": "application/json" },
     });
+  }
+
+  if (messages.length > MAX_MESSAGES) {
+    return new Response(
+      JSON.stringify({ error: `一次最多带 ${MAX_MESSAGES} 条对话记录` }),
+      { status: 413, headers: { "content-type": "application/json" } },
+    );
+  }
+  const oversized = messages.find((m) => m.content.length > MAX_CHARS_PER_MESSAGE);
+  if (oversized) {
+    return new Response(
+      JSON.stringify({ error: `单条消息不能超过 ${MAX_CHARS_PER_MESSAGE} 字` }),
+      { status: 413, headers: { "content-type": "application/json" } },
+    );
+  }
+  const totalChars = messages.reduce((sum, m) => sum + m.content.length, 0);
+  if (totalChars > MAX_TOTAL_CHARS) {
+    return new Response(
+      JSON.stringify({ error: `一轮对话总字数不能超过 ${MAX_TOTAL_CHARS} 字` }),
+      { status: 413, headers: { "content-type": "application/json" } },
+    );
   }
 
   // 模型名白名单校验，非法值回退到默认
@@ -138,7 +188,10 @@ export async function POST(req: NextRequest) {
           })),
           warnings: planned.warnings,
         }),
-        { status: 200, headers: { "content-type": "application/json" } },
+        {
+          status: 200,
+          headers: { "content-type": "application/json", ...rateLimitHeaders(limit) },
+        },
       );
     }
 
@@ -188,6 +241,7 @@ export async function POST(req: NextRequest) {
         "x-accel-buffering": "no",
         // 这条回答参考了几条知识库资料，便于排查「为什么答成这样」
         "x-rag-hits": String(knowledge.hits),
+        ...rateLimitHeaders(limit),
       },
     });
   } catch (err) {

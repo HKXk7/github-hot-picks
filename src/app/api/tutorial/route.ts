@@ -6,6 +6,7 @@ import {
   type TutorialMeta,
 } from "@/lib/tutorial/generate";
 import { renderTutorialToMarkdown, toTutorialMarkdown } from "@/lib/tutorial/schema";
+import { checkRateLimit, clientIp, rateLimitHeaders } from "@/lib/rate-limit";
 
 // 尽力从 GitHub 补全 topics / homepage 等元数据（失败不影响，回退用数据库里的信息）
 async function fetchGithubMeta(fullName: string): Promise<Partial<TutorialMeta>> {
@@ -53,11 +54,30 @@ function placeholderGithubId(fullName: string): number {
   return -(Math.abs(hash) + 1);
 }
 
+/**
+ * 生成一次教程 = 一次大模型生成 + 至少一次 GitHub 请求，比对话更贵，
+ * 所以配额给得更紧。正常用法是「点开一个项目看教程」，一分钟 5 次绰绰有余。
+ */
+const RATE_LIMIT_PER_MIN = Number(process.env.TUTORIAL_RATE_LIMIT ?? 5);
+const MAX_FULL_NAME_LENGTH = 100;
+
 export async function POST(request: Request) {
+  // 先看有没有 key（成本为零），再限流，最后才碰 body 和数据库
   if (!hasApiKey()) {
     return NextResponse.json(
       { error: "未配置 SILICONFLOW_API_KEY，无法生成教程" },
       { status: 503 },
+    );
+  }
+
+  const limit = checkRateLimit(`tutorial:${clientIp(request.headers)}`, {
+    limit: Number.isFinite(RATE_LIMIT_PER_MIN) ? RATE_LIMIT_PER_MIN : 5,
+    windowMs: 60_000,
+  });
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: `生成请求太频繁，请 ${Math.ceil(limit.retryAfterMs / 1000)} 秒后再试。` },
+      { status: 429, headers: rateLimitHeaders(limit) },
     );
   }
 
@@ -68,6 +88,9 @@ export async function POST(request: Request) {
   } catch {
     return NextResponse.json({ error: "请求格式错误" }, { status: 400 });
   }
+  if (fullName.length > MAX_FULL_NAME_LENGTH) {
+    return NextResponse.json({ error: "项目名过长" }, { status: 400 });
+  }
   if (!/^[\w.-]+\/[\w.-]+$/.test(fullName)) {
     return NextResponse.json({ error: "项目名格式不正确" }, { status: 400 });
   }
@@ -77,10 +100,10 @@ export async function POST(request: Request) {
     const repo = await prisma.repository.findUnique({ where: { fullName } });
     if (repo?.tutorial) {
       // 数据库里存的是结构化 JSON，这里转回 Markdown 供弹窗渲染；旧版 Markdown 数据原样返回
-      return NextResponse.json({
-        tutorial: toTutorialMarkdown(repo.tutorial),
-        cached: true,
-      });
+      return NextResponse.json(
+        { tutorial: toTutorialMarkdown(repo.tutorial), cached: true },
+        { headers: rateLimitHeaders(limit) },
+      );
     }
 
     // 用数据库里的基础信息 + GitHub 实时元数据补全
@@ -129,13 +152,16 @@ export async function POST(request: Request) {
         .catch(() => {});
     }
 
-    return NextResponse.json({
-      tutorial: renderTutorialToMarkdown(tutorial),
-      cached: false,
-      attempts: result.attempts,
-      // 取证了多少次、用了哪些工具。前端可以拿它说明「这份教程不是凭空编的」
-      evidence: result.toolCalls ?? [],
-    });
+    return NextResponse.json(
+      {
+        tutorial: renderTutorialToMarkdown(tutorial),
+        cached: false,
+        attempts: result.attempts,
+        // 取证了多少次、用了哪些工具。前端可以拿它说明「这份教程不是凭空编的」
+        evidence: result.toolCalls ?? [],
+      },
+      { headers: rateLimitHeaders(limit) },
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     return NextResponse.json({ error: `教程生成失败：${message}` }, { status: 500 });
