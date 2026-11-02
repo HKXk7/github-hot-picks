@@ -41,6 +41,18 @@ async function fetchGithubMeta(fullName: string): Promise<Partial<TutorialMeta>>
   }
 }
 
+/**
+ * 用户手动请求生成的仓库没有 GitHub 真实 id，但 githubId 是唯一约束，
+ * 以前一律填 0 —— 第二个这样的项目就会撞唯一约束（虽然被 catch 吞掉，
+ * 结果是静默不入库，教程下次还得重生成）。用全名哈希顶上，并取负值：
+ * 真实 GitHub id 恒为正，这样两个 id 空间不会打架。
+ */
+function placeholderGithubId(fullName: string): number {
+  let hash = 0;
+  for (let i = 0; i < fullName.length; i++) hash = (hash * 31 + fullName.charCodeAt(i)) | 0;
+  return -(Math.abs(hash) + 1);
+}
+
 export async function POST(request: Request) {
   if (!hasApiKey()) {
     return NextResponse.json(
@@ -102,7 +114,7 @@ export async function POST(request: Request) {
       await prisma.repository
         .create({
           data: {
-            githubId: 0,
+            githubId: placeholderGithubId(fullName),
             fullName,
             name: fullName.split("/")[1] ?? fullName,
             description: meta.description,

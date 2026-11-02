@@ -49,10 +49,12 @@ async function main() {
 
   // 1. 导入 / 更新 Repository
   for (const pick of snap.picks) {
-    // 快照里没有 githubId，用全名哈希代替，保证跨次运行稳定
+    // 快照里没有 githubId，用全名哈希顶上（该字段非空）。
+    // 但**匹配一律用 fullName**：githubId 是快照造出来的假值，
+    // 拿它当主键就会和 GitHub 真实 id 错位。
     const githubId = hashToInt(pick.fullName);
     await prisma.repository.upsert({
-      where: { githubId },
+      where: { fullName: pick.fullName },
       update: {
         name: pick.name,
         description: pick.description ?? null,

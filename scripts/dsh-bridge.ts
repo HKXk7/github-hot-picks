@@ -17,6 +17,7 @@ import "dotenv/config"
 import { spawn } from "node:child_process"
 import { join } from "node:path"
 import { PrismaClient } from "../generated/prisma/client"
+import { toTutorialMarkdown } from "../src/lib/tutorial/schema"
 
 const prisma = new PrismaClient()
 
@@ -110,7 +111,9 @@ async function cmdPicks(limit = 10) {
       forks: r.repository.forks,
       category: r.category,
       reason: r.reason,
-      tutorial: r.repository.tutorial,
+      // 库里存的是 v2 JSON；直接吐会给插件一段看不懂的 JSON 字符串。
+      // 走 toTutorialMarkdown 才能拿到可渲染的 Markdown（旧数据本身是 Markdown，原样返回）。
+      tutorial: toTutorialMarkdown(r.repository.tutorial),
     }),
   )
 

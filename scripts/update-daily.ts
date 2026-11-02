@@ -228,7 +228,10 @@ async function main() {
       const r = top[i];
 
       // 已有教程则复用（避免重复调用 AI、保持幂等），否则生成
-      const existing = await prisma.repository.findUnique({ where: { githubId: r.id } });
+      // 按 fullName 查，不能按 githubId：从快照导入的记录里 githubId 是拿全名哈希出来的假值，
+      // 与 GitHub 真实 id 对不上，按 id 查会查不到 → 教程每天重生成（白花钱），
+      // 更糟的是 upsert 会走到 create 分支，撞 fullName 唯一约束，整轮跑挂。
+      const existing = await prisma.repository.findUnique({ where: { fullName: r.full_name } });
       let tutorial = existing?.tutorial ?? null;
       if (!tutorial) {
         if (!hasApiKey()) {
@@ -256,7 +259,7 @@ async function main() {
       }
 
       await prisma.repository.upsert({
-        where: { githubId: r.id },
+        where: { fullName: r.full_name },
         update: {
           name: r.name,
           description: r.description,
