@@ -1,18 +1,35 @@
+import { Suspense } from "react";
 import Link from "next/link";
-import { getLatestSiteIssue, type SiteIssue } from "@/lib/site-data";
-import { langStyle, formatStars, formatTime, parseContent } from "@/lib/format";
-import ProjectTutorialModal from "@/components/ProjectTutorialModal";
+import { getLatestSiteIssue } from "@/lib/site-data";
+import { formatStars, formatTime, parseContent } from "@/lib/format";
+import PicksExplorer from "@/components/PicksExplorer";
 
-export default async function Home() {
-  const issue = await getLatestSiteIssue();
+/**
+ * 首页必须是「静态外壳 + Suspense 包住查库的那部分」。
+ *
+ * 开了 cacheComponents 之后，直接在页面组件里 await 数据库属于运行时数据，
+ * 会让整页没法预渲染（build 会直接失败）。所以外壳同步渲染，
+ * 内容放 Suspense 里流式补齐 —— 也就是 Partial Prerender 想要的形态。
+ */
+export default function Home() {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-      <RecommendationSection issue={issue} />
+      <Suspense
+        fallback={
+          <div className="panel-card p-10 text-center">
+            <p className="text-base font-bold text-slate-800">正在加载今日推荐…</p>
+            <p className="mt-2 text-sm text-slate-500">第一次打开要读一次数据库，稍等一下就好。</p>
+          </div>
+        }
+      >
+        <RecommendationSection />
+      </Suspense>
     </main>
   );
 }
 
-function RecommendationSection({ issue }: { issue: SiteIssue | null }) {
+async function RecommendationSection() {
+  const issue = await getLatestSiteIssue();
   if (!issue) {
     return (
       <div className="panel-card p-10 text-center">
@@ -28,7 +45,6 @@ function RecommendationSection({ issue }: { issue: SiteIssue | null }) {
   }
 
   const contentBlocks = parseContent(issue.content);
-  const topPick = issue.picks[0];
 
   return (
     <div className="space-y-12">
@@ -101,64 +117,8 @@ function RecommendationSection({ issue }: { issue: SiteIssue | null }) {
           <p className="max-w-2xl text-sm leading-7 text-slate-500">{issue.summary}</p>
         </div>
 
-        {/* #1 焦点：独占一行，炫彩边框 */}
-        {topPick ? <FeaturedCard issue={issue} /> : null}
-
-        {/* #2~#10：三列网格 */}
-        {issue.picks.length > 1 ? (
-          <ol className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {issue.picks.slice(1).map((pick, index) => {
-              const lang = langStyle(pick.language);
-              return (
-                <li key={pick.fullName} className="card-enter" style={{ animationDelay: `${index * 50}ms` }}>
-                  <div className="project-card flex h-full flex-col p-5">
-                    <div className="mb-2 flex items-center justify-between">
-                      <span className="font-mono text-sm font-bold text-cyan-500">
-                        #{String(pick.rank).padStart(2, "0")}
-                      </span>
-                      {pick.language ? (
-                        <span
-                          className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                          style={{ color: lang.text, background: lang.bg }}
-                        >
-                          <span className="h-1.5 w-1.5 rounded-full" style={{ background: lang.dot }} />
-                          {pick.language}
-                        </span>
-                      ) : null}
-                    </div>
-                    <div className="mb-2 flex items-start justify-between gap-2">
-                      <h3 className="text-base font-bold text-slate-900 leading-snug hover:text-cyan-600 transition-colors">
-                        <a href={pick.url} target="_blank" rel="noopener noreferrer">{pick.fullName}</a>
-                      </h3>
-                      <span className="flex shrink-0 items-center gap-1 text-xs font-bold text-amber-500">
-                        <StarIcon />{formatStars(pick.stars)}
-                      </span>
-                    </div>
-                    {pick.description ? (
-                      <p className="mb-3 flex-1 text-sm leading-6 text-slate-500 line-clamp-3">{pick.description}</p>
-                    ) : null}
-                    <div className="mt-auto space-y-1.5 border-t border-slate-100 pt-2 text-xs">
-                      {pick.category ? (
-                        <span className="inline-block rounded-full bg-fuchsia-50 px-2 py-0.5 font-semibold text-fuchsia-600 border border-fuchsia-100">
-                          {pick.category}
-                        </span>
-                      ) : null}
-                      {pick.reason ? (
-                        <p className="text-slate-500">
-                          <span className="text-cyan-600 font-semibold">推荐：</span>
-                          {pick.reason.length > 48 ? pick.reason.slice(0, 48) + "…" : pick.reason}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="mt-3">
-                      <ProjectTutorialModal pick={pick} />
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        ) : null}
+        {/* 搜索 / 筛选 / 卡片列表（客户端组件，过滤是本地的、瞬时的） */}
+        <PicksExplorer picks={issue.picks} />
       </section>
 
       {/* ====== 说明区 ====== */}
@@ -220,49 +180,6 @@ function RecommendationSection({ issue }: { issue: SiteIssue | null }) {
   );
 }
 
-// ====== #1 FeaturedCard ======
-function FeaturedCard({ issue }: { issue: SiteIssue }) {
-  const pick = issue.picks[0];
-  const lang = langStyle(pick.language);
-  return (
-    <div className="featured-card p-6 sm:p-8">
-      <div className="flex items-center justify-between">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-cyan-500 to-fuchsia-500 px-3 py-1 text-xs font-bold text-white shadow-lg shadow-cyan-400/30">
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-          今日焦点 · #{String(pick.rank).padStart(2, "0")}
-        </span>
-      </div>
-      <h3 className="mt-4 text-2xl font-extrabold text-slate-900 sm:text-3xl">
-        <a href={pick.url} target="_blank" rel="noopener noreferrer" className="hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r hover:from-cyan-500 hover:to-fuchsia-500 transition-all">
-          {pick.fullName}
-        </a>
-      </h3>
-      <p className="mt-3 text-base leading-7 text-slate-600 sm:text-lg">
-        {pick.description ?? "这个项目今天冲到了推荐榜首，值得优先看看。"}
-      </p>
-      <div className="mt-4 flex flex-wrap items-center gap-2 text-sm">
-        {pick.language ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-semibold" style={{ color: lang.text, background: lang.bg }}>
-            <span className="h-1.5 w-1.5 rounded-full" style={{ background: lang.dot }} />{pick.language}
-          </span>
-        ) : null}
-        {pick.category ? (
-          <span className="rounded-full bg-fuchsia-50 px-2.5 py-1 font-semibold text-fuchsia-600 border border-fuchsia-100">{pick.category}</span>
-        ) : null}
-        <span className="inline-flex items-center gap-1 font-bold text-amber-500"><StarIcon />{formatStars(pick.stars)}</span>
-        <span className="text-slate-400">⑂ {formatStars(pick.forks)}</span>
-      </div>
-      <div className="mt-4 rounded-2xl border border-cyan-200 bg-cyan-50 p-5 text-sm leading-7 text-cyan-900 font-medium">
-        <span className="font-bold">推荐理由：</span>
-        {pick.reason ?? "它在今天的候选项目里综合表现最突出。"}
-      </div>
-      <div className="mt-5">
-        <ProjectTutorialModal pick={pick} />
-      </div>
-    </div>
-  );
-}
-
 // ====== InfoPanel ======
 function InfoPanel({ eyebrow, title, body, footer, children }: {
   eyebrow: string; title: string; body: string; footer: string; children?: React.ReactNode;
@@ -297,13 +214,5 @@ function GuideCard({ step, title, text, code }: { step: string; title: string; t
         <code>{code}</code>
       </pre>
     </div>
-  );
-}
-
-function StarIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-      <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z" />
-    </svg>
   );
 }

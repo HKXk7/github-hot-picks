@@ -11,6 +11,9 @@ import {
 } from "../src/lib/tutorial/generate";
 import { parseStructuredTutorial, toTutorialMarkdown } from "../src/lib/tutorial/schema";
 import { attachEvidence } from "../src/lib/tutorial/evidence";
+// 分类规则抽成纯函数（src/lib/picks.ts）：分类贴错了不会报错，只会安静地别扭一整期，
+// 所以要能被单测覆盖；放在脚本里就没法测（import 本文件会直接跑起整条管线）。
+import { categorize } from "../src/lib/picks";
 import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 
 const prisma = new PrismaClient();
@@ -129,14 +132,6 @@ function filterTop(repos: RawRepo[], n: number, exclude: Set<string>): ScoredRep
     .slice(0, n);
 }
 
-function guessCategory(r: RawRepo): string {
-  const text = `${r.name} ${r.description ?? ""} ${(r.topics ?? []).join(" ")}`.toLowerCase();
-  if (/ai|llm|gpt|agent|ml|deep|neural|infer|model|chat/i.test(text)) return "AI";
-  if (/react|vue|next|front|web|ui|css|tailwind|component/i.test(text)) return "前端";
-  if (/cli|tool|sdk|lib|framework|util|dev/i.test(text)) return "工具";
-  if (/rust|go|python|java|server|api|database|sql|backend/i.test(text)) return "后端";
-  return "其他";
-}
 
 // ================= AI 生成小白教程 =================
 // 生成逻辑已抽到共享模块，scripts 与 API 路由共用同一份，避免 prompt 两边不同步：
@@ -293,7 +288,7 @@ async function main() {
         language: r.language,
         stars: r.stargazers_count,
         forks: r.forks_count,
-        category: guessCategory(r),
+        category: categorize(r),
         reason: r.reasons.join("；"),
         tutorial,
       });
