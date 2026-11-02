@@ -44,3 +44,10 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Build
+        # typecheck 只证明「代码写得对」，不证明「能上线」。
+        # 开了 cacheComponents 之后，预渲染期的坑（Date.now()、Suspense 外的
+        # params / 数据库访问）只在 build 时才报错——这两个问题就因为 CI 从不
+        # build 而藏了很久。放在最后一步：它最慢，前面的检查先给出反馈。
+        run: npm run build
