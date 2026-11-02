@@ -163,8 +163,51 @@ function formatIssues(error: z.ZodError): string {
     .join("\n");
 }
 
+/**
+ * 「数组多写了几条」是最高频的校验失败，而它是**确定性**的：
+ * 模型写了 4 条坑、上限是 3 条，砍掉一条就合规了 —— 为这个再花一轮 LLM
+ * 不划算（tools 模式一轮要 10~20 秒，实测约四成项目都栽在这）。
+ *
+ * 所以只在「所有错误都能靠截断解决」时自动修：
+ * - 只看 too_big 且 path 指向数组本身（第二段是数字说明超长的是数组里某条
+ *   字符串，截断它等于把一句话砍半，那种必须让模型自己重写）
+ * - 上限直接取 zod 报的 maximum，不在这里复制一份，避免和 schema 走偏
+ * - 只要有一条错误不属于这个类型，就整体放弃，交回模型自修复
+ *
+ * 导出只为单测，正常流程走 tryParse。
+ */
+export function autoTrimArrays(
+  parsed: unknown,
+  error: z.ZodError,
+): { value: unknown; trimmed: string[] } | null {
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+
+  const draft: Record<string, unknown> = { ...(parsed as Record<string, unknown>) };
+  const trimmed = new Set<string>();
+
+  for (const issue of error.issues) {
+    if (issue.code !== "too_big") return null;
+    const maximum = (issue as { maximum?: unknown }).maximum;
+    if (typeof maximum !== "number") return null;
+
+    const [field, index] = issue.path;
+    if (typeof field !== "string" || typeof index === "number") return null;
+
+    const value = draft[field];
+    if (!Array.isArray(value) || value.length <= maximum) return null;
+
+    draft[field] = value.slice(0, maximum);
+    trimmed.add(`${field} 保留前 ${maximum} 条`);
+  }
+
+  return trimmed.size ? { value: draft, trimmed: [...trimmed] } : null;
+}
+
 /** 把一段模型输出变成「通过校验的教程」或「下一条修复提示」 */
-function tryParse(raw: string, finishReason: string | null): { tutorial: Tutorial } | { note: string } {
+function tryParse(
+  raw: string,
+  finishReason: string | null,
+): { tutorial: Tutorial; trimmed?: string[] } | { note: string } {
   const jsonText = extractJsonObject(raw);
   if (!jsonText) {
     return {
@@ -188,8 +231,16 @@ function tryParse(raw: string, finishReason: string | null): { tutorial: Tutoria
   }
 
   const result = TutorialSchema.safeParse(parsed);
-  if (!result.success) return { note: formatIssues(result.error) };
-  return { tutorial: result.data };
+  if (result.success) return { tutorial: result.data };
+
+  // 先试试能不能确定性地修好（多写了几条而已），修不好再把错误喂回给模型
+  const repair = autoTrimArrays(parsed, result.error);
+  if (repair) {
+    const retried = TutorialSchema.safeParse(repair.value);
+    if (retried.success) return { tutorial: retried.data, trimmed: repair.trimmed };
+  }
+
+  return { note: formatIssues(result.error) };
 }
 
 // ================= 主入口 =================
@@ -289,6 +340,11 @@ export async function generateStructuredTutorial(
 
     const parsed = tryParse(raw, finishReason);
     if ("tutorial" in parsed) {
+      if (parsed.trimmed?.length) {
+        const note = `已自动裁剪超长字段（${parsed.trimmed.join("、")}），省掉一轮重新生成`;
+        warnings.push(note);
+        log(`  ↳ ${note}`);
+      }
       return { tutorial: parsed.tutorial, attempts: attempt, warnings, toolCalls, mode };
     }
 

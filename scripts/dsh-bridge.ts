@@ -181,7 +181,7 @@ async function cmdRun() {
   //    跟 lib/run.mjs 同策略：用当前 Node 进程直接跑 tsx + update-daily.ts
   const tsxCli = join(process.cwd(), "node_modules", "tsx", "dist", "cli.mjs")
   const start = Date.now()
-  return new Promise<void>((resolve, _reject) => {
+  return new Promise<void>((resolve) => {
     const child = spawn(process.execPath, [tsxCli, "scripts/update-daily.ts"], {
       cwd: process.cwd(),
       stdio: ["ignore", "pipe", "pipe"],
