@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getIssueByDate } from "@/lib/site-data";
 import { formatStars, parseContent } from "@/lib/format";
@@ -15,6 +16,20 @@ interface PageProps {
  * 路由没法预渲染——实测直接把 build 打断在 /history/[date]。正确做法是把 params
  * 这个 Promise 原样传进去，在 Suspense 内部再 await：外壳静态、内容流式补齐。
  */
+/**
+ * 每期页面给出自己的标题。
+ *
+ * 这里刻意不查库：日期本身就是足够的标题素材，
+ * 为了一个标题去多查一次数据库不划算（generateMetadata 在每次请求都会跑）。
+ */
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { date } = await params;
+  return {
+    title: `${date} 的推荐`,
+    description: `查看 ${date} 这一期的 GitHub 热门项目推荐与每个项目的小白教程`,
+  };
+}
+
 export default function IssueDetailPage({ params }: PageProps) {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 sm:py-14">

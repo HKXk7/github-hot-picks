@@ -78,6 +78,8 @@ jobs:
           # 需要在仓库 Settings → Secrets and variables → Actions 里添加 SILICONFLOW_API_KEY
           SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
           SILICONFLOW_BASE_URL: https://api.siliconflow.cn/v1
+          # 订阅源里要写绝对链接，没配就退回 localhost（在 Settings → Variables 里加）
+          SITE_URL: ${{ vars.SITE_URL }}
 
       - name: Purge expired chat sessions
         # 会话里是用户真实问过的话，不该无限期留着
@@ -98,8 +100,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # 只提交生成的快照文件（站点前端通过它读取最新推荐）
-          git add public/data/latest.json
+          # 只提交生成的产物：快照（站点前端的数据库兜底）+ 订阅源（静态 RSS）
+          git add public/data/latest.json public/feed.xml
           if git diff --cached --quiet; then
             echo "没有内容变化，跳过提交"
           else

@@ -21,6 +21,7 @@ import { categorize } from "../src/lib/picks";
 import { buildRunReport, formatRunReport, formatRunReportMarkdown } from "../src/lib/pipeline/report";
 import type { RetryOutcome, StepOutcome } from "../src/lib/pipeline/report";
 import { retryMissingTutorials } from "../src/lib/pipeline/retry";
+import { buildRssFeed } from "../src/lib/pipeline/feed";
 import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 
 const prisma = new PrismaClient();
@@ -39,6 +40,13 @@ const prisma = new PrismaClient();
  * 两版编造率都是 0%，但 tools 能给出可核验命令的项目数多了近七成。
  */
 const tutorialMode: GenerationMode = process.env.TUTORIAL_MODE === "plain" ? "plain" : "tools";
+
+/**
+ * 站点对外地址，写进 RSS 和 sitemap 的绝对链接里。
+ * 没配就退回 localhost：宁可链接是错的（一眼能看出来），
+ * 也不要因为环境变量缺失让整轮跑挂 —— 订阅源和数据库不是一回事。
+ */
+const SITE_URL = process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
 
 // ================= 类型 =================
@@ -398,6 +406,24 @@ async function main() {
     const outDir = path.join(process.cwd(), "public", "data");
     await fs.mkdir(outDir, { recursive: true });
     await fs.writeFile(path.join(outDir, "latest.json"), JSON.stringify(snapshot, null, 2) + "\n", "utf8");
+
+    // 订阅源跟着快照一起写：数据一天只变一次，为一个静态结果每次请求都查库不划算
+    const feed = buildRssFeed({
+      siteUrl: SITE_URL,
+      issue,
+      dateKey: todayKey(),
+      title,
+      picks: picks.map((p) => ({
+        rank: p.rank,
+        fullName: p.fullName,
+        description: p.description,
+        url: p.url,
+        language: p.language,
+        stars: p.stars,
+        category: p.category,
+      })),
+    });
+    await fs.writeFile(path.join(process.cwd(), "public", "feed.xml"), feed, "utf8");
 
     // 本期内容已经全部落库了，这时候才去补历史的坑：
     // 补做是额外开销，绝不能让它挡住今天这一期出稿。
