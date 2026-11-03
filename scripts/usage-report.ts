@@ -8,11 +8,15 @@
  *
  * 金额只有在 .env 里配了 LLM_PRICING_JSON 才会出现，否则只报 token
  * ——不内置单价表是刻意的，模型定价几个月一变，写死的数字迟早是错的。
+ *
+ * 汇总口径来自 src/lib/ai/usage-stats.ts，和网页上的成本看板是同一份：
+ * 两边各算一遍的话，迟早会出现「网页说 3 块、命令行说 5 块」的场面。
  */
 
 import "dotenv/config";
 import { PrismaClient } from "../generated/prisma/client";
 import { formatCost, formatTokens } from "../src/lib/ai/usage";
+import { summarizeUsage } from "../src/lib/ai/usage-stats";
 
 const prisma = new PrismaClient();
 
@@ -29,17 +33,16 @@ function ms(n: number): string {
   return n >= 1000 ? `${(n / 1000).toFixed(1)}s` : `${Math.round(n)}ms`;
 }
 
-/** 分位数：样本少的时候不插值，直接取最近的那个 */
-function quantile(sorted: number[], q: number): number {
-  if (sorted.length === 0) return 0;
-  const idx = Math.min(sorted.length - 1, Math.max(0, Math.round((sorted.length - 1) * q)));
-  return sorted[idx];
-}
-
 function pad(s: string, n: number): string {
   // 中文占两格，按显示宽度补空格，否则表格会歪
   const width = [...s].reduce((w, c) => w + (c.charCodeAt(0) > 0x2e80 ? 2 : 1), 0);
   return s + " ".repeat(Math.max(0, n - width));
+}
+
+function table(title: string, head: string[], lines: string[][]): void {
+  console.log(`\n${title}`);
+  console.log("  " + head.map((h, i) => pad(h, [22, 10, 14, 14][i] ?? 12)).join(""));
+  for (const l of lines) console.log("  " + l.map((c, i) => pad(c, [22, 10, 14, 14][i] ?? 12)).join(""));
 }
 
 async function main() {
@@ -57,88 +60,42 @@ async function main() {
     return;
   }
 
-  const ok = rows.filter((r) => r.ok);
-  const failed = rows.filter((r) => !r.ok);
-  const tokens = rows.reduce((s, r) => s + r.totalTokens, 0);
-  const prompt = rows.reduce((s, r) => s + r.promptTokens, 0);
-  const completion = rows.reduce((s, r) => s + r.completionTokens, 0);
-  const cost = rows.reduce((s, r) => s + (r.costCny ?? 0), 0);
-  const hasCost = rows.some((r) => r.costCny !== null);
-  const latencies = rows.map((r) => r.latencyMs).sort((a, b) => a - b);
+  const s = summarizeUsage(rows);
 
-  console.log(`\n最近 ${days} 天 · ${rows.length} 次调用`);
-  console.log(`成功率     ${pct(ok.length / rows.length)}（失败 ${failed.length} 次）`);
-  console.log(`token      ${formatTokens(tokens)}（入 ${formatTokens(prompt)} / 出 ${formatTokens(completion)}）`);
-  console.log(`成本       ${hasCost ? formatCost(cost) : formatCost(null)}`);
-  console.log(`耗时       p50 ${ms(quantile(latencies, 0.5))} · p95 ${ms(quantile(latencies, 0.95))} · 合计 ${ms(rows.reduce((s, r) => s + r.latencyMs, 0))}`);
-
-  // ---- 按类型 ----
-  const byKind = new Map<string, { n: number; tokens: number; cost: number; ms: number }>();
-  const byModel = new Map<string, { n: number; tokens: number; cost: number; ms: number }>();
-  const byLabel = new Map<string, { n: number; tokens: number; ms: number }>();
-  for (const r of rows) {
-    const bump = (m: Map<string, { n: number; tokens: number; cost: number; ms: number }>, key: string) => {
-      const cur = m.get(key) ?? { n: 0, tokens: 0, cost: 0, ms: 0 };
-      cur.n += 1; cur.tokens += r.totalTokens; cur.cost += r.costCny ?? 0; cur.ms += r.latencyMs;
-      m.set(key, cur);
-    };
-    bump(byKind, r.kind);
-    bump(byModel, r.model);
-    if (r.label) {
-      const cur = byLabel.get(r.label) ?? { n: 0, tokens: 0, ms: 0 };
-      cur.n += 1; cur.tokens += r.totalTokens; cur.ms += r.latencyMs;
-      byLabel.set(r.label, cur);
-    }
-  }
-
-  const table = (title: string, head: string[], lines: string[][]) => {
-    console.log(`\n${title}`);
-    console.log("  " + head.map((h, i) => pad(h, [22, 10, 14, 14][i] ?? 12)).join(""));
-    for (const l of lines) console.log("  " + l.map((c, i) => pad(c, [22, 10, 14, 14][i] ?? 12)).join(""));
-  };
+  console.log(`\n最近 ${days} 天 · ${s.calls} 次调用`);
+  console.log(`成功率     ${pct(s.successRate)}（失败 ${s.failed} 次）`);
+  console.log(`token      ${formatTokens(s.totalTokens)}（入 ${formatTokens(s.promptTokens)} / 出 ${formatTokens(s.completionTokens)}）`);
+  console.log(`成本       ${s.hasCost ? formatCost(s.cost) : formatCost(null)}`);
+  console.log(`耗时       p50 ${ms(s.p50Ms)} · p95 ${ms(s.p95Ms)} · 合计 ${ms(s.totalMs)}`);
 
   table(
     "按用途",
     ["用途", "次数", "token", "耗时"],
-    [...byKind.entries()]
-      .sort((a, b) => b[1].ms - a[1].ms)
-      .map(([k, v]) => [k, String(v.n), formatTokens(v.tokens), ms(v.ms)]),
+    s.byKind.map((g) => [g.key, String(g.calls), formatTokens(g.tokens), ms(g.ms)]),
   );
 
   table(
     "按模型",
-    ["模型", "次数", "token", hasCost ? "成本" : "耗时"],
-    [...byModel.entries()]
-      .sort((a, b) => b[1].tokens - a[1].tokens)
-      .map(([k, v]) => [k, String(v.n), formatTokens(v.tokens), hasCost ? formatCost(v.cost) : ms(v.ms)]),
+    ["模型", "次数", "token", s.hasCost ? "成本" : "耗时"],
+    s.byModel.map((g) => [g.key, String(g.calls), formatTokens(g.tokens), s.hasCost ? formatCost(g.cost) : ms(g.ms)]),
   );
 
-  if (byLabel.size > 0) {
+  if (s.byLabel.length > 0) {
     table(
       "哪一步最慢",
       ["步骤", "次数", "token", "总耗时"],
-      [...byLabel.entries()]
-        .sort((a, b) => b[1].ms - a[1].ms)
-        .slice(0, 6)
-        .map(([k, v]) => [k, String(v.n), formatTokens(v.tokens), ms(v.ms)]),
+      s.byLabel.slice(0, 6).map((g) => [g.key, String(g.calls), formatTokens(g.tokens), ms(g.ms)]),
     );
   }
 
   // ---- 最贵的几次生成 ----
   if (!traceId) {
-    const byTrace = new Map<string, { n: number; tokens: number; cost: number; ms: number; kind: string }>();
-    for (const r of rows) {
-      const cur = byTrace.get(r.traceId) ?? { n: 0, tokens: 0, cost: 0, ms: 0, kind: r.kind };
-      cur.n += 1; cur.tokens += r.totalTokens; cur.cost += r.costCny ?? 0; cur.ms += r.latencyMs;
-      byTrace.set(r.traceId, cur);
-    }
     table(
       "最贵的几次生成",
-      ["traceId", "调用数", "token", hasCost ? "成本" : "耗时"],
-      [...byTrace.entries()]
-        .sort((a, b) => b[1].tokens - a[1].tokens)
+      ["traceId", "调用数", "token", s.hasCost ? "成本" : "耗时"],
+      s.byTrace
         .slice(0, 5)
-        .map(([k, v]) => [k.slice(0, 22), String(v.n), formatTokens(v.tokens), hasCost ? formatCost(v.cost) : ms(v.ms)]),
+        .map((g) => [g.key.slice(0, 22), String(g.calls), formatTokens(g.tokens), s.hasCost ? formatCost(g.cost) : ms(g.ms)]),
     );
     console.log("\n  想看某一次的每一步：npm run usage -- --trace <traceId>");
   } else {
@@ -155,11 +112,9 @@ async function main() {
   }
 
   // ---- 失败 ----
-  if (failed.length > 0) {
-    console.log(`\n最近 ${Math.min(5, failed.length)} 次失败：`);
-    for (const r of failed.slice(0, 5)) {
-      console.log(`  ${r.createdAt.toISOString().slice(0, 19)} ${r.model} ${(r.error ?? "").slice(0, 90)}`);
-    }
+  if (s.failures.length > 0) {
+    console.log(`\n最近 ${s.failures.length} 次失败：`);
+    for (const f of s.failures) console.log(`  ${f.at} ${f.model} ${f.error.slice(0, 90)}`);
   }
   console.log("");
 }
