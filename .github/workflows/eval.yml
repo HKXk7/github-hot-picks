@@ -1,26 +1,41 @@
 name: Tutorial Quality Eval
 
 on:
-  # 不挂定时：评测每次要真调模型，按天跑不划算。
-  # 改了 prompt / schema / 工具之后手动点一下，或者在 PR 里触发，用来卡回归。
+  schedule:
+    # 每周一 03:00 UTC（北京时间 11:00）自动跑一次。
+    # 不按天跑：评测要给每个样本真调模型生成教程，按天跑不划算；
+    # 按周跑又足以在 prompt / schema / 工具被改坏之后一周内发现问题。
+    - cron: "0 3 * * 1"
+  # 改了 prompt / schema / 工具之后手动点一下，用来卡回归。
   workflow_dispatch:
     inputs:
       samples:
         description: 抽样几个项目
         required: false
-        default: "8"
+        default: "20"
       mode:
         description: tools / plain / both
         required: false
-        default: "both"
+        default: "tools"
       judge:
         description: 是否启用 LLM 评审（更慢）
         required: false
         type: boolean
         default: false
+      gate:
+        description: 是否启用门禁（不达标就让 workflow 变红）
+        required: false
+        type: boolean
+        default: true
 
+# 评测要跑好几分钟，并发跑没意义还双倍烧额度
+concurrency:
+  group: eval
+  cancel-in-progress: false
+
+# 门禁通过后要把新基线提交回仓库，需要写权限
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   eval:
@@ -28,6 +43,9 @@ jobs:
     env:
       # prisma.config.ts 对 DATABASE_URL 是硬校验，任何 prisma CLI 都要求它在位
       DATABASE_URL: "file:${{ github.workspace }}/prisma/dev.db"
+      # 定时触发时没有 inputs，这里统一给默认值，后面的步骤不用到处判空
+      SAMPLES: ${{ github.event.inputs.samples || '20' }}
+      MODE: ${{ github.event.inputs.mode || 'tools' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,21 +60,47 @@ jobs:
         # generated/prisma 不在仓库里，必须现生成；且要用 tsx 跑脚本（客户端是 .ts）
         run: npx prisma generate
 
+      # ── 复用日更积累的仓库池 ──────────────────────────────────────
+      # 评测从"库里已有的项目"分层抽样。只导入一份快照的话只有十来个项目，
+      # 样本不够 → 指标波动大 → 门禁容易假红。
+      # 用 restore（不是 cache）是因为评测只读历史，不该把自己的库写回缓存。
+      - name: Restore repository pool
+        uses: actions/cache/restore@v4
+        with:
+          path: prisma/db-cache
+          key: eval-db-${{ github.run_id }}
+          restore-keys: daily-db-
+
+      - name: Prepare database
+        run: |
+          if [ -f prisma/db-cache/dev.db ]; then
+            cp prisma/db-cache/dev.db prisma/dev.db
+            echo "✅ 复用日更积累的数据库（可抽样项目更多）"
+          else
+            echo "ℹ️ 没有历史缓存，退回到从仓库快照导入"
+          fi
+
       - name: Setup database
         run: npx prisma migrate deploy
 
       - name: Seed repositories from snapshot
-        # 评测要从已有项目里抽样，空库跑不了
-        run: npx tsx scripts/import-snapshot.ts
+        # 没有历史缓存时的兜底：保证库里至少有一期的项目可评
+        run: |
+          if [ ! -f prisma/db-cache/dev.db ]; then
+            npx tsx scripts/import-snapshot.ts
+          fi
 
       - name: Run evaluation
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SILICONFLOW_API_KEY: ${{ secrets.SILICONFLOW_API_KEY }}
           SILICONFLOW_BASE_URL: https://api.siliconflow.cn/v1
+          # 阈值走仓库变量（Settings → Variables），调阈值不用改代码也不用发版
+          EVAL_GATE_JSON: ${{ vars.EVAL_GATE_JSON }}
         run: |
-          FLAGS="--limit ${{ github.event.inputs.samples || '8' }} --mode ${{ github.event.inputs.mode || 'both' }}"
+          FLAGS="--limit $SAMPLES --mode $MODE"
           if [ "${{ github.event.inputs.judge }}" = "true" ]; then FLAGS="$FLAGS --judge"; fi
+          if [ "${{ github.event.inputs.gate }}" != "false" ]; then FLAGS="$FLAGS --gate"; fi
           npm run eval -- $FLAGS
 
       - name: Upload report
@@ -65,3 +109,19 @@ jobs:
         with:
           name: eval-report
           path: data/eval/
+
+      # ── 门禁通过才更新基线 ────────────────────────────────────────
+      # 失败的那轮如果也写进基线，质量就会一路棘轮下滑：
+      # 下次比的是这次的烂结果，于是永远"没有退化"。
+      - name: Commit new baseline
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/eval/latest.json
+          if git diff --cached --quiet; then
+            echo "基线无变化，跳过提交"
+          else
+            git commit -m "chore: update eval baseline $(date +%F)"
+            git push
+          fi

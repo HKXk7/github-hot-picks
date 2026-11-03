@@ -106,4 +106,6 @@ export interface EvalRun {
   summary: RunSummary[];
   /** 相对上一次运行的退化项 */
   regressions?: string[];
+  /** 门禁结论（只在 --gate 时有） */
+  gate?: { passed: boolean; failures: string[] };
 }
