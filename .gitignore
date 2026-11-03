@@ -58,6 +58,11 @@ next-env.d.ts
 today-picks.md
 scripts/_probe_auth.py
 scripts/_reenable_plugin.py
+build.log
+dev.log
+
+# 部署时注入的运行时环境变量（可能含令牌，绝不入库）
+.deploy-env
 
 # DSH 插件属于本机 Harness 配置，不是本站代码
 /dsh-plugin/

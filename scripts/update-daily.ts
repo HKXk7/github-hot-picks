@@ -22,6 +22,7 @@ import { buildRunReport, formatRunReport, formatRunReportMarkdown } from "../src
 import type { RetryOutcome, StepOutcome } from "../src/lib/pipeline/report";
 import { retryMissingTutorials } from "../src/lib/pipeline/retry";
 import { buildRssFeed } from "../src/lib/pipeline/feed";
+import { writeStaticSiteData } from "../src/lib/pipeline/static-data";
 import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 
 const prisma = new PrismaClient();
@@ -406,6 +407,10 @@ async function main() {
     const outDir = path.join(process.cwd(), "public", "data");
     await fs.mkdir(outDir, { recursive: true });
     await fs.writeFile(path.join(outDir, "latest.json"), JSON.stringify(snapshot, null, 2) + "\n", "utf8");
+
+    // 部署版没有数据库，往期列表 / 详情全靠这两份静态文件。
+    // 索引是累积的：读取仓库里上期留下的 history.json，把本期并进去。
+    await writeStaticSiteData(outDir, snapshot, (m) => console.log(m));
 
     // 订阅源跟着快照一起写：数据一天只变一次，为一个静态结果每次请求都查库不划算
     const feed = buildRssFeed({

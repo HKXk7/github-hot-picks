@@ -101,7 +101,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # 只提交生成的产物：快照（站点前端的数据库兜底）+ 订阅源（静态 RSS）
-          git add public/data/latest.json public/feed.xml
+          # 整个数据包一起提交：latest.json / feed.xml / history.json / issues/*.json
+          git add public/data public/feed.xml
           if git diff --cached --quiet; then
             echo "没有内容变化，跳过提交"
           else

@@ -67,7 +67,7 @@ export async function POST(request: Request) {
   // 先看有没有 key（成本为零），再限流，最后才碰 body 和数据库
   if (!hasApiKey()) {
     return NextResponse.json(
-      { error: "未配置 SILICONFLOW_API_KEY，无法生成教程" },
+      { error: "公开演示站未接入模型密钥，即时生成暂不可用；站点里已有的教程仍可正常阅读。" },
       { status: 503 },
     );
   }

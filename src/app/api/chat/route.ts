@@ -157,7 +157,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   const apiKey = process.env.SILICONFLOW_API_KEY;
   if (!apiKey) {
-    return json({ error: "未配置 SILICONFLOW_API_KEY，请在 .env 中填写" }, { status: 500 });
+    // 公开演示站默认不带密钥（不该把私有密钥塞进部署环境）。
+    // 给一句能照着做的话，而不是丢个 500 让访客以为站点坏了。
+    return json(
+      { error: "公开演示站未接入模型密钥，AI 问答暂不可用；克隆仓库并在 .env 配置 SILICONFLOW_API_KEY 后即可启用。" },
+      { status: 503 },
+    );
   }
 
   // 限流放在最前面：被刷的时候，连解析 body 都不该为它做

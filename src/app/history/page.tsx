@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { connection } from "next/server";
 import Link from "next/link";
 import { getIssueList } from "@/lib/site-data";
 import { formatStars, formatTime } from "@/lib/format";
@@ -31,6 +32,9 @@ export default function HistoryPage() {
 }
 
 async function IssueList() {
+  // 同首页：不加 connection() 的话这段会在构建期被解析成静态 HTML，
+  // 往期列表就永远停在部署那一天。
+  await connection();
   const issues = await getIssueList();
 
   if (issues.length === 0) {

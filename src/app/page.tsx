@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { connection } from "next/server";
 import Link from "next/link";
 import { getLatestSiteIssue } from "@/lib/site-data";
 import { formatStars, formatTime, parseContent } from "@/lib/format";
@@ -42,6 +43,10 @@ export default function Home() {
 }
 
 async function RecommendationSection() {
+  // 光有 Suspense 不够：Next 会在构建期把这段解析完、整页标成静态，
+  // 数据就烘死在构建产物里了。声明「按请求渲染」，日更之后线上才会
+  // 读到新的快照（部署版靠 SITE_SNAPSHOT_BASE 每 10 分钟同步一次）。
+  await connection();
   const issue = await getLatestSiteIssue();
   if (!issue) {
     return (

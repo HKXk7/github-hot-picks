@@ -1,6 +1,5 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import { prisma } from "@/lib/prisma";
+import { readSiteData } from "@/lib/snapshot-source";
 import { parseStructuredTutorial, toTutorialMarkdown } from "@/lib/tutorial/schema";
 import { buildIssueSummary } from "@/lib/picks";
 import type { ToolEvidence } from "@/lib/tutorial/evidence";
@@ -64,8 +63,6 @@ interface SnapshotPayload {
   runStatus?: SiteRunStatus | null;
 }
 
-const SNAPSHOT_PATH = path.join(process.cwd(), "public", "data", "latest.json");
-
 function formatZhDate(input: string | Date): string {
   const date = typeof input === "string" ? new Date(input) : input;
   return date.toLocaleDateString("zh-CN", {
@@ -81,35 +78,50 @@ function toDayKey(input: string | Date): string {
 }
 
 async function readSnapshot(): Promise<SiteIssue | null> {
-  try {
-    const raw = await fs.readFile(SNAPSHOT_PATH, "utf8");
-    const data = JSON.parse(raw) as SnapshotPayload;
+  // readSiteData 会按 SITE_SNAPSHOT_BASE 决定读远端还是本地文件。
+  // 本地开发不配这个变量，行为和以前完全一样；部署版靠它每天自动拿最新一期。
+  const data = await readSiteData<SnapshotPayload>("latest.json");
+  if (!data?.picks?.length) return null;
 
-    if (!data?.picks?.length) {
-      return null;
-    }
+  return {
+    source: "snapshot",
+    issue: data.issue,
+    title: data.title,
+    summary: data.summary,
+    content: data.content,
+    dateKey: data.dateKey,
+    dateLabel: formatZhDate(data.updatedAt),
+    updatedAt: data.updatedAt,
+    totalStars: data.totalStars,
+    languageCount: data.languageCount,
+    picks: data.picks.map((p) => ({
+      ...p,
+      tutorial: toTutorialMarkdown(p.tutorial ?? null),
+      tutorialEvidence: evidenceOf(p.tutorial ?? null),
+    })),
+    runStatus: data.runStatus ?? null,
+  };
+}
 
-    return {
-      source: "snapshot",
-      issue: data.issue,
-      title: data.title,
-      summary: data.summary,
-      content: data.content,
-      dateKey: data.dateKey,
-      dateLabel: formatZhDate(data.updatedAt),
-      updatedAt: data.updatedAt,
-      totalStars: data.totalStars,
-      languageCount: data.languageCount,
-      picks: data.picks.map((p) => ({
-        ...p,
-        tutorial: toTutorialMarkdown(p.tutorial ?? null),
-        tutorialEvidence: evidenceOf(p.tutorial ?? null),
-      })),
-      runStatus: data.runStatus ?? null,
-    };
-  } catch {
-    return null;
-  }
+/**
+ * 静态包里的往期详情。
+ *
+ * 部署环境没有数据库（serverless 上 SQLite 只读、发布沙箱不保证带得进来），
+ * 往期页原本会全空。日更任务现在把每一期都写成独立的 JSON，这里直接读。
+ * 存的就是 SiteIssue 本身，不需要再组装一遍 —— 组装逻辑只留在 DB 路径里。
+ */
+async function readStaticIssue(dateKey: string): Promise<SiteIssue | null> {
+  const data = await readSiteData<SiteIssue>(`issues/${dateKey}.json`);
+  if (!data?.picks?.length || data.dateKey !== dateKey) return null;
+  return {
+    ...data,
+    source: "snapshot",
+    picks: data.picks.map((p) => ({
+      ...p,
+      tutorial: toTutorialMarkdown(p.tutorial ?? null),
+      tutorialEvidence: p.tutorialEvidence ?? evidenceOf(p.tutorial ?? null),
+    })),
+  };
 }
 
 // 把数据库里的 Article（含推荐关系）组装成站点用的 SiteIssue
@@ -284,13 +296,16 @@ export interface IssueListItem {
 /** 所有有推荐内容的期（按日期倒序），用于「往期推荐」列表页 */
 export async function getIssueList(): Promise<IssueListItem[]> {
   return withCache("issue-list", async () => {
+    // 「查库成功但库是空的」和「连不上库」都要回退：部署沙箱里往往是
+    // 一个刚 migrate 完的空 SQLite，查询不抛异常，只是安静地返回 []。
+    let fromDb: IssueListItem[] = [];
     try {
       const articles = await prisma.article.findMany({
         where: { status: "published" },
         orderBy: { weekStart: "desc" },
         include: LIST_INCLUDE,
       });
-      return articles
+      fromDb = articles
         .filter((a) => a.recommendations.length > 0)
         .map((a) => ({
           issue: a.issue,
@@ -302,8 +317,11 @@ export async function getIssueList(): Promise<IssueListItem[]> {
           updatedAt: (a.publishedAt ?? a.createdAt).toISOString(),
         }));
     } catch {
-      return [];
+      // 数据库不可用 → 走静态包
     }
+    if (fromDb.length > 0) return fromDb;
+
+    return (await readSiteData<IssueListItem[]>("history.json")) ?? [];
   });
 }
 
@@ -347,9 +365,9 @@ export async function getIssueByDate(dateKey: string): Promise<SiteIssue | null>
         return toSiteIssue(article, toRunStatus(run));
       }
     } catch {
-      // 数据库不可用时返回 null
+      // 数据库不可用时落到静态包
     }
-    return null;
+    return readStaticIssue(dateKey);
   });
 }
 
