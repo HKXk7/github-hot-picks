@@ -5,125 +5,125 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 03 Nov 2026 12:45:20 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 03 Nov 2026 14:12:02 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. valentderah/totk-pc-recomp</title>
-      <link>https://github.com/valentderah/totk-pc-recomp</link>
-      <guid isPermaLink="false">valentderah/totk-pc-recomp@2026-11-03</guid>
+      <title>1. ccch1mneyyy/dsh-Go</title>
+      <link>https://github.com/ccch1mneyyy/dsh-Go</link>
+      <guid isPermaLink="false">ccch1mneyyy/dsh-Go@2026-11-03</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Static recompilation of The Legend of Zelda: Tears of the Kingdom to native Windows and Linux x86-64, with a Vulkan renderer. Game files not included.
+      <category>AI</category>
+      <description><![CDATA[dsh-go — DeepSeek Harness 装进口袋：手机本机运行，也能遥控你的电脑。
 
-语言：C | Star：4307 | 分类：其他
+语言：Dart | Star：6919 | 分类：AI
 
 第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
     </item>
     <item>
-      <title>2. storytold/figcraft</title>
-      <link>https://github.com/storytold/figcraft</link>
-      <guid isPermaLink="false">storytold/figcraft@2026-11-03</guid>
+      <title>2. storytold/craft-anything</title>
+      <link>https://github.com/storytold/craft-anything</link>
+      <guid isPermaLink="false">storytold/craft-anything@2026-11-03</guid>
+      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Craft Anything: understand how any software works, and craft your own.
+
+语言：Rust | Star：6591 | 分类：其他
+
+第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
+    </item>
+    <item>
+      <title>3. SoMarkAI/OXR</title>
+      <link>https://github.com/SoMarkAI/OXR</link>
+      <guid isPermaLink="false">SoMarkAI/OXR@2026-11-03</guid>
+      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[An open-source document parsing model with SOTA accuracy and speed, using an RSI loop during post-training.
+
+语言：Python | Star：3436 | 分类：AI
+
+第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
+    </item>
+    <item>
+      <title>4. l0ng-ai/openidea</title>
+      <link>https://github.com/l0ng-ai/openidea</link>
+      <guid isPermaLink="false">l0ng-ai/openidea@2026-11-03</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
       <category>工具</category>
-      <description><![CDATA[FigCraft: interface design and prototyping; an open-source, clean-room reimplementation of collaborative design workflows in pure Rust
+      <description><![CDATA[The IDE you know, rebuilt in Rust. IntelliJ IDEA–style keymap, tool windows and search-everywhere in a fast native app: editor, code insight, debugger, Git, terminal, database and HTTP clients for 60+ languages.
 
-语言：Rust | Star：4180 | 分类：工具
+语言：TypeScript | Star：5486 | 分类：工具
 
 第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
     </item>
     <item>
-      <title>3. obsidianmd/pele</title>
-      <link>https://github.com/obsidianmd/pele</link>
-      <guid isPermaLink="false">obsidianmd/pele@2026-11-03</guid>
+      <title>5. LNPANDY/NX2Apple</title>
+      <link>https://github.com/LNPANDY/NX2Apple</link>
+      <guid isPermaLink="false">LNPANDY/NX2Apple@2026-11-03</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Renders Mermaid diagrams faster than you'd run from a volcano! 🌋 
+      <category>工具</category>
+      <description><![CDATA[Play your own Switch games on iPhone/iPad — one-click macOS app, no terminal. | 把 Switch 游戏装进 iPhone：图形界面一键构建，不用命令行。Bring your own game.
 
-语言：TypeScript | Star：4142 | 分类：其他
+语言：Swift | Star：3175 | 分类：工具
 
 第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
     </item>
     <item>
-      <title>4. heydamir/unslop</title>
-      <link>https://github.com/heydamir/unslop</link>
-      <guid isPermaLink="false">heydamir/unslop@2026-11-03</guid>
+      <title>6. InukaAsith/TwinDesk</title>
+      <link>https://github.com/InukaAsith/TwinDesk</link>
+      <guid isPermaLink="false">InukaAsith/TwinDesk@2026-11-03</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[A Claude skill that turns vibecoded, AI-looking UI into a designed interface
+      <category>工具</category>
+      <description><![CDATA[ All your computers and your phone, working as one desk. Screens, apps, files, clipboard, calls, texts, notifications, mouse and keyboard, shared between Mac, Windows, Linux and Android. Free and open source. No account, no cloud, and now no shared network needed.
 
-语言：JavaScript | Star：6947 | 分类：AI
-
-第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
-    </item>
-    <item>
-      <title>5. ly05010419/MacNativeGames</title>
-      <link>https://github.com/ly05010419/MacNativeGames</link>
-      <guid isPermaLink="false">ly05010419/MacNativeGames@2026-11-03</guid>
-      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Play your own Tears of the Kingdom and Breath of the Wild natively on Apple silicon Mac, iPhone and iPad. Not an emulator: the game's ARM64 code runs directly, NVN rebuilt on Metal. Bring your own game.
-
-语言：C | Star：6933 | 分类：其他
+语言：JavaScript | Star：3174 | 分类：工具
 
 第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
     </item>
     <item>
-      <title>6. nullmoth/nvidia-macos-driver</title>
-      <link>https://github.com/nullmoth/nvidia-macos-driver</link>
-      <guid isPermaLink="false">nullmoth/nvidia-macos-driver@2026-11-03</guid>
-      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Metal driver for NVIDIA GeForce cards on macOS Sequoia
-
-语言：Rust | Star：4042 | 分类：其他
-
-第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
-    </item>
-    <item>
-      <title>7. seedds/nxnative</title>
-      <link>https://github.com/seedds/nxnative</link>
-      <guid isPermaLink="false">seedds/nxnative@2026-11-03</guid>
-      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Switch games running natively on iPhone, iPad and Mac: an NSP folder becomes an unsigned IPA (NSO rewriter, Horizon HLE host, NVN→Metal)
-
-语言：Python | Star：11700 | 分类：其他
-
-第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
-    </item>
-    <item>
-      <title>8. HeyPuter/everything</title>
-      <link>https://github.com/HeyPuter/everything</link>
-      <guid isPermaLink="false">HeyPuter/everything@2026-11-03</guid>
-      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[We're rebuilding and open-sourcing the world’s software from scratch.
-
-语言：JavaScript | Star：6694 | 分类：其他
-
-第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
-    </item>
-    <item>
-      <title>9. rddmwmddr/android-ad-cleaner</title>
-      <link>https://github.com/rddmwmddr/android-ad-cleaner</link>
-      <guid isPermaLink="false">rddmwmddr/android-ad-cleaner@2026-11-03</guid>
+      <title>7. Fei2411/DS-Bot</title>
+      <link>https://github.com/Fei2411/DS-Bot</link>
+      <guid isPermaLink="false">Fei2411/DS-Bot@2026-11-03</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[关掉国产安卓手机系统里的广告、热搜、资讯推荐和营销推送。不 root，可还原，支持 AI 智能体一键执行。
+      <description><![CDATA[A team of long-lived bots for DeepSeek Harness, with main bots, bot-to-bot messages and group chats.
 
-语言：Python | Star：6022 | 分类：AI
+语言：JavaScript | Star：5248 | 分类：AI
 
 第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
     </item>
     <item>
-      <title>10. SubmitGame/awesome-decomp-games</title>
-      <link>https://github.com/SubmitGame/awesome-decomp-games</link>
-      <guid isPermaLink="false">SubmitGame/awesome-decomp-games@2026-11-03</guid>
+      <title>8. T-Auto/dsh-ops</title>
+      <link>https://github.com/T-Auto/dsh-ops</link>
+      <guid isPermaLink="false">T-Auto/dsh-ops@2026-11-03</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
-      <category>前端</category>
-      <description><![CDATA[Rated, auto-refreshed list of decompiled, recompiled & reverse-engineered games: decomps, static recomps, source ports, engine remakes, browser ports.
+      <category>工具</category>
+      <description><![CDATA[A toolkit for low-level operations in DSH, designed to reduce token usage and task execution time / DSH 底层操作工具插件，旨在减少 Token 消耗与任务耗时
 
-语言：Python | Star：2835 | 分类：前端
+语言：JavaScript | Star：5124 | 分类：工具
+
+第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
+    </item>
+    <item>
+      <title>9. amosblomqvist/learnharness</title>
+      <link>https://github.com/amosblomqvist/learnharness</link>
+      <guid isPermaLink="false">amosblomqvist/learnharness@2026-11-03</guid>
+      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Agent harness for learning difficult things.
+
+语言：TypeScript | Star：5103 | 分类：AI
+
+第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
+    </item>
+    <item>
+      <title>10. jhaizhou-ops/d2r-mobile</title>
+      <link>https://github.com/jhaizhou-ops/d2r-mobile</link>
+      <guid isPermaLink="false">jhaizhou-ops/d2r-mobile@2026-11-03</guid>
+      <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Open-source compatibility layer for Diablo II: Resurrected with the Reign of the Warlock expansion. Runs your own Switch copy natively on iPhone, iPad, Mac, Android and HarmonyOS — full touch controls, 60 fps, new endgame modes. Bring your own game files. 开源的《暗黑破坏神 II：狱火重生》术士君临 iOS / macOS / 安卓 / 鸿蒙兼容层
+
+语言：C | Star：5044 | 分类：其他
 
 第 8 期（2026-11-03）推荐 · 原文 /history/2026-11-03]]></description>
     </item>
