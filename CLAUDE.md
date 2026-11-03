@@ -30,9 +30,10 @@ npm run dev        # 启动 Next.js 开发服务器 → http://localhost:3000
 npm run build      # 生产构建
 npm run start      # 生产启动
 npm run lint       # ESLint
-npm test           # vitest 单测（161 项）
+npm test           # vitest 单测（176 项）
 npm run update:daily   # 手动跑「抓取→筛选→AI教程→入库→快照→订阅源」全流程
-npm run eval       # 教程质量评测（真调模型，花钱）；--gate 卡质量、--limit/--mode/--judge
+npm run eval       # 教程质量评测（真调模型，花钱）；--gate 卡质量、--limit/--mode/--concurrency/--judge
+npm run data:static # 从数据库回填静态数据包（history.json + issues/*.json），部署前跑
 npm run usage      # LLM 用量报告（与站内 /usage 看板同一套口径）
 npm run db:seed        # 填充种子数据（等同 npx prisma db seed）
 
@@ -117,7 +118,9 @@ github-hot-picks/
 4. **Next.js 16 踩坑**：
    - `next.config.ts` 开了 `cacheComponents`，**不能用** `export const dynamic = "force-dynamic"`，也**不能用** `export const revalidate`（两个都会让 build 直接报错）。
    - 动态数据（DB 查询）必须包在 `<Suspense fallback={...}>` 里，否则 build 报 "uncached data during prerendering"。正确形态是「静态外壳 + Suspense 包异步组件」，最终 `◐` Partial Prerender。
-   - 确实需要「按请求生成」的路由（如 `sitemap.ts`）在函数开头 `await connection()`；同理，读当前时间（`Date.now()`）在预渲染期会被拦，必须先 `await connection()`。
+   - 确实需要「按请求生成」的路由（`sitemap.ts`、`/usage`、首页 `RecommendationSection`、往期列表 `IssueList`）在函数开头 `await connection()`；同理，读当前时间（`Date.now()`）在预渲染期会被拦，必须先 `await connection()`。
+   - ⚠️ **光有 `<Suspense>` 不等于按请求渲染**：Next 会在构建期把 Suspense 里的异步组件解析完、整页标成 `○`。想让运行时数据生效（部署版每天同步最新快照），必须显式 `await connection()`，让路由变成 `◐`。
+   - 站点在无数据库环境靠 `public/data/` 静态包运行：`latest.json` / `history.json` / `issues/<date>.json`。查询「成功但返回空数组」也要回退，空库不会抛异常。`SITE_SNAPSHOT_BASE` 配置后按 10 分钟 TTL 从 GitHub 拉最新数据。
    - `middleware.ts` 已废弃，改用 **`src/proxy.ts`**（`export default function proxy()`）；两个文件同时存在会报错。
    - 改 `.env` 后 dev 服务要**重启**才生效。
 5. **路径别名**：`@/` 指向 `src/`。
