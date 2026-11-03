@@ -55,6 +55,11 @@ export interface GateCheck {
   op: ">=" | "<=";
   ok: boolean;
   /**
+   * 小样本容差（比例型指标才有）。判定实际用的是 `threshold - tolerance`，
+   * 阈值本身没被改低，只是承认「20 个样本估出来的比例本来就有 ±10 个点的误差」。
+   */
+  tolerance?: number;
+  /**
    * 本次没有可查证的命令（全是 git clone / docker run），算不出比率。
    * 这种情况既不能说好也不能说坏，跳过而不是判红 —— 否则 registry
    * 网络一抽风就会误报。
@@ -70,6 +75,23 @@ export interface GateResult {
 
 function pct(v: number | null): string {
   return v === null ? "—" : `${(v * 100).toFixed(0)}%`;
+}
+
+/**
+ * 小样本容差：一个比例用 n 个样本估出来，标准误约 `sqrt(p(1-p)/n)`。
+ *
+ * 实测踩过：20 个样本时「有可验证命令的样本占比」35%，阈值也设的 35%，
+ * 刚好压线通过；下一轮抽到 30% 就是纯抽样波动，却会让门禁变红。
+ * 一个经常假红的门禁比没有门禁更糟 —— 它会训练人忽略红色。
+ *
+ * 所以判定改成 `实测 >= 阈值 - 1 个标准误`，配置里的阈值不动。
+ * 样本越多容差越小（n=200 时约 3 个点），p 接近 0 或 1 时容差也趋近 0，
+ * 于是「真正烂掉」和「一个可验证命令都给不出来」依然会被拦住。
+ */
+function sampleTolerance(observed: number, cases: number): number {
+  if (cases <= 0) return 0;
+  const p = Math.min(1, Math.max(0, observed));
+  return Math.sqrt((p * (1 - p)) / cases);
 }
 
 /**
@@ -111,13 +133,17 @@ export function applyGate(
   for (const s of summaries) {
     const t = thresholds[s.mode] ?? DEFAULT_THRESHOLDS[s.mode];
 
+    // 成功率 / 覆盖率的分母都是「样本数」，小样本波动大，按标准误留余量。
+    // 编造率 / 可验证率的分母是「命令数」（通常几十上百），不需要这层容差。
+    const successTol = sampleTolerance(s.successRate, s.cases);
     checks.push({
       mode: s.mode,
       metric: "生成成功率",
       actual: s.successRate,
       threshold: t.minSuccessRate,
       op: ">=",
-      ok: s.successRate >= t.minSuccessRate,
+      ok: s.successRate >= t.minSuccessRate - successTol,
+      ...(successTol > 0 ? { tolerance: successTol } : {}),
     });
 
     // 编造率 / 可验证率在"没有可查证命令"时为 null —— 跳过，不判红也不判绿
@@ -143,13 +169,15 @@ export function applyGate(
       ...(s.verifiedRate === null ? { skipped: true } : {}),
     });
 
+    const coverageTol = sampleTolerance(s.casesWithVerifiedCommand, s.cases);
     checks.push({
       mode: s.mode,
       metric: "有可验证命令的样本占比",
       actual: s.casesWithVerifiedCommand,
       threshold: t.minCasesWithVerifiedCommand,
       op: ">=",
-      ok: s.casesWithVerifiedCommand >= t.minCasesWithVerifiedCommand,
+      ok: s.casesWithVerifiedCommand >= t.minCasesWithVerifiedCommand - coverageTol,
+      ...(coverageTol > 0 ? { tolerance: coverageTol } : {}),
     });
 
     if (noDecidable) {
@@ -159,7 +187,10 @@ export function applyGate(
 
   const failures = checks
     .filter((c) => !c.ok)
-    .map((c) => `[${c.mode}] ${c.metric} ${pct(c.actual)} ${c.op === ">=" ? "低于" : "高于"} 阈值 ${pct(c.threshold)}`);
+    .map((c) => {
+      const floor = c.tolerance ? pct(c.threshold - c.tolerance) : pct(c.threshold);
+      return `[${c.mode}] ${c.metric} ${pct(c.actual)} ${c.op === ">=" ? "低于" : "高于"} 阈值 ${floor}${c.tolerance ? `（配置 ${pct(c.threshold)}，已含 ${pct(c.tolerance)} 小样本容差）` : ""}`;
+    });
 
   return { passed: failures.length === 0, checks, failures };
 }
@@ -169,7 +200,10 @@ export function formatGate(gate: GateResult): string {
   const lines = ["| 模式 | 指标 | 实测 | 阈值 | 结果 |", "|------|------|------|------|------|"];
   for (const c of gate.checks) {
     const verdict = c.skipped ? "跳过（无可查证命令）" : c.ok ? "✅" : "❌";
-    lines.push(`| ${c.mode} | ${c.metric} | ${pct(c.actual)} | ${c.op} ${pct(c.threshold)} | ${verdict} |`);
+    const threshold = c.tolerance
+      ? `${c.op} ${pct(c.threshold - c.tolerance)}（容差 ${pct(c.tolerance)}）`
+      : `${c.op} ${pct(c.threshold)}`;
+    lines.push(`| ${c.mode} | ${c.metric} | ${pct(c.actual)} | ${threshold} | ${verdict} |`);
   }
   return lines.join("\n");
 }

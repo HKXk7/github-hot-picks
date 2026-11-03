@@ -30,7 +30,7 @@ npm run dev        # 启动 Next.js 开发服务器 → http://localhost:3000
 npm run build      # 生产构建
 npm run start      # 生产启动
 npm run lint       # ESLint
-npm test           # vitest 单测（157 项）
+npm test           # vitest 单测（161 项）
 npm run update:daily   # 手动跑「抓取→筛选→AI教程→入库→快照→订阅源」全流程
 npm run eval       # 教程质量评测（真调模型，花钱）；--gate 卡质量、--limit/--mode/--judge
 npm run usage      # LLM 用量报告（与站内 /usage 看板同一套口径）

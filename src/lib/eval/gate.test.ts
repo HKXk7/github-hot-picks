@@ -74,6 +74,36 @@ describe("applyGate", () => {
   });
 });
 
+describe("小样本容差", () => {
+  it("20 样本下 30% 属于 35% 的抽样波动，不假红", () => {
+    // 云端实测：20 个样本测出 35%，阈值也是 35%，压线通过零余量。
+    // 下一轮抽到 30% 是正常波动，不该让门禁变红。
+    const r = applyGate([summary({ cases: 20, casesWithVerifiedCommand: 0.3 })]);
+    expect(r.passed).toBe(true);
+  });
+
+  it("样本足够大时，同样的 30% 会被判红（容差不是免死金牌）", () => {
+    const r = applyGate([summary({ cases: 200, casesWithVerifiedCommand: 0.3 })]);
+    expect(r.passed).toBe(false);
+    expect(r.failures.join()).toContain("有可验证命令的样本占比");
+  });
+
+  it("配置阈值本身没被改低，容差只体现在判定里", () => {
+    const r = applyGate([summary({ cases: 20, casesWithVerifiedCommand: 0.3 })]);
+    const check = r.checks.find((c) => c.metric === "有可验证命令的样本占比");
+    expect(check?.threshold).toBe(DEFAULT_THRESHOLDS.tools.minCasesWithVerifiedCommand);
+    expect(check?.tolerance).toBeGreaterThan(0);
+    expect(check?.tolerance).toBeLessThan(0.2);
+  });
+
+  it("一个可验证命令都给不出来时容差为 0，仍然判红", () => {
+    const r = applyGate([summary({ cases: 20, casesWithVerifiedCommand: 0 })]);
+    expect(r.passed).toBe(false);
+    const check = r.checks.find((c) => c.metric === "有可验证命令的样本占比");
+    expect(check?.tolerance).toBeUndefined();
+  });
+});
+
 describe("readThresholds", () => {
   it("没配就用默认值", () => {
     expect(readThresholds(undefined)).toEqual(DEFAULT_THRESHOLDS);
