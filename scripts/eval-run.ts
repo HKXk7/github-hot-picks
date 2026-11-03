@@ -3,7 +3,7 @@
  *
  * 用法：
  *   npm run eval                          # 默认 8 个样本，tools / plain 两版对照
- *   npm run eval -- --limit 6 --mode tools
+ *   npm run eval -- --limit 50 --mode tools --concurrency 5
  *   npm run eval -- --judge                # 额外让另一个模型给质量打分
  *   npm run eval -- --gate                 # 指标低于绝对阈值时以非零码退出（CI 用）
  *                                          # 相对基线的退化只打印提示，不拦人（样本不同，差值不可比）
@@ -20,6 +20,7 @@ import path from "node:path";
 import { prisma } from "../src/lib/prisma";
 import { runEvaluation, summarize, diffAgainstBaseline } from "../src/lib/eval/run";
 import { applyGate, formatGate, readThresholds } from "../src/lib/eval/gate";
+import { formatInterval, summaryIntervals } from "../src/lib/eval/stats";
 import type { EvalCase, EvalRun, RunSummary } from "../src/lib/eval/types";
 import type { GenerationMode } from "../src/lib/tutorial/generate";
 
@@ -60,6 +61,9 @@ function readArgs() {
     judge: args.includes("--judge"),
     gate: args.includes("--gate"),
     seed: num("seed", 42),
+    // 50 个样本串行要 40+ 分钟；默认并发 5，压到 10 分钟内。
+    // 上游有速率限制，别调太高，否则 429 + 退避反而更慢。
+    concurrency: num("concurrency", 5),
   };
 }
 
@@ -154,6 +158,7 @@ function pct(v: number | null): string {
 }
 
 function printSummary(s: RunSummary): void {
+  const ci = summaryIntervals(s);
   console.log(
     [
       `[${s.mode}]`,
@@ -166,6 +171,13 @@ function printSummary(s: RunSummary): void {
       `工具调用 ${s.avgToolCalls.toFixed(1)}`,
       `耗时 ${(s.avgMs / 1000).toFixed(1)}s`,
     ].join(" | "),
+  );
+  // 光写一个百分比会让人误以为它是精确值。把 95% 区间一起打出来，
+  // 20 样本和 50 样本的「35%」可信程度差得很远。
+  console.log(
+    `       95% 置信区间：成功率 ${formatInterval(ci.successRate)}，` +
+      `可验证率 ${ci.verifiedRate ? formatInterval(ci.verifiedRate) : "—"}，` +
+      `编造率 ${ci.fabricationRate ? formatInterval(ci.fabricationRate) : "—"}`,
   );
   if (s.avgJudgeGroundedness !== undefined && s.avgJudgeUsefulness !== undefined) {
     console.log(
@@ -190,7 +202,12 @@ function printSummary(s: RunSummary): void {
 
   for (const mode of modes) {
     console.log(`──── ${mode} 模式 ────`);
-    const batch = await runEvaluation(cases, { mode, useJudge: opts.judge, log: (m) => console.log(m) });
+    const batch = await runEvaluation(cases, {
+      mode,
+      useJudge: opts.judge,
+      concurrency: opts.concurrency,
+      log: (m) => console.log(m),
+    });
     metrics.push(...batch);
     summaries.push(summarize(mode, batch));
   }
@@ -216,11 +233,13 @@ function printSummary(s: RunSummary): void {
 
   await fs.mkdir(RUNS_DIR, { recursive: true });
   const at = new Date();
+  const confidence = summaries.map((s) => ({ mode: s.mode, intervals: summaryIntervals(s) }));
   const report: EvalRun = {
     at: at.toISOString(),
     cases,
     metrics,
     summary: summaries,
+    confidence,
     ...(regressions.length ? { regressions } : {}),
     ...(gate ? { gate: { passed: gate.passed, failures: gate.failures } } : {}),
   };
@@ -238,13 +257,19 @@ function printSummary(s: RunSummary): void {
   // 报告落盘 + 摘要上墙，两者不是一个东西 —— 前者给下次对比用，后者给人看。
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
   if (summaryPath) {
-    const rows = summaries.map(
-      (s) =>
-        `| ${s.mode} | ${pct(s.successRate)} | ${pct(s.verifiedRate)} | ${pct(s.fabricationRate)} | ` +
-        `${pct(s.casesWithVerifiedCommand)} | ${s.avgToolCalls.toFixed(1)} | ${(s.avgMs / 1000).toFixed(1)}s |`,
-    );
+    const rows = summaries.map((s) => {
+      const ci = summaryIntervals(s);
+      return (
+        `| ${s.mode} | ${pct(s.successRate)} ${formatInterval(ci.successRate)} | ` +
+        `${pct(s.verifiedRate)} ${ci.verifiedRate ? formatInterval(ci.verifiedRate) : "—"} | ` +
+        `${pct(s.fabricationRate)} ${ci.fabricationRate ? formatInterval(ci.fabricationRate) : "—"} | ` +
+        `${pct(s.casesWithVerifiedCommand)} | ${s.avgToolCalls.toFixed(1)} | ${(s.avgMs / 1000).toFixed(1)}s |`
+      );
+    });
     const md = [
-      `## 教程质量评测（${opts.limit} 个样本，seed=${opts.seed}）`,
+      `## 教程质量评测（${cases.length} 个样本，seed=${opts.seed}，并发 ${opts.concurrency}）`,
+      "",
+      "括号里是 95% Wilson 置信区间：区间越窄，样本量越够。",
       "",
       "| 模式 | 成功率 | 命令可验证 | 命令编造 | 有可验证命令的样本 | 平均工具调用 | 平均耗时 |",
       "|------|--------|-----------|---------|-------------------|-------------|---------|",

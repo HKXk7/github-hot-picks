@@ -2,6 +2,7 @@ import { generateStructuredTutorial, type GenerationMode, type TutorialMeta } fr
 import type { Tutorial } from "../tutorial/schema";
 import { checkCommand } from "./scorers";
 import { judgeTutorial, summarizeJudge } from "./judge";
+import { mapWithConcurrency } from "./concurrency";
 import type { CaseMetrics, CaseResult, CommandCheck, EvalCase, RunSummary } from "./types";
 
 export interface EvalOptions {
@@ -9,6 +10,13 @@ export interface EvalOptions {
   maxAttempts?: number;
   /** 是否启用 LLM-as-judge（多一次模型调用，默认关） */
   useJudge?: boolean;
+  /**
+   * 同时跑几个样本，默认 1（串行）。
+   *
+   * 评测每个样本要真调模型，50 个串行 40+ 分钟；并发 5 能压到 10 分钟内。
+   * 不要调太高：上游有速率限制，一次打太多只会换来 429 和退避重试。
+   */
+  concurrency?: number;
   log?: (msg: string) => void;
 }
 
@@ -154,12 +162,20 @@ export function summarize(mode: GenerationMode, metrics: CaseMetrics[]): RunSumm
 
 export async function runEvaluation(cases: EvalCase[], opts: EvalOptions): Promise<CaseMetrics[]> {
   const log = opts.log ?? (() => {});
-  const out: CaseMetrics[] = [];
 
-  for (const c of cases) {
-    log(`▶ ${c.fullName}（${c.language ?? "?"}）`);
+  // 并发跑，但结果按输入顺序写回。日志也等全部跑完再按序打印，
+  // 否则 5 个样本交错输出，人眼根本没法看，两次运行也没法对照。
+  const pairs = await mapWithConcurrency(cases, opts.concurrency ?? 1, async (c) => {
     const result = await evaluateOne(c, opts);
     const m = await toMetrics(result, opts.useJudge ?? false, c);
+    return { result, m };
+  });
+
+  const out: CaseMetrics[] = [];
+  for (let i = 0; i < pairs.length; i++) {
+    const c = cases[i];
+    const { result, m } = pairs[i];
+    log(`▶ ${c.fullName}（${c.language ?? "?"}）`);
 
     if (!m.generated) {
       log(`   ❌ 生成失败：${m.error ?? "未知"}`);

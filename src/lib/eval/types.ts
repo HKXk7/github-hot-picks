@@ -99,11 +99,25 @@ export interface RunSummary {
   avgJudgeUsefulness?: number;
 }
 
+export interface IntervalPair {
+  low: number;
+  high: number;
+}
+
+/** 关键比例的 95% Wilson 区间；无可查证命令时比率为 null */
+export interface SummaryIntervals {
+  successRate: IntervalPair;
+  verifiedRate: IntervalPair | null;
+  fabricationRate: IntervalPair | null;
+}
+
 export interface EvalRun {
   at: string;
   cases: EvalCase[];
   metrics: CaseMetrics[];
   summary: RunSummary[];
+  /** 关键比例的置信区间，用来说明「这个百分比有多稳」 */
+  confidence?: { mode: GenerationMode; intervals: SummaryIntervals }[];
   /** 相对上一次运行的退化项 */
   regressions?: string[];
   /** 门禁结论（只在 --gate 时有） */

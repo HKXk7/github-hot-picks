@@ -10,13 +10,17 @@ on:
   workflow_dispatch:
     inputs:
       samples:
-        description: 抽样几个项目
+        description: 抽样几个项目（50 个时比例指标的 95% 区间约 ±7 个点）
         required: false
-        default: "20"
+        default: "50"
       mode:
         description: tools / plain / both
         required: false
         default: "tools"
+      concurrency:
+        description: 同时跑几个样本（别超过 5，上游有速率限制）
+        required: false
+        default: "5"
       judge:
         description: 是否启用 LLM 评审（更慢）
         required: false
@@ -28,7 +32,7 @@ on:
         type: boolean
         default: true
 
-# 评测要跑好几分钟，并发跑没意义还双倍烧额度
+# 50 个样本并发 5，约 10 分钟。同时跑两轮没意义还双倍烧额度
 concurrency:
   group: eval
   cancel-in-progress: false
@@ -44,8 +48,9 @@ jobs:
       # prisma.config.ts 对 DATABASE_URL 是硬校验，任何 prisma CLI 都要求它在位
       DATABASE_URL: "file:${{ github.workspace }}/prisma/dev.db"
       # 定时触发时没有 inputs，这里统一给默认值，后面的步骤不用到处判空
-      SAMPLES: ${{ github.event.inputs.samples || '20' }}
+      SAMPLES: ${{ github.event.inputs.samples || '50' }}
       MODE: ${{ github.event.inputs.mode || 'tools' }}
+      CONCURRENCY: ${{ github.event.inputs.concurrency || '5' }}
     steps:
       # checkout 默认只拉 1 层，后面要 rebase 到最新 main，浅历史可能不够用
       - uses: actions/checkout@v4
@@ -101,7 +106,7 @@ jobs:
           # 阈值走仓库变量（Settings → Variables），调阈值不用改代码也不用发版
           EVAL_GATE_JSON: ${{ vars.EVAL_GATE_JSON }}
         run: |
-          FLAGS="--limit $SAMPLES --mode $MODE"
+          FLAGS="--limit $SAMPLES --mode $MODE --concurrency $CONCURRENCY"
           if [ "${{ github.event.inputs.judge }}" = "true" ]; then FLAGS="$FLAGS --judge"; fi
           if [ "${{ github.event.inputs.gate }}" != "false" ]; then FLAGS="$FLAGS --gate"; fi
           npm run eval -- $FLAGS
