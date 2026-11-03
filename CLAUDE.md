@@ -30,7 +30,10 @@ npm run dev        # 启动 Next.js 开发服务器 → http://localhost:3000
 npm run build      # 生产构建
 npm run start      # 生产启动
 npm run lint       # ESLint
-npm run update:daily   # 手动跑「抓取→筛选→AI教程→入库→快照」全流程
+npm test           # vitest 单测（157 项）
+npm run update:daily   # 手动跑「抓取→筛选→AI教程→入库→快照→订阅源」全流程
+npm run eval       # 教程质量评测（真调模型，花钱）；--gate 卡质量、--limit/--mode/--judge
+npm run usage      # LLM 用量报告（与站内 /usage 看板同一套口径）
 npm run db:seed        # 填充种子数据（等同 npx prisma db seed）
 
 # Prisma
@@ -54,15 +57,26 @@ npm run typecheck  # 类型检查
 
 ```
 github-hot-picks/
-├── src/app/              # Next.js 页面（page.tsx 已写推荐列表 / layout.tsx / api/chat/route.ts）
-├── src/components/       # ChatAssistant.tsx（AI 助手）/ ProjectTutorialModal.tsx（教程弹窗）
-├── src/lib/prisma.ts     # PrismaClient 单例（开发模式避免重复建连接）
-├── src/lib/site-data.ts  # 读最新一期推荐（优先 DB、失败回退 public/data/latest.json 快照）
-├── scripts/update-daily.ts  # 「一天一更」核心管线（抓取→筛选→AI教程→入库→快照）
-├── public/               # 静态资源 + data/latest.json（每天生成的推荐快照）
+├── src/app/
+│   ├── page.tsx          # 首页（焦点卡 + 榜单 + 推荐稿全文）
+│   ├── history/          # 往期列表 + 往期详情 [date]
+│   ├── usage/page.tsx    # 成本看板（需 USAGE_PAGE_TOKEN，由 src/proxy.ts 保护）
+│   ├── sitemap.ts / robots.ts / not-found.tsx / loading.tsx / feed.xml 静态文件
+│   └── api/              # chat（流式问答）/ tutorial（教程即时生成）
+├── src/proxy.ts          # Next 16 里取代 middleware.ts 的约定，目前只守 /usage
+├── src/components/       # ChatAssistant / ProjectTutorialModal / PicksExplorer（搜索筛选）
+├── src/lib/
+│   ├── prisma.ts         # PrismaClient 单例
+│   ├── site-data.ts      # 读推荐数据（优先 DB、失败回退快照）
+│   ├── site-url.ts       # 站点绝对地址（sitemap / RSS / OG 用）
+│   ├── pipeline/         # report（每期成败报告）/ retry（跨期补做教程）/ feed（RSS）
+│   ├── eval/             # 评测：run / scorers / judge / gate（门禁阈值）
+│   └── ai/               # llm / agent / planner / sanitize / usage / usage-stats …
+├── scripts/update-daily.ts  # 「一天一更」核心管线（抓取→筛选→AI教程→入库→快照→订阅源）
+├── public/               # 静态资源 + data/latest.json 与 feed.xml（**机器每天写的，别手改**）
 ├── prisma/
-│   ├── schema.prisma     # 数据模型：Repository / Article / Recommendation / JobRun（4 张表）
-│   ├── migrations/       # 迁移记录（已应用 init + add_repo_tutorial）
+│   ├── schema.prisma     # 数据模型：8 张表（见下）
+│   ├── migrations/       # 迁移记录（init → … → add_tutorial_failure_tracking）
 │   ├── seed.ts           # 种子数据脚本（8 项目 + 1 稿 + 5 推荐）
 │   └── dev.db            # SQLite 数据库文件（已被 .gitignore 忽略）
 ├── generated/prisma/     # Prisma 生成的客户端（勿手改，已 gitignore）
@@ -79,7 +93,7 @@ github-hot-picks/
 
 ## 关键文件
 
-- `prisma/schema.prisma` —— 4 张表已定义：`Repository`（项目，含 `tutorial String?` 小白教程字段）、`Article`（每天推荐稿）、`Recommendation`（稿子↔项目多对多）、`JobRun`（定时任务运行记录）。
+- `prisma/schema.prisma` —— **8 张表**：`Repository`（项目，含 `tutorial` 结构化教程 + `tutorialError`/`tutorialAttempts`/`tutorialFailedAt` 失败追踪）、`Article`（每天推荐稿）、`Recommendation`（稿子↔项目多对多）、`JobRun`（运行记录，`log` 里是每期成败报告）、`KnowledgeChunk`（RAG 切片）、`LlmCall`（每次模型调用的用量/耗时）、`ChatSession` + `ChatMessage`（AI Buddy 会话）。
 - `prisma/seed.ts` —— 种子数据，从 `../generated/prisma/client` 导入（**不是** `@prisma/client`）。
 - `src/lib/prisma.ts` —— PrismaClient 单例，从 `../../generated/prisma/client` 导入。
 - `src/lib/site-data.ts` —— `getLatestSiteIssue()` 优先读 Prisma、失败回退读 `public/data/latest.json` 快照（静态部署也能显示最新推荐）。`SitePick` 接口含 `tutorial` 字段。另有 `getIssueList()`（所有期列表）和 `getIssueByDate(dateKey)`（按 YYYY-MM-DD 取某一期），供往期页使用。
@@ -101,8 +115,10 @@ github-hot-picks/
 2. **Prisma 客户端生成位置**：schema 用 `provider = "prisma-client"` + `output = "../generated/prisma"`，类型化客户端在 `generated/prisma/`。所有业务代码（`seed.ts`、`src/lib/prisma.ts`）都应从 `../generated/prisma/client` 或 `../../generated/prisma/client` 导入，**不要用 `@prisma/client`**。
 3. **DATABASE_URL 用绝对路径**：`.env` 里必须是 `file:D:/ai-coding-projects/github-hot-picks/prisma/dev.db` 这种绝对路径。相对路径 `file:./dev.db` 在 CLI 相对 `prisma/` 解析、Next.js 运行时相对项目根解析，两边不一致会报 `Error code 14: Unable to open the database file`。
 4. **Next.js 16 踩坑**：
-   - `next.config.ts` 开了 `cacheComponents`，**不能用** `export const dynamic = "force-dynamic"`（不兼容）。数据获取默认就是动态的。
+   - `next.config.ts` 开了 `cacheComponents`，**不能用** `export const dynamic = "force-dynamic"`，也**不能用** `export const revalidate`（两个都会让 build 直接报错）。
    - 动态数据（DB 查询）必须包在 `<Suspense fallback={...}>` 里，否则 build 报 "uncached data during prerendering"。正确形态是「静态外壳 + Suspense 包异步组件」，最终 `◐` Partial Prerender。
+   - 确实需要「按请求生成」的路由（如 `sitemap.ts`）在函数开头 `await connection()`；同理，读当前时间（`Date.now()`）在预渲染期会被拦，必须先 `await connection()`。
+   - `middleware.ts` 已废弃，改用 **`src/proxy.ts`**（`export default function proxy()`）；两个文件同时存在会报错。
    - 改 `.env` 后 dev 服务要**重启**才生效。
 5. **路径别名**：`@/` 指向 `src/`。
 6. **两个数据库**：主项目 `prisma/dev.db`；子项目 `github-hot-recommend/data/app.db`（互不相干）。两个 `.db` 都被 gitignore。
@@ -110,3 +126,5 @@ github-hot-picks/
 8. **子项目存档规则**：`github-hot-recommend/data/` 下只提交 `*.md`（每天稿）和 `recommended.json`（去重历史），`app.db*` 不提交（子项目 .gitignore 已配置）。
 9. **小白教程生成**：`Repository.tutorial` 字段存 AI 生成的 Markdown 教程，由 `scripts/update-daily.ts` 里的 `generateTutorial()` 调用硅基流动生成（4 段式：是什么/怎么装/核心功能/适合谁+避坑）。幂等策略：入库前若 `repository.tutorial` 已非空则跳过，避免重复花钱调 API。前端通过 `site-data.ts` 的 `SitePick.tutorial` 透传，卡片点「看小白教程」弹 `ProjectTutorialModal`。
 10. **⚠️ 并行冲突风险**：用户编辑器里可能还有另一个 AI 助手在同时改文件，动手前先核对当前文件状态，避免互相覆盖。
+11. **机器每天会写两个文件**：`public/data/latest.json`（推荐快照）和 `public/feed.xml`（RSS）由日更任务生成并由 Actions 提交回仓库。**不要手改**，第二天会被覆盖。
+12. **git push 到 github.com 不通**（连接被 reset），但 `api.github.com` 正常。推送用 `scripts/push-via-api.mjs`（`GH_BASE=<远端 sha>` + `GH_LOCAL_BASE=<本地 sha>`）；推送前记得先把远端更新的 `public/data/latest.json` 拉回来，否则会把云端数据推成旧版本。

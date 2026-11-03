@@ -55,7 +55,10 @@
 - **AI 助手带上下文**：不是裸聊天框，而是带着当天推荐数据的小助手，支持 4 个主流模型切换、流式输出、连续对话；回答前会先混合检索站内知识库（BM25 + bge-m3 向量），所以「上次那个做图表的库叫什么」这类问题也答得上来。
 - **深度模式（规划型 Agent）**：打开后它会先拆分步骤、逐步联网取证、反思是否够用再补做，最后综合成答案，并把执行过的计划展示出来。慢，但能回答单轮答不了的多步问题。
 - **教程标注取证来源**：教程弹窗会写明这份内容是 AI 查过 README / 包管理器之后写的，还是没联网取证凭知识写的。
-- **成本可查**：每一次模型调用的 token、耗时、成功与否都落库，`npm run usage` 能按用途 / 模型 / 步骤出报告，还能按 `traceId` 展开某一份教程的每一步花了多少。
+- **成本可查**：每一次模型调用的 token、耗时、成功与否都落库，`npm run usage` 能按用途 / 模型 / 步骤出报告，还能按 `traceId` 展开某一份教程的每一步花了多少；站内 `/usage` 是同一套口径的可视化看板（带访问令牌）。
+- **跑挂了能自己补回来**：某个项目的教程生成失败不再是静默跳过——失败原因记进库、跑完出一份「成功 / 复用 / 失败 / 补做」报告，下一期自动给它补做（最多三期，之后标记放弃，不再白烧额度）。
+- **质量有持续护栏**：教程质量评测每周一自动跑一次，命令编造率、可验证率等指标低于阈值就直接让 CI 变红，而不是靠人记得手动点一下。
+- **可订阅**：`/feed.xml` 提供 RSS，每天这一期的项目清单直接进阅读器；另有 sitemap、robots 与 404 页。
 - **防提示注入**：外部 README 一律定界包裹 + 注入句式中和，并挡住「提前闭合数据区」的逃逸手法（带单测）。
 - **会话跨设备**：AI Buddy 的对话存在服务端，换设备、清缓存都还在；聊长了会自动把早期对话折叠成滚动摘要，上下文不会无限膨胀。
 - **双数据源容灾**：前端优先读数据库，读不到时自动回退读已提交的快照文件，所以静态部署也能正常显示。
@@ -150,7 +153,17 @@
 
 ### 回归门禁
 
-`npm run eval -- --gate` 会把本次结果与上一次运行对比，生成成功率下降、编造率上升、可验证命令占比下降都会导致非零退出。配套 `.github/workflows/eval.yml` 是手动触发的——评测每次都要真调模型，按天跑不划算，改了 prompt / schema / 工具之后点一下更合适。
+`.github/workflows/eval.yml` **每周一自动跑一次**（也可以在 Actions 里手动点），跑完把报告当 artifact 上传、结论写进 job summary。评测每次都要真调模型，按天跑不划算；按周跑又足以在 prompt / schema / 工具被改坏之后一周内发现问题。
+
+门禁由 `src/lib/eval/gate.ts` 判定，`npm run eval -- --gate` 不达标就以非零码退出。三点设计取舍：
+
+| 取舍 | 为什么 |
+|------|--------|
+| **用绝对阈值，而不是「比上次差就红」** | 基线对比有个致命漏洞：第一次跑没有基线，跑得再烂也是绿的；而且只要基线被更新，质量就会一路棘轮下滑。所以门禁以绝对阈值为主（成功率 ≥ 70%、编造率 ≤ 25%、可验证率 ≥ 40% 等，按模式分别设定） |
+| **相对基线的退化只报警，不拦人** | 每轮抽到的项目并不相同（库在变、样本是分层随机的），两组不同样本直接比差值，波动能轻松造出十几个点的「退化」。实测一次 8 样本的运行就报了「成功率 100% → 88%」——八个里挂了一个。拿这个判红等于掷骰子，而门禁假红几次之后就没人看了 |
+| **阈值留余量、走配置** | 8 个样本时 verifiedRate 抽风就能差 20 个点，阈值贴着实测值定只会制造噪音。所以周跑用 20 个样本，阈值通过仓库变量 `EVAL_GATE_JSON` 覆盖，调阈值不用改代码 |
+
+顺带修了一个真 bug：eval 的参数解析只认 `--limit=6`，而文档里写的全是 `--limit 6`——也就是说文档里的用法一直是静默失效的（回退成默认 8 个样本）。现在两种写法都认，非法数字会明确提示。
 
 ### 第五层：规划型 Agent（解决「一步查不完」）
 
@@ -192,6 +205,8 @@
 - 落库是**尽力而为**的：观测把主流程拖垮是最糟的失败模式，所以写失败只记一行警告，绝不影响生成
 
 `npm run usage` 出报告（按用途 / 按模型 / 按步骤 / 最贵的几次生成 / 延迟分位 / 最近失败）。日更任务每天跑完会打一份到日志里，成本异常时能第一时间看见。
+
+站内 `/usage` 是同一套口径的可视化看板（调用次数、成功率、token、金额、p50/p95，按用途和模型出条形图）。汇总逻辑抽在 `src/lib/ai/usage-stats.ts`，**终端和网页共用一份**——两边各算一遍的话，迟早会出现「网页说 3 块、命令行说 5 块」这种谁都没错、但没人知道该信谁的场面。看板带访问令牌（`USAGE_PAGE_TOKEN`），没配就一律 404：令牌缺失的默认结果必须是「打不开」而不是「谁都能看」。
 
 ```bash
 npm run usage                       # 最近 7 天
@@ -240,7 +255,7 @@ AI Buddy 的会话原本只存在浏览器 `localStorage` 里：换台设备、�
 
 ### 单元测试
 
-`npm test`（vitest，117 项）覆盖的都是「纯函数、回归了不会有任何现象」的地方：
+`npm test`（vitest，157 项）覆盖的都是「纯函数、回归了不会有任何现象」的地方：
 
 | 模块 | 测的是什么 |
 |------|-----------|
@@ -255,6 +270,11 @@ AI Buddy 的会话原本只存在浏览器 `localStorage` 里：换台设备、�
 | `chat-session` | 历史裁剪丢最早保最近、脏角色不进上下文 |
 | `rate-limit` | 滑动窗口、超限恢复、retry-after |
 | `picks` | 分类优先用作者 topics、每期摘要与输入顺序无关 |
+| `eval/gate` | 阈值判定、无可查证命令时跳过而非误判、按模式取不同阈值、配置写错时回退默认 |
+| `pipeline/report` | 一个失败也必须出现在报告里（不能被 9 个成功盖住）、「没尝试」不等于失败 |
+| `pipeline/retry` | 挑出该补的项目、本期失败的留到下期、补成功后清空失败记录、到上限标记放弃 |
+| `pipeline/feed` | RSS 结构与转义（`]]>` 不截断 CDATA、标题里的尖括号）、guid 带期号、RFC 822 日期 |
+| `ai/usage-stats` | 分位数、空数据集成功率是 1 不是 0、分组排序、有/无单价表的行为 |
 
 评分器和分词器各踩过一次假阳性 bug（scoped 包被削空、`npm create` 被判编造、中英混排把「用」「写」粘成「用写」），都是靠临时脚本偶然发现的——这类知识不写进测试就会流失。CI（`.github/workflows/ci.yml`）在每次 push / PR 上跑 typecheck + 测试 + lint。
 
@@ -296,6 +316,28 @@ AI 层之外，站点本身这几处也值得单独说一句——它们不「�
 > 本期 10 个项目（AI 6 · 后端 2 · 工具 1 · 其他 1），榜首 storytold/wordcraft 拿到 16.5k star。
 
 首页和 AI Buddy 的上下文都用得上它。这两处原来散在日更脚本里，抽到 `src/lib/picks.ts` 就是为了能写单测——**分类贴错不会报错，只会安静地别扭一整期**。
+
+### 日更的失败可见与跨期补做
+
+原来某个项目的教程生成失败只是打一行 warn，然后它照样被推荐出去——**而一旦进了历史去重名单，它就再也不会被选中**，于是「缺教程」是永久的。跑完照样打印「✅ 已更新第 N 期」，10 个里挂 1 个没人看得见。
+
+现在这条路径是闭环的：
+
+1. **失败记进库**：`Repository.tutorialError` / `tutorialAttempts` / `tutorialFailedAt` 记下原因和跨期尝试次数（不是单次生成内部那 3 次自修复）。
+2. **跑完出报告**：`src/lib/pipeline/report.ts` 汇总「新生成 / 复用 / 失败 / 跳过」，失败的项目和原因逐条列出；报告写进 `JobRun.log` 和 CI 的 job summary，运行状态是 `partial` 而不是 `success`——**半成功最容易被当成成功**。
+3. **下期自动补做**：`src/lib/pipeline/retry.ts` 每期挑最多 3 个「推荐过、还没教程、失败过」的项目重新生成；同一个项目最多补 3 期，之后标记放弃。本期刚失败的留到下期（一次生成内部已经自我修复过 3 次，紧接着再试大概率还是同样结果）。补做放在本期内容落库**之后**，额外开销挡不住今天出稿；真出错也只是记一条警告。
+
+补做和报告都抽成了注入式纯函数（`db` 和「生成函数」都能替换），所以能用假 prisma + 假模型单测「什么时候该补、什么时候该放弃」。
+
+### 订阅源与 SEO 收尾
+
+| 东西 | 位置 | 说明 |
+|------|------|------|
+| RSS | `/feed.xml`（`src/lib/pipeline/feed.ts`） | 日更任务写好的静态文件，不是每次请求现算——数据一天只变一次 |
+| 站点地图 | `src/app/sitemap.ts` | 按请求生成（`await connection()`），构建时烘死的话往期页面永远进不了地图 |
+| 爬虫规则 | `src/app/robots.ts` | 禁掉 `/api/`（花钱的接口）和 `/usage`（内部看板） |
+| 404 / 加载态 | `src/app/not-found.tsx`、`loading.tsx` | 404 页顺手兜住「往期日期写错」这个最常见的误入场景 |
+| 页面元信息 | 各页 `metadata` + `src/lib/site-url.ts` | 标题模板、OG / Twitter 卡、canonical、RSS alternate；绝对地址统一从这里取 |
 
 ## 技术栈
 
@@ -421,7 +463,12 @@ npm run dev
 | `/` | 首页：今日焦点项目 + 候选榜单 + 本期推荐稿全文 + 新手指引区块 |
 | `/history` | 往期列表：每一期一张卡片（期号、日期、项目数、合计 Star） |
 | `/history/<日期>` | 往期详情：日期形如 `2026-10-21`，看当天完整榜单和稿子原文 |
+| `/feed.xml` | RSS 订阅源：每天这一期的项目清单，可直接丢进阅读器 |
+| `/usage` | 成本看板：调用次数 / 成功率 / token / 金额 / 延迟分位，按用途和模型拆解（需 `USAGE_PAGE_TOKEN`，见下） |
+| `/sitemap.xml`、`/robots.txt` | 站点地图与爬虫规则 |
 | 右下角浮窗 | AI Buddy：带当天推荐上下文的问答助手，可切模型 |
+
+订阅源是**日更任务写好的静态文件**，不是每次请求现算的接口：数据一天只变一次，为一个固定结果每次都查库没有意义。同理，`/api/` 和 `/usage` 都在 `robots.txt` 里禁掉了。
 
 小白教程的入口在每个项目卡片底部：
 
@@ -443,8 +490,8 @@ npm run dev
 | `npm run rag:build` | 重建 RAG 知识库索引（切片 + 生成向量，幂等） |
 | `npm run eval` | 跑一轮教程质量评测（验证命令真伪 + 生成指标），默认 tools / plain 对照 |
 | `npm run eval -- --mode tools --judge` | 只测工具模式，并额外让另一个模型给内容质量打分 |
-| `npm run eval -- --gate` | 评测并与上次结果对比，指标退化时非零退出（CI 门禁） |
-| `npm run usage` | 出 LLM 用量报告（token / 耗时 / 失败；配了单价才显示金额） |
+| `npm run eval -- --gate` | 评测并按绝对阈值卡质量，不达标非零退出（CI 每周自动跑） |
+| `npm run usage` | 出 LLM 用量报告（token / 耗时 / 失败；配了单价才显示金额），和 `/usage` 页面同一套口径 |
 | `npm run usage -- --trace <id>` | 展开某一次生成的每一步 |
 | `npm run cleanup:sessions` | 删除 7 天未活跃的 AI Buddy 会话（日更任务里自动跑） |
 | `npm run db:seed` | 填充种子数据 |
@@ -478,23 +525,32 @@ npm run dev
 
 `.github/workflows/daily.yml` 已经在仓库里，**每天北京时间 17:00** 自动跑一次：安装依赖 → 应用迁移 → 跑更新脚本 → 把生成的数据快照提交回仓库。也可以在 GitHub 仓库页面的 Actions 里手动点「Run workflow」立即触发。
 
-推送到 GitHub 后，如果希望云端也生成 AI 教程，需要在仓库 **Settings → Secrets and variables → Actions** 里添加一个 Secret：
+除此之外还有两个 workflow：
 
-| Secret 名 | 值 |
-|-----------|-----|
-| `SILICONFLOW_API_KEY` | 你的硅基流动密钥 |
+| 文件 | 触发时机 | 做什么 |
+|------|---------|--------|
+| `.github/workflows/eval.yml` | **每周一**自动跑，也可手动点 | 跑教程质量评测，按绝对阈值卡质量，不达标就变红；通过后把新基线提交回仓库 |
+| `.github/workflows/ci.yml` | 每次 push | typecheck → 单测 → lint → **生产构建**（能编译 ≠ 能上线，这一步专门守这个） |
 
-不配也没关系：推荐流水线照常跑，只是文章里不会有 AI 教程（本地因为有 `.env`，不受影响）。
+推送到 GitHub 后，如果希望云端也生成 AI 教程，需要在仓库 **Settings → Secrets and variables → Actions** 里添加：
+
+| 类型 | 名称 | 值 | 不配会怎样 |
+|------|------|-----|-----------|
+| Secret | `SILICONFLOW_API_KEY` | 你的硅基流动密钥 | 推荐流水线照常跑，只是没有 AI 教程（本地有 `.env`，不受影响） |
+| Variable | `SITE_URL` | 站点对外地址 | 订阅源里的链接退回 `localhost:3000`，一眼能看出是错的但不影响跑 |
+| Variable | `EVAL_GATE_JSON` | 门禁阈值覆盖（可选） | 用代码里的默认阈值 |
+
+> 日更任务会把快照和订阅源提交回仓库。也就是说**仓库里的 `public/data/latest.json` 和 `public/feed.xml` 是机器写的**，不要手改——手改会在第二天被覆盖。
 
 ---
 
 ## 数据模型
 
-`prisma/schema.prisma` 里定义了 5 张表：
+`prisma/schema.prisma` 里定义了 8 张表：
 
 | 模型 | 关键字段 | 作用 |
 |------|---------|------|
-| `Repository` | `fullName`、`stars`、`language`、`tutorial` | 抓取到的 GitHub 项目；`tutorial` 存 AI 生成的小白教程（新版为结构化 JSON） |
+| `Repository` | `fullName`、`stars`、`language`、`tutorial`、`tutorialError`、`tutorialAttempts` | 抓取到的 GitHub 项目；`tutorial` 存 AI 生成的小白教程（新版为结构化 JSON），后三个字段记录教程生成失败的原因与跨期补做次数 |
 | `Article` | `issue`、`title`、`content`、`weekStart` | 每天一期的推荐稿 |
 | `Recommendation` | `sortOrder`、`reason`、`category` | 稿子 ↔ 项目的多对多关系（兼带排名和推荐理由） |
 | `JobRun` | `jobType`、`status`、`startedAt` | 定时任务运行记录，用于展示自动化状态 |
@@ -516,15 +572,25 @@ github-hot-picks/
 │   │   ├── globals.css               # 三色霓虹主题样式
 │   │   ├── history/page.tsx          # 往期列表页
 │   │   ├── history/[date]/page.tsx   # 往期详情页
+│   │   ├── usage/page.tsx            # 成本看板（需访问令牌）
+│   │   ├── sitemap.ts / robots.ts    # 站点地图与爬虫规则
+│   │   ├── not-found.tsx             # 404 页
 │   │   └── api/
 │   │       ├── chat/route.ts         # AI 问答接口（多模型流式）
 │   │       └── tutorial/route.ts     # 小白教程即时生成接口
+│   ├── proxy.ts                      # /usage 的访问保护（Next 16 用 proxy 取代 middleware）
 │   ├── components/
 │   │   ├── ChatAssistant.tsx         # 右下角 AI 助手浮窗
+│   │   ├── PicksExplorer.tsx         # 榜单的关键词搜索与语言/分类筛选
 │   │   └── ProjectTutorialModal.tsx  # 小白教程弹窗（含即时生成按钮）
 │   └── lib/
 │       ├── prisma.ts                 # PrismaClient 单例
 │       ├── site-data.ts              # 读推荐数据（优先 DB、回退快照）
+│       ├── site-url.ts               # 站点绝对地址（sitemap / RSS / OG 都要用）
+│       ├── pipeline/
+│       │   ├── report.ts             # 每期跑完的结果报告（成败可见）
+│       │   ├── retry.ts              # 给历史缺教程的项目跨期补做
+│       │   └── feed.ts               # RSS 生成
 │       └── format.ts                 # 语言配色、Star 格式化、稿子解析
 ├── scripts/update-daily.ts           # 「一天一更」核心管线
 ├── public/data/latest.json           # 生成的推荐快照（会提交回仓库）
@@ -554,7 +620,9 @@ github-hot-picks/
 | `npx prisma generate` 报 EPERM | dev server 正锁着引擎 dll，先停止服务再生成 |
 | `No flag registered` / `--datasource-provider` 报错 | Prisma 版本不对（装成了 v8），安装时锁 6：`prisma@6` + `@prisma/client@6` |
 | `Unknown argument 'xxx'`（刚加的字段） | 改完 schema 没重生成客户端，停掉 dev server 跑 `npx prisma generate` |
-| build 时提示 `dynamic = "force-dynamic"` 不兼容 | 本项目的 Next.js 配置里开了 `cacheComponents`，不要声明这个导出；动态数据用 `<Suspense>` 包裹即可 |
+| build 时提示 `dynamic = "force-dynamic"` 或 `revalidate` 不兼容 | 本项目开了 `cacheComponents`，这两个导出都不能用。动态数据用 `<Suspense>` 包裹；确实需要「按请求生成」的路由（如 sitemap）在函数开头 `await connection()` |
+| build 时提示 `Date.now()` 是不稳定值 | 预渲染期不允许读当前时间：先 `await connection()` 声明这段按请求渲染，或把时间计算挪出渲染路径 |
+| `/usage` 打不开（404） | 没配 `USAGE_PAGE_TOKEN`。这是刻意的：令牌缺失的默认结果必须是「打不开」而不是「谁都能看」。在 `.env` 里配上后用 `/usage?key=<令牌>` 访问 |
 
 ---
 
@@ -564,7 +632,9 @@ github-hot-picks/
 
 | 局限 | 现状 | 真上生产会怎么改 |
 |------|------|-----------------|
-| 评测样本量 | 8 个分层随机样本，单次运行波动大 | 扩到 50+ 并改成按天跑的子集；现在的数字看趋势可以，当精确值引用不行 |
+| 评测样本量 | 8 个样本（历史对照）/ 20 个（每周自动跑），单次波动仍大 | 趋势可信，具体数字不宜当精确值引用；要稳定结论需 50+ 样本并按天跑子集 |
+| 门禁阈值 | 第一版按单次 8 样本实测值留余量定出来的 | 阈值会随样本量、prompt、模型版本变，所以走 `EVAL_GATE_JSON` 配置；攒够几周数据后应当回看并校准一次 |
+| 教程补做 | 每个项目最多跨期补做 3 次，每期最多补 3 个 | 封顶是刻意的（补做要真花钱）；真上生产应该按额度预算动态决定补几个 |
 | 编造率区分度 | 两边都是 0% | 需要更刁钻的样本（新建、极小众）才能拉开；当前 prompt 已经把模型压得很保守 |
 | 向量检索 | 几百条切片暴力算余弦 | 数据量到万级就该换 sqlite-vec / pgvector；现在引入是过度设计 |
 | 用量存储 | 单进程内存 + SQLite | 多实例要换 Redis 或独立库；`checkRateLimit` 同理 |
