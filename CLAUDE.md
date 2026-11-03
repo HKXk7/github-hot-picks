@@ -127,7 +127,8 @@ github-hot-picks/
 6. **两个数据库**：主项目 `prisma/dev.db`；子项目 `github-hot-recommend/data/app.db`（互不相干）。两个 `.db` 都被 gitignore。
 7. **`.env` 有 `DATABASE_URL`**，不要提交到 git（.gitignore 已忽略 `.env*`）。
 8. **子项目存档规则**：`github-hot-recommend/data/` 下只提交 `*.md`（每天稿）和 `recommended.json`（去重历史），`app.db*` 不提交（子项目 .gitignore 已配置）。
-9. **小白教程生成**：`Repository.tutorial` 字段存 AI 生成的 Markdown 教程，由 `scripts/update-daily.ts` 里的 `generateTutorial()` 调用硅基流动生成（4 段式：是什么/怎么装/核心功能/适合谁+避坑）。幂等策略：入库前若 `repository.tutorial` 已非空则跳过，避免重复花钱调 API。前端通过 `site-data.ts` 的 `SitePick.tutorial` 透传，卡片点「看小白教程」弹 `ProjectTutorialModal`。
+9. **小白教程生成**：`Repository.tutorial` 存**结构化 JSON**（`src/lib/tutorial/schema.ts`，Zod 校验 + 自评 confidence/missingInfo + 取证痕迹），渲染成 Markdown 是展示层的事；旧数据本身是 Markdown，两种格式共存。`scripts/update-daily.ts` 调 `generateStructuredTutorial()`（默认 tools 模式，先取证再动笔）。幂等：已有教程直接复用，失败记 `tutorialError` 并由 `src/lib/pipeline/retry.ts` 跨期补做。前端通过 `SitePick.tutorial` 透传，弹窗是 `ProjectTutorialModal`。
 10. **⚠️ 并行冲突风险**：用户编辑器里可能还有另一个 AI 助手在同时改文件，动手前先核对当前文件状态，避免互相覆盖。
-11. **机器每天会写两个文件**：`public/data/latest.json`（推荐快照）和 `public/feed.xml`（RSS）由日更任务生成并由 Actions 提交回仓库。**不要手改**，第二天会被覆盖。
+11. **机器每天会写一组数据文件**：`public/data/latest.json`（最新快照）、`history.json`（往期索引）、`issues/<date>.json`（每期完整内容）、`public/feed.xml`（RSS），由日更任务生成并由 Actions 提交回仓库。**不要手改**，第二天会被覆盖。`npm run data:static` 只用于部署前从数据库回填历史期。
+   - ⚠️ **发布到线上前先把 `.env` 和 `dsh-plugin/` 临时移出项目目录**：部署工具会按目录原样打包上传，`.env` 里有真实的 `SILICONFLOW_API_KEY`。发布完再移回。部署入口 `scripts/deploy-build.sh` / `scripts/serve.sh`，运行时变量放本地 `.deploy-env`（已 gitignore）。
 12. **git push 到 github.com 不通**（连接被 reset），但 `api.github.com` 正常。推送用 `scripts/push-via-api.mjs`（`GH_BASE=<远端 sha>` + `GH_LOCAL_BASE=<本地 sha>`）；推送前记得先把远端更新的 `public/data/latest.json` 拉回来，否则会把云端数据推成旧版本。
