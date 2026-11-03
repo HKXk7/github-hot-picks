@@ -47,7 +47,10 @@ jobs:
       SAMPLES: ${{ github.event.inputs.samples || '20' }}
       MODE: ${{ github.event.inputs.mode || 'tools' }}
     steps:
+      # checkout 默认只拉 1 层，后面要 rebase 到最新 main，浅历史可能不够用
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-node@v4
         with:
@@ -121,7 +124,18 @@ jobs:
           git add data/eval/latest.json
           if git diff --cached --quiet; then
             echo "基线无变化，跳过提交"
-          else
-            git commit -m "chore: update eval baseline $(date +%F)"
-            git push
+            exit 0
           fi
+          git commit -m "chore: update eval baseline $(date +%F)"
+          # 日更 bot 可能在这几分钟里推了快照，直接 push 会被拒（实测踩过）。
+          # 先 rebase 再推，撞上了就重试。基线只是附加产物，回写失败
+          # 不该把一次门禁通过的评测判成红，所以最后只发 warning。
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then
+              echo "✅ 基线已更新"
+              exit 0
+            fi
+            echo "::warning::基线回写第 $i 次失败，5 秒后重试"
+            sleep 5
+          done
+          echo "::warning::基线回写最终失败（不影响本次评测结论）"
