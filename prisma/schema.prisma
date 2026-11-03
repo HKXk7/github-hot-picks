@@ -27,6 +27,16 @@ model Repository {
   // AI 生成的小白教程（Markdown），教新手「它是什么 / 怎么装 / 怎么用」
   tutorial    String?
 
+  // ── 教程生成失败的记录 ──────────────────────────────────────────
+  // 之前生成失败只是打一行 warn，然后这个项目就被推荐出去了：
+  // 它进了历史去重名单，永远不会再被选中，于是「缺教程」是永久的。
+  // 记下原因和次数，才能在下期自动补做，也才能回答「为什么它没有教程」。
+  // 注意 attempts 记的是「跑过几期」，不是单次生成内部那 3 次重试
+  // （generate.ts 里的 MAX_ATTEMPTS 是一次生成内的自我修复）。
+  tutorialError    String?
+  tutorialAttempts Int       @default(0)
+  tutorialFailedAt DateTime?
+
   recommendations Recommendation[]
 }
 

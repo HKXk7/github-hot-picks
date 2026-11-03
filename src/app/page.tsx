@@ -5,6 +5,19 @@ import { formatStars, formatTime, parseContent } from "@/lib/format";
 import PicksExplorer from "@/components/PicksExplorer";
 
 /**
+ * 任务状态的中文标签。
+ * partial = 稿子出来了但本期有项目没生成出教程 —— 这种半失败以前会显示成 success，
+ * 于是「某项目连续几期没有教程」这种问题一直没人看见。
+ */
+const RUN_STATUS_LABEL: Record<string, string> = {
+  success: "正常运行",
+  partial: "部分成功",
+  failed: "运行失败",
+  running: "运行中",
+  ready: "待运行",
+};
+
+/**
  * 首页必须是「静态外壳 + Suspense 包住查库的那部分」。
  *
  * 开了 cacheComponents 之后，直接在页面组件里 await 数据库属于运行时数据，
@@ -90,7 +103,7 @@ async function RecommendationSection() {
             footer={`最近更新：${formatTime(issue.updatedAt)}`}
           >
             <div className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-              <MiniStat label="任务状态" value={issue.runStatus?.status ?? "ready"} />
+              <MiniStat label="任务状态" value={RUN_STATUS_LABEL[issue.runStatus?.status ?? "ready"] ?? "待运行"} />
               <MiniStat label="运行模式" value={issue.source === "database" ? "实时读取" : "已提交快照"} />
               <MiniStat label="更新频率" value="一天一更" />
               <MiniStat label="对话方式" value="流式 AI 问答" />

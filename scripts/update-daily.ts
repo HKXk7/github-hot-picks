@@ -17,6 +17,10 @@ import "../src/lib/ai/observability";
 // 分类规则抽成纯函数（src/lib/picks.ts）：分类贴错了不会报错，只会安静地别扭一整期，
 // 所以要能被单测覆盖；放在脚本里就没法测（import 本文件会直接跑起整条管线）。
 import { categorize } from "../src/lib/picks";
+// 跑完的报告抽成纯函数模块：报告写错不会报错，只会让人看不见问题
+import { buildRunReport, formatRunReport, formatRunReportMarkdown } from "../src/lib/pipeline/report";
+import type { RetryOutcome, StepOutcome } from "../src/lib/pipeline/report";
+import { retryMissingTutorials } from "../src/lib/pipeline/retry";
 import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
 
 const prisma = new PrismaClient();
@@ -35,6 +39,7 @@ const prisma = new PrismaClient();
  * 两版编造率都是 0%，但 tools 能给出可核验命令的项目数多了近七成。
  */
 const tutorialMode: GenerationMode = process.env.TUTORIAL_MODE === "plain" ? "plain" : "tools";
+
 
 // ================= 类型 =================
 interface RawRepo {
@@ -221,6 +226,9 @@ async function main() {
       reason: string;
       tutorial: string | null;
     }[] = [];
+    // 本期每个项目的教程结果，跑完汇总成报告 ——
+    // 之前失败只打一行 warn，10 个项目里挂 1 个照样打印「✅ 已更新第 N 期」
+    const steps: StepOutcome[] = [];
 
     for (let i = 0; i < top.length; i++) {
       const r = top[i];
@@ -231,9 +239,13 @@ async function main() {
       // 更糟的是 upsert 会走到 create 分支，撞 fullName 唯一约束，整轮跑挂。
       const existing = await prisma.repository.findUnique({ where: { fullName: r.full_name } });
       let tutorial = existing?.tutorial ?? null;
+      // 生成失败时要写回库的字段（成功则清空）
+      let failure: { tutorialError: string; tutorialFailedAt: Date } | null = null;
+
       if (!tutorial) {
         if (!hasApiKey()) {
           console.warn(`  ⚠️ 未配置 SILICONFLOW_API_KEY，跳过教程生成：${r.full_name}`);
+          steps.push({ fullName: r.full_name, kind: "skipped" });
         } else {
           console.log(`  ✍️ 生成教程 ${i + 1}/${top.length}：${r.full_name}（模式 ${tutorialMode}）`);
           const result = await generateStructuredTutorial(toTutorialMeta(r), {
@@ -248,12 +260,16 @@ async function main() {
             // 存结构化 JSON，渲染成 Markdown 是展示层的事。
             // 顺带把取证痕迹记进去：读者得能看出这份教程是查过资料的还是凭记忆写的。
             tutorial = JSON.stringify(attachEvidence(result.tutorial, result.toolCalls));
+            steps.push({ fullName: r.full_name, kind: "generated" });
           } else {
             console.warn(`  ⚠️ 教程生成失败：${r.full_name} - ${result.error}`);
+            failure = { tutorialError: result.error ?? "未知原因", tutorialFailedAt: new Date() };
+            steps.push({ fullName: r.full_name, kind: "failed", error: failure.tutorialError });
           }
         }
       } else {
         console.log(`  ♻️ 复用已有教程 ${i + 1}/${top.length}：${r.full_name}`);
+        steps.push({ fullName: r.full_name, kind: "reused" });
       }
 
       await prisma.repository.upsert({
@@ -266,7 +282,10 @@ async function main() {
           stars: r.stargazers_count,
           forks: r.forks_count,
           fetchedAt: new Date(),
-          ...(tutorial ? { tutorial } : {}),
+          // 有教程就顺手清掉历史失败记录：这一项的语义是「当前缺教程的原因」
+          ...(tutorial ? { tutorial, tutorialError: null, tutorialFailedAt: null } : {}),
+          // 失败则记下原因并把跨期尝试次数 +1，供下期补做时挑出它
+          ...(failure ? { ...failure, tutorialAttempts: { increment: 1 } } : {}),
         },
         create: {
           githubId: r.id,
@@ -279,6 +298,7 @@ async function main() {
           forks: r.forks_count,
           fetchedAt: new Date(),
           ...(tutorial ? { tutorial } : {}),
+          ...(failure ? { ...failure, tutorialAttempts: 1 } : {}),
         },
       });
 
@@ -367,7 +387,9 @@ async function main() {
       languageCount,
       picks,
       runStatus: {
-        status: "success",
+        // 有项目没生成出教程就如实写 partial：快照是数据库不可用时的兜底，
+        // 兜底数据里写「一切正常」会骗过看快照的人
+        status: steps.some((s) => s.kind === "failed") ? "partial" : "success",
         startedAt: startedAt.toISOString(),
         endedAt: new Date().toISOString(),
         log: null,
@@ -376,6 +398,21 @@ async function main() {
     const outDir = path.join(process.cwd(), "public", "data");
     await fs.mkdir(outDir, { recursive: true });
     await fs.writeFile(path.join(outDir, "latest.json"), JSON.stringify(snapshot, null, 2) + "\n", "utf8");
+
+    // 本期内容已经全部落库了，这时候才去补历史的坑：
+    // 补做是额外开销，绝不能让它挡住今天这一期出稿。
+    // 放在索引重建之前，补出来的教程才能一并进检索库。
+    // 用 try/catch 兜住：今天这一期已经落库了，补做失败不该让整轮变成 failed。
+    let retries: RetryOutcome[] = [];
+    try {
+      retries = await retryMissingTutorials(
+        tutorialMode,
+        { db: prisma, log: (m) => console.log(m) },
+        top.map((r) => r.full_name),
+      );
+    } catch (err) {
+      console.warn(`   ⚠️ 补做历史欠账时出错：${err instanceof Error ? err.message : err}`);
+    }
 
     // 当天新增的教程要并进检索库，否则 search_knowledge 检索不到它们
     if (hasApiKey()) {
@@ -389,15 +426,26 @@ async function main() {
       }
     }
 
+    // ── 本期报告 ────────────────────────────────────────────────
+    // 有项目没拿到教程时状态是 partial，不是 success：
+    // 这种「稿子出来了但缺一块」的半失败最容易被人当成成功。
+    const report = buildRunReport(steps, retries);
+    console.log(`\n${formatRunReport(report)}`);
+
     await prisma.jobRun.update({
       where: { id: jobRun.id },
-      data: { status: "success", endedAt: new Date() },
+      data: { status: report.status, endedAt: new Date(), log: formatRunReport(report) },
     });
+
+    // CI 里顺便把报告写进 job summary，不翻日志也能看见本期到底顺不顺
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      await fs.appendFile(process.env.GITHUB_STEP_SUMMARY, formatRunReportMarkdown(report) + "\n", "utf8");
+    }
 
     const withTutorial = picks.filter((p) => p.tutorial).length;
     const structured = picks.filter((p) => parseStructuredTutorial(p.tutorial)).length;
     console.log(
-      `✅ 已更新第 ${issue} 期（${title}），推荐 ${top.length} 个项目，其中 ${withTutorial} 个有教程（结构化 ${structured} 个）`,
+      `\n✅ 已更新第 ${issue} 期（${title}），推荐 ${top.length} 个项目，其中 ${withTutorial} 个有教程（结构化 ${structured} 个）`,
     );
     console.log(`   快照已写入 public/data/latest.json`);
   } catch (err) {
