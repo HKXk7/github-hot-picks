@@ -5,127 +5,127 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 05 Nov 2026 06:27:29 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 06 Nov 2026 06:21:59 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. Verlintas/NOIR</title>
-      <link>https://github.com/Verlintas/NOIR</link>
-      <guid isPermaLink="false">Verlintas/NOIR@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[手机隐私审计：用 adb 扫出 Android 应用的权限、上报端点与数据流向，并给出可回滚的处置。Desktop Android leak audit: permissions, endpoints, data flows, reversible fixes.
-
-语言：Kotlin | Star：2193 | 分类：工具
-
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
-    </item>
-    <item>
-      <title>2. haydenschmitty/floorplan</title>
-      <link>https://github.com/haydenschmitty/floorplan</link>
-      <guid isPermaLink="false">haydenschmitty/floorplan@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. caru-ini/stack-diagram</title>
+      <link>https://github.com/caru-ini/stack-diagram</link>
+      <guid isPermaLink="false">caru-ini/stack-diagram@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[See how your app actually fits together. An interactive, plain-English map of your codebase, drawn by Claude or Codex.
+      <description><![CDATA[Agent skill: describe your stack in a sentence, get an architecture diagram with official logos
 
-语言：JavaScript | Star：2883 | 分类：AI
+语言：TypeScript | Star：1881 | 分类：AI
 
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
     </item>
     <item>
-      <title>3. KKKKhazix/agent-autoloop</title>
-      <link>https://github.com/KKKKhazix/agent-autoloop</link>
-      <guid isPermaLink="false">KKKKhazix/agent-autoloop@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[让你的命令行 Agent 在后台自己接活、自己跟进到底；平时不烦你，遇到拿不准的事才发卡片找你拍板。
-
-语言：TypeScript | Star：2821 | 分类：工具
-
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
-    </item>
-    <item>
-      <title>4. microsoft/TokenEconomizer</title>
-      <link>https://github.com/microsoft/TokenEconomizer</link>
-      <guid isPermaLink="false">microsoft/TokenEconomizer@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. qybaihe/bla</title>
+      <link>https://github.com/qybaihe/bla</link>
+      <guid isPermaLink="false">qybaihe/bla@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[Experience-Driven Black-Box Cost Control for Coding Agents
+      <description><![CDATA[🛡️ BLA (Blind LLM Agents) — Adversarial defense shield that protects binaries, Electron apps, JS bundles, Python, and WebAssembly against AI reverse-engineering agents like REA. Poison -> Exhaust -> Hallucinate.
 
-语言：Python | Star：4795 | 分类：AI
+语言：TypeScript | Star：2460 | 分类：AI
 
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
     </item>
     <item>
-      <title>5. storytold/deckcraft</title>
-      <link>https://github.com/storytold/deckcraft</link>
-      <guid isPermaLink="false">storytold/deckcraft@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[Presentations and slide shows: an open-source, clean-room reimplementation of Microsoft PowerPoint in pure Rust. Part of the ArtCraft Crafting Apps.
-
-语言：Rust | Star：4612 | 分类：后端
-
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
-    </item>
-    <item>
-      <title>6. modelflare-ai/AnyModelBot</title>
-      <link>https://github.com/modelflare-ai/AnyModelBot</link>
-      <guid isPermaLink="false">modelflare-ai/AnyModelBot@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[🤖 Open-source, local-first alternative to Grok Bot, OpenAI dots and Claude Duet. Your own AI bots on any model: GPT, Claude, Gemini, Grok, DeepSeek, Kimi, GLM and 70+ more through one Modelflare key. Reach them in the app, WeChat or Feishu; they remember you, work in the background, run commands and use your computer. Pay per use.
-
-语言：Python | Star：2703 | 分类：AI
-
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
-    </item>
-    <item>
-      <title>7. OpenMOSS/MOSS-Image</title>
-      <link>https://github.com/OpenMOSS/MOSS-Image</link>
-      <guid isPermaLink="false">OpenMOSS/MOSS-Image@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Official repository for MOSS-Image, a 5B-parameter base DiT model with high-quality text rendering, layout generation, and efficient fine-tuning.
-
-语言：Python | Star：2612 | 分类：AI
-
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
-    </item>
-    <item>
-      <title>8. xevrion/hatchzip</title>
-      <link>https://github.com/xevrion/hatchzip</link>
-      <guid isPermaLink="false">xevrion/hatchzip@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[HatchZip is a free, open-source archive extractor for Windows, macOS and Linux that extracts ZIP, 7z, RAR, tar and split archives in place, so it needs free space for the extracted files only. Desktop app and CLI.
-
-语言：Rust | Star：2501 | 分类：工具
-
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
-    </item>
-    <item>
-      <title>9. Arekejoker/qwen21-nsfw-pose-skill</title>
-      <link>https://github.com/Arekejoker/qwen21-nsfw-pose-skill</link>
-      <guid isPermaLink="false">Arekejoker/qwen21-nsfw-pose-skill@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Qwen-Image 2.1 NSFW/姿势出图 skill：作者级提示词配方 + NSFW LoRA + 136 姿势 VNCCS 人偶控制；适用 Claude Code / Codex / Cursor / OpenClaw
-
-语言：Python | Star：4153 | 分类：AI
-
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
-    </item>
-    <item>
-      <title>10. alchaincyf/huashu-motion</title>
-      <link>https://github.com/alchaincyf/huashu-motion</link>
-      <guid isPermaLink="false">alchaincyf/huashu-motion@2026-11-05</guid>
-      <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
+      <title>3. shaongitbd/doory</title>
+      <link>https://github.com/shaongitbd/doory</link>
+      <guid isPermaLink="false">shaongitbd/doory@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
       <category>前端</category>
-      <description><![CDATA[让你的agent一键直出商业级产品宣传片：会作曲，能指着画面改。Commercial-grade launch films by your coding agent — point at the frame to change it.
+      <description><![CDATA[Open source canva alternative
 
-语言：JavaScript | Star：2374 | 分类：前端
+语言：TypeScript | Star：2388 | 分类：前端
 
-第 10 期（2026-11-05）推荐 · 原文 /history/2026-11-05]]></description>
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+    </item>
+    <item>
+      <title>4. ahwootech/BRUTAL</title>
+      <link>https://github.com/ahwootech/BRUTAL</link>
+      <guid isPermaLink="false">ahwootech/BRUTAL@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>工具</category>
+      <description><![CDATA[A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. The foundation under Kitten Space Agency and RimWorld's Waylith engine.
+
+语言：C# | Star：2377 | 分类：工具
+
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+    </item>
+    <item>
+      <title>5. opengeos/RustGIS</title>
+      <link>https://github.com/opengeos/RustGIS</link>
+      <guid isPermaLink="false">opengeos/RustGIS@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>后端</category>
+      <description><![CDATA[A fast, free and open-source GIS in pure Rust.
+
+语言：Rust | Star：2363 | 分类：后端
+
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+    </item>
+    <item>
+      <title>6. JoasASantos/REA-Prompts</title>
+      <link>https://github.com/JoasASantos/REA-Prompts</link>
+      <guid isPermaLink="false">JoasASantos/REA-Prompts@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[REAP - Prompts for you to use REA (Reverse Engineer Anything), get the most out of it, and clone or break down any program
+
+语言：Batchfile | Star：3668 | 分类：其他
+
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+    </item>
+    <item>
+      <title>7. deeplethe/solid-glass</title>
+      <link>https://github.com/deeplethe/solid-glass</link>
+      <guid isPermaLink="false">deeplethe/solid-glass@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[A design system for AI applications. Material, physical, tactile, technical.
+
+语言：TypeScript | Star：2041 | 分类：AI
+
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+    </item>
+    <item>
+      <title>8. indexable-inc/blaze</title>
+      <link>https://github.com/indexable-inc/blaze</link>
+      <guid isPermaLink="false">indexable-inc/blaze@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>后端</category>
+      <description><![CDATA[Incremental rust builds up to 92x faster than cargo/rustc
+
+语言：Rust | Star：2017 | 分类：后端
+
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+    </item>
+    <item>
+      <title>9. govijr/terminal-mac</title>
+      <link>https://github.com/govijr/terminal-mac</link>
+      <guid isPermaLink="false">govijr/terminal-mac@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>工具</category>
+      <description><![CDATA[Entire MacOS running in your terminal.
+
+语言：Swift | Star：2001 | 分类：工具
+
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+    </item>
+    <item>
+      <title>10. humblemuzzu/dumbtv</title>
+      <link>https://github.com/humblemuzzu/dumbtv</link>
+      <guid isPermaLink="false">humblemuzzu/dumbtv@2026-11-06</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Take the ads, tracking and clutter out of your Fire TV over ADB, no root. Every step can be undone. Comes with its own open-source home screen.
+
+语言：Java | Star：1965 | 分类：其他
+
+第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
     </item>
   </channel>
 </rss>
