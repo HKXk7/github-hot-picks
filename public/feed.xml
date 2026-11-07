@@ -5,127 +5,127 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 06 Nov 2026 06:21:59 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 07 Nov 2026 05:46:54 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. caru-ini/stack-diagram</title>
-      <link>https://github.com/caru-ini/stack-diagram</link>
-      <guid isPermaLink="false">caru-ini/stack-diagram@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Agent skill: describe your stack in a sentence, get an architecture diagram with official logos
+      <title>1. zortos293/Lichii</title>
+      <link>https://github.com/zortos293/Lichii</link>
+      <guid isPermaLink="false">zortos293/Lichii@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[VERY experimental Nintendo Switch 2 emulator
 
-语言：TypeScript | Star：1881 | 分类：AI
+语言：C++ | Star：4201 | 分类：其他
 
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
     </item>
     <item>
-      <title>2. qybaihe/bla</title>
-      <link>https://github.com/qybaihe/bla</link>
-      <guid isPermaLink="false">qybaihe/bla@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. Leonxlnx/earshot</title>
+      <link>https://github.com/Leonxlnx/earshot</link>
+      <guid isPermaLink="false">Leonxlnx/earshot@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[🛡️ BLA (Blind LLM Agents) — Adversarial defense shield that protects binaries, Electron apps, JS bundles, Python, and WebAssembly against AI reverse-engineering agents like REA. Poison -> Exhaust -> Hallucinate.
+      <description><![CDATA[Ears for coding agents: let AI hear, review and make sound. CPU-only, open source.
 
-语言：TypeScript | Star：2460 | 分类：AI
+语言：Python | Star：4086 | 分类：AI
 
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
     </item>
     <item>
-      <title>3. shaongitbd/doory</title>
-      <link>https://github.com/shaongitbd/doory</link>
-      <guid isPermaLink="false">shaongitbd/doory@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <title>3. longbridge/nsh</title>
+      <link>https://github.com/longbridge/nsh</link>
+      <guid isPermaLink="false">longbridge/nsh@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>前端</category>
-      <description><![CDATA[Open source canva alternative
+      <description><![CDATA[Native Shell is a native UI framework for iOS, Android, macOS, Windows, Linux and the web, built in Rust.
 
-语言：TypeScript | Star：2388 | 分类：前端
+语言：Rust | Star：1937 | 分类：前端
 
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
     </item>
     <item>
-      <title>4. ahwootech/BRUTAL</title>
-      <link>https://github.com/ahwootech/BRUTAL</link>
-      <guid isPermaLink="false">ahwootech/BRUTAL@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[A free, open source C# framework for making games, or your own game engine. Direct access to native APIs and Vulkan, with the low-level libraries around them. The foundation under Kitten Space Agency and RimWorld's Waylith engine.
-
-语言：C# | Star：2377 | 分类：工具
-
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
-    </item>
-    <item>
-      <title>5. opengeos/RustGIS</title>
-      <link>https://github.com/opengeos/RustGIS</link>
-      <guid isPermaLink="false">opengeos/RustGIS@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[A fast, free and open-source GIS in pure Rust.
-
-语言：Rust | Star：2363 | 分类：后端
-
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
-    </item>
-    <item>
-      <title>6. JoasASantos/REA-Prompts</title>
-      <link>https://github.com/JoasASantos/REA-Prompts</link>
-      <guid isPermaLink="false">JoasASantos/REA-Prompts@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[REAP - Prompts for you to use REA (Reverse Engineer Anything), get the most out of it, and clone or break down any program
-
-语言：Batchfile | Star：3668 | 分类：其他
-
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
-    </item>
-    <item>
-      <title>7. deeplethe/solid-glass</title>
-      <link>https://github.com/deeplethe/solid-glass</link>
-      <guid isPermaLink="false">deeplethe/solid-glass@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <title>4. UnderleveledBuilder/awesome-short-drama-skills</title>
+      <link>https://github.com/UnderleveledBuilder/awesome-short-drama-skills</link>
+      <guid isPermaLink="false">UnderleveledBuilder/awesome-short-drama-skills@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[A design system for AI applications. Material, physical, tactile, technical.
+      <description><![CDATA[AI 短剧 · 漫剧 Skill（技能包）精选：剧本、改编、分镜、Seedance / 可灵 / MiniMax 视频提示词，千问、豆包、龙虾 OpenClaw、WorkBuddy、Claude Code、Codex 等智能体可用 | Curated agent skills for AI short drama, micro drama / microdrama, vertical drama and manju (AI comic drama): screenwriting, storyboards, Seedance / Kling / MiniMax video prompts
 
-语言：TypeScript | Star：2041 | 分类：AI
+语言：HTML | Star：1920 | 分类：AI
 
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
     </item>
     <item>
-      <title>8. indexable-inc/blaze</title>
-      <link>https://github.com/indexable-inc/blaze</link>
-      <guid isPermaLink="false">indexable-inc/blaze@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[Incremental rust builds up to 92x faster than cargo/rustc
-
-语言：Rust | Star：2017 | 分类：后端
-
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
-    </item>
-    <item>
-      <title>9. govijr/terminal-mac</title>
-      <link>https://github.com/govijr/terminal-mac</link>
-      <guid isPermaLink="false">govijr/terminal-mac@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[Entire MacOS running in your terminal.
-
-语言：Swift | Star：2001 | 分类：工具
-
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
-    </item>
-    <item>
-      <title>10. humblemuzzu/dumbtv</title>
-      <link>https://github.com/humblemuzzu/dumbtv</link>
-      <guid isPermaLink="false">humblemuzzu/dumbtv@2026-11-06</guid>
-      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <title>5. lexifina/global-law</title>
+      <link>https://github.com/lexifina/global-law</link>
+      <guid isPermaLink="false">lexifina/global-law@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Take the ads, tracking and clutter out of your Fire TV over ADB, no root. Every step can be undone. Comes with its own open-source home screen.
+      <description><![CDATA[The world's law in git: any provision, any country, any date, and the law that wrote each word.
 
-语言：Java | Star：1965 | 分类：其他
+语言：HTML | Star：1840 | 分类：其他
 
-第 11 期（2026-11-06）推荐 · 原文 /history/2026-11-06]]></description>
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+    </item>
+    <item>
+      <title>6. JuneYaooo/rea-video</title>
+      <link>https://github.com/JuneYaooo/rea-video</link>
+      <guid isPermaLink="false">JuneYaooo/rea-video@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Reverse-engineer any video, shot by shot: tells whether each shot was filmed, AI-generated or coded, how the captions, cuts and audio were made, and how to remake it. 逆向一切视频，逐镜拆出制作方式并给出复刻方案。
+
+语言：Python | Star：3232 | 分类：AI
+
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+    </item>
+    <item>
+      <title>7. DUNHKpcc/Claude-Guardian</title>
+      <link>https://github.com/DUNHKpcc/Claude-Guardian</link>
+      <guid isPermaLink="false">DUNHKpcc/Claude-Guardian@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Claude Guardian is an all-in-one Claude account safety and risk prevention skill.Claude防封实战 It intelligently assesses your device, account history, network environment, and payment options, then provides personalized guidance for local, VPS, or virtual machine setups. 
+
+语言：Python | Star：1818 | 分类：AI
+
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+    </item>
+    <item>
+      <title>8. Minireel/HGhub</title>
+      <link>https://github.com/Minireel/HGhub</link>
+      <guid isPermaLink="false">Minireel/HGhub@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[YellowFruit third-party client
+
+语言：TypeScript | Star：1805 | 分类：前端
+
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+    </item>
+    <item>
+      <title>9. worldonlyu/Google_AI_Pro_2Year_ZeroCost_Auto</title>
+      <link>https://github.com/worldonlyu/Google_AI_Pro_2Year_ZeroCost_Auto</link>
+      <guid isPermaLink="false">worldonlyu/Google_AI_Pro_2Year_ZeroCost_Auto@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Google_AI_Pro_2Year_ZeroCost_Auto
+
+语言：Python | Star：2927 | 分类：其他
+
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+    </item>
+    <item>
+      <title>10. storytold/craft-launcher</title>
+      <link>https://github.com/storytold/craft-launcher</link>
+      <guid isPermaLink="false">storytold/craft-launcher@2026-11-07</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[The Craft App Launcher
+
+语言：Rust | Star：5038 | 分类：其他
+
+第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
     </item>
   </channel>
 </rss>
