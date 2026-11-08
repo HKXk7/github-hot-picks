@@ -5,127 +5,127 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sat, 07 Nov 2026 05:46:54 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 08 Nov 2026 05:49:48 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. zortos293/Lichii</title>
-      <link>https://github.com/zortos293/Lichii</link>
-      <guid isPermaLink="false">zortos293/Lichii@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. BryceYuuu/RUN</title>
+      <link>https://github.com/BryceYuuu/RUN</link>
+      <guid isPermaLink="false">BryceYuuu/RUN@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[RUN · 润：中国护照持有人的海外移居手册。欧洲 36 国 110 条移民路线 + 13 个主要移民地区：数字游民签证、欧盟蓝卡、技术移民、留学转工作、创业自雇、投资居留，每条附官方来源，持续更新。
+
+语言：Python | Star：4194 | 分类：其他
+
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
+    </item>
+    <item>
+      <title>2. Djihads80/Eglantine</title>
+      <link>https://github.com/Djihads80/Eglantine</link>
+      <guid isPermaLink="false">Djihads80/Eglantine@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
       <description><![CDATA[VERY experimental Nintendo Switch 2 emulator
 
-语言：C++ | Star：4201 | 分类：其他
+语言：C++ | Star：5251 | 分类：其他
 
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
     </item>
     <item>
-      <title>2. Leonxlnx/earshot</title>
-      <link>https://github.com/Leonxlnx/earshot</link>
-      <guid isPermaLink="false">Leonxlnx/earshot@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <title>3. wesbos/3d-model-anything</title>
+      <link>https://github.com/wesbos/3d-model-anything</link>
+      <guid isPermaLink="false">wesbos/3d-model-anything@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[Ears for coding agents: let AI hear, review and make sound. CPU-only, open source.
+      <description><![CDATA[Capture iPhone LiDAR and photos, reconstruct editable Three.js rooms, and explore them in a browser.
 
-语言：Python | Star：4086 | 分类：AI
+语言：Swift | Star：2850 | 分类：AI
 
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
     </item>
     <item>
-      <title>3. longbridge/nsh</title>
-      <link>https://github.com/longbridge/nsh</link>
-      <guid isPermaLink="false">longbridge/nsh@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <title>4. JustAResearcher/gpu-unlock-ada</title>
+      <link>https://github.com/JustAResearcher/gpu-unlock-ada</link>
+      <guid isPermaLink="false">JustAResearcher/gpu-unlock-ada@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[GPU tensor unlock source for RTX 4090 and experimental RTX 4070 Ti SUPER; firmware generated locally
+
+语言：C | Star：4836 | 分类：其他
+
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
+    </item>
+    <item>
+      <title>5. oosexgang/hakios-xnu-kernel</title>
+      <link>https://github.com/oosexgang/hakios-xnu-kernel</link>
+      <guid isPermaLink="false">oosexgang/hakios-xnu-kernel@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Apple's open-source XNU kernel on Android phones: its own loader and drivers, Metal on the Adreno. Runs from RAM; a reboot gives the phone back to Android.
+
+语言：C | Star：2617 | 分类：其他
+
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
+    </item>
+    <item>
+      <title>6. interplains/Zero-Breach-Toolkit</title>
+      <link>https://github.com/interplains/Zero-Breach-Toolkit</link>
+      <guid isPermaLink="false">interplains/Zero-Breach-Toolkit@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Free, open-source check for traces of mercenary spyware (Pegasus, Predator, Graphite, Candiru and more) on computers, Android phones and iPhone backups. Double-click apps for Windows, Mac and Linux, in 27 languages.
+
+语言：Python | Star：4562 | 分类：其他
+
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
+    </item>
+    <item>
+      <title>7. herdrdev/herdr-app</title>
+      <link>https://github.com/herdrdev/herdr-app</link>
+      <guid isPermaLink="false">herdrdev/herdr-app@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[herdr desktop app
+
+语言：Rust | Star：2354 | 分类：其他
+
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
+    </item>
+    <item>
+      <title>8. paipiange/nvzhuang</title>
+      <link>https://github.com/paipiange/nvzhuang</link>
+      <guid isPermaLink="false">paipiange/nvzhuang@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[1407 张 AI 女装参考图集与虚拟试穿网站，支持中英检索、OpenAI Images / Gemini / 豆包及自定义 Base URL、API Key、模型。https://github.com/paipiange/nvzhuang
+
+语言：Go | Star：2310 | 分类：AI
+
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
+    </item>
+    <item>
+      <title>9. anomalyco/rune</title>
+      <link>https://github.com/anomalyco/rune</link>
+      <guid isPermaLink="false">anomalyco/rune@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>前端</category>
-      <description><![CDATA[Native Shell is a native UI framework for iOS, Android, macOS, Windows, Linux and the web, built in Rust.
+      <description><![CDATA[Rune: Native UI framework
 
-语言：Rust | Star：1937 | 分类：前端
+语言：Rust | Star：3949 | 分类：前端
 
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
     </item>
     <item>
-      <title>4. UnderleveledBuilder/awesome-short-drama-skills</title>
-      <link>https://github.com/UnderleveledBuilder/awesome-short-drama-skills</link>
-      <guid isPermaLink="false">UnderleveledBuilder/awesome-short-drama-skills@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[AI 短剧 · 漫剧 Skill（技能包）精选：剧本、改编、分镜、Seedance / 可灵 / MiniMax 视频提示词，千问、豆包、龙虾 OpenClaw、WorkBuddy、Claude Code、Codex 等智能体可用 | Curated agent skills for AI short drama, micro drama / microdrama, vertical drama and manju (AI comic drama): screenwriting, storyboards, Seedance / Kling / MiniMax video prompts
-
-语言：HTML | Star：1920 | 分类：AI
-
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
-    </item>
-    <item>
-      <title>5. lexifina/global-law</title>
-      <link>https://github.com/lexifina/global-law</link>
-      <guid isPermaLink="false">lexifina/global-law@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <title>10. mromidev/claude-animated-shorts</title>
+      <link>https://github.com/mromidev/claude-animated-shorts</link>
+      <guid isPermaLink="false">mromidev/claude-animated-shorts@2026-11-08</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[The world's law in git: any provision, any country, any date, and the law that wrote each word.
+      <description><![CDATA[Free Claude skill: viral animated story shorts (2D characters in a 3D world) with three.js + Remotion
 
-语言：HTML | Star：1840 | 分类：其他
+语言：TypeScript | Star：2272 | 分类：其他
 
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
-    </item>
-    <item>
-      <title>6. JuneYaooo/rea-video</title>
-      <link>https://github.com/JuneYaooo/rea-video</link>
-      <guid isPermaLink="false">JuneYaooo/rea-video@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Reverse-engineer any video, shot by shot: tells whether each shot was filmed, AI-generated or coded, how the captions, cuts and audio were made, and how to remake it. 逆向一切视频，逐镜拆出制作方式并给出复刻方案。
-
-语言：Python | Star：3232 | 分类：AI
-
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
-    </item>
-    <item>
-      <title>7. DUNHKpcc/Claude-Guardian</title>
-      <link>https://github.com/DUNHKpcc/Claude-Guardian</link>
-      <guid isPermaLink="false">DUNHKpcc/Claude-Guardian@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Claude Guardian is an all-in-one Claude account safety and risk prevention skill.Claude防封实战 It intelligently assesses your device, account history, network environment, and payment options, then provides personalized guidance for local, VPS, or virtual machine setups. 
-
-语言：Python | Star：1818 | 分类：AI
-
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
-    </item>
-    <item>
-      <title>8. Minireel/HGhub</title>
-      <link>https://github.com/Minireel/HGhub</link>
-      <guid isPermaLink="false">Minireel/HGhub@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <category>前端</category>
-      <description><![CDATA[YellowFruit third-party client
-
-语言：TypeScript | Star：1805 | 分类：前端
-
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
-    </item>
-    <item>
-      <title>9. worldonlyu/Google_AI_Pro_2Year_ZeroCost_Auto</title>
-      <link>https://github.com/worldonlyu/Google_AI_Pro_2Year_ZeroCost_Auto</link>
-      <guid isPermaLink="false">worldonlyu/Google_AI_Pro_2Year_ZeroCost_Auto@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Google_AI_Pro_2Year_ZeroCost_Auto
-
-语言：Python | Star：2927 | 分类：其他
-
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
-    </item>
-    <item>
-      <title>10. storytold/craft-launcher</title>
-      <link>https://github.com/storytold/craft-launcher</link>
-      <guid isPermaLink="false">storytold/craft-launcher@2026-11-07</guid>
-      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[The Craft App Launcher
-
-语言：Rust | Star：5038 | 分类：其他
-
-第 12 期（2026-11-07）推荐 · 原文 /history/2026-11-07]]></description>
+第 13 期（2026-11-08）推荐 · 原文 /history/2026-11-08]]></description>
     </item>
   </channel>
 </rss>
