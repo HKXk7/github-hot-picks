@@ -21,6 +21,7 @@ import { categorize } from "../src/lib/picks";
 import { buildRunReport, formatRunReport, formatRunReportMarkdown } from "../src/lib/pipeline/report";
 import type { RetryOutcome, StepOutcome } from "../src/lib/pipeline/report";
 import { retryMissingTutorials } from "../src/lib/pipeline/retry";
+import { indexHistory, selectFresh } from "../src/lib/pipeline/candidates";
 import { buildRssFeed } from "../src/lib/pipeline/feed";
 import { writeStaticSiteData } from "../src/lib/pipeline/static-data";
 import { buildKnowledgeIndex } from "../src/lib/rag/index-store";
@@ -134,10 +135,14 @@ function scoreRepo(r: RawRepo): ScoredRepo {
   };
 }
 
-function filterTop(repos: RawRepo[], n: number, exclude: Set<string>): ScoredRepo[] {
+/**
+ * 本期候选里挑出前 n 个。
+ * 历史去重已在上游用 selectFresh（按 fullName + githubId）做完，
+ * 这里只负责打分和「同一作者最多一个」。
+ */
+function filterTop(repos: RawRepo[], n: number): ScoredRepo[] {
   const seenOwner = new Set<string>();
   return repos
-    .filter((r) => !exclude.has(r.full_name)) // 历史去重：排除往期已推荐
     .map(scoreRepo)
     .sort((a, b) => b.score - a.score)
     .filter((r) => {
@@ -192,6 +197,57 @@ function zhDate(): string {
   });
 }
 
+/**
+ * 把项目写进库：已有记录就更新，没有才新建。
+ *
+ * 为什么不用 `upsert({ where: { fullName } })`：作者改名后 fullName 变了、githubId 没变，
+ * upsert 会判断成「新记录」走 create 分支，撞上 githubId 唯一约束抛 P2002 —— 而在改成
+ * 逐项兜底之前，这一下就能让整轮日更 exit 1（一期都不出）。
+ * 所以先按两个维度找一次：找到就按主键更新，并把 fullName / githubId 一起刷新成 GitHub 上的当前值。
+ */
+async function saveRepository(
+  r: ScoredRepo,
+  existing: { id: string } | null,
+  tutorial: string | null,
+  failure: { tutorialError: string; tutorialFailedAt: Date } | null,
+) {
+  const shared = {
+    name: r.name,
+    description: r.description,
+    url: r.html_url,
+    language: r.language,
+    stars: r.stargazers_count,
+    forks: r.forks_count,
+    fetchedAt: new Date(),
+  };
+
+  if (existing) {
+    await prisma.repository.update({
+      where: { id: existing.id },
+      data: {
+        ...shared,
+        fullName: r.full_name,
+        githubId: r.id,
+        // 有教程就顺手清掉历史失败记录：这一项的语义是「当前缺教程的原因」
+        ...(tutorial ? { tutorial, tutorialError: null, tutorialFailedAt: null } : {}),
+        // 失败则记下原因并把跨期尝试次数 +1，供下期补做时挑出它
+        ...(failure ? { ...failure, tutorialAttempts: { increment: 1 } } : {}),
+      },
+    });
+    return;
+  }
+
+  await prisma.repository.create({
+    data: {
+      ...shared,
+      githubId: r.id,
+      fullName: r.full_name,
+      ...(tutorial ? { tutorial } : {}),
+      ...(failure ? { ...failure, tutorialAttempts: 1 } : {}),
+    },
+  });
+}
+
 // ================= 主流程 =================
 async function main() {
   const startedAt = new Date();
@@ -202,13 +258,14 @@ async function main() {
   try {
     const repos = await fetchCandidates();
 
-    // 历史去重：排除以前推荐过的项目
-    const history = await prisma.repository.findMany({
+    // 历史去重：排除以前推荐过的项目。fullName 和 githubId 两个维度都要看 ——
+    // 作者改名后名字变了、id 没变，只按名字去重会让它重新上榜，
+    // 随后 upsert 撞上 githubId 唯一约束，整轮日更失败（见 pipeline/candidates.ts）。
+    const historyRows = await prisma.repository.findMany({
       where: { recommendations: { some: {} } },
-      select: { fullName: true },
+      select: { fullName: true, githubId: true },
     });
-    const exclude = new Set(history.map((h) => h.fullName));
-    const top = filterTop(repos, 10, exclude);
+    const top = filterTop(selectFresh(repos, indexHistory(historyRows)), 10);
     if (top.length === 0) {
       throw new Error("没有筛选出任何项目，请稍后重试或调低 star 门槛");
     }
@@ -242,74 +299,59 @@ async function main() {
     for (let i = 0; i < top.length; i++) {
       const r = top[i];
 
-      // 已有教程则复用（避免重复调用 AI、保持幂等），否则生成
-      // 按 fullName 查，不能按 githubId：从快照导入的记录里 githubId 是拿全名哈希出来的假值，
-      // 与 GitHub 真实 id 对不上，按 id 查会查不到 → 教程每天重生成（白花钱），
-      // 更糟的是 upsert 会走到 create 分支，撞 fullName 唯一约束，整轮跑挂。
-      const existing = await prisma.repository.findUnique({ where: { fullName: r.full_name } });
-      let tutorial = existing?.tutorial ?? null;
-      // 生成失败时要写回库的字段（成功则清空）
-      let failure: { tutorialError: string; tutorialFailedAt: Date } | null = null;
+      // 一个项目的意外不该带走整期：这段里的任何一次抛错（改名撞唯一约束、
+      // 一次写库失败、工具/模型返回意料之外的结构）以前都会冒到最外层，
+      // 日更 exit 1，稿子 / 快照 / RSS 一个都不落盘 —— 表现出来就是「今天没更新」。
+      // 现在只把这个项目标成 failed 记进报告，剩下的项目照常跑。
+      let tutorial: string | null = null;
+      try {
+        // 已有教程则复用（避免重复调用 AI、保持幂等），否则生成。
+        // 同时按 fullName 和 githubId 查：从快照导入的记录里 githubId 是拿全名哈希出来的假值，
+        // 只按 id 查会查不到（教程每天重生成、白花钱）；而仓库改名后只按名字也查不到。
+        const existing = await prisma.repository.findFirst({
+          where: { OR: [{ fullName: r.full_name }, { githubId: r.id }] },
+        });
+        tutorial = existing?.tutorial ?? null;
+        // 生成失败时要写回库的字段（成功则清空）
+        let failure: { tutorialError: string; tutorialFailedAt: Date } | null = null;
 
-      if (!tutorial) {
-        if (!hasApiKey()) {
-          console.warn(`  ⚠️ 未配置 SILICONFLOW_API_KEY，跳过教程生成：${r.full_name}`);
-          steps.push({ fullName: r.full_name, kind: "skipped" });
-        } else {
-          console.log(`  ✍️ 生成教程 ${i + 1}/${top.length}：${r.full_name}（模式 ${tutorialMode}）`);
-          const result = await generateStructuredTutorial(toTutorialMeta(r), {
-            mode: tutorialMode,
-            log: (msg) => console.log(msg),
-          });
-          for (const w of result.warnings) console.warn(`     ⚠️ ${w}`);
-          if (result.toolCalls?.length) {
-            console.log(`     🔧 取证 ${result.toolCalls.length} 次：${result.toolCalls.map((c) => c.name).join("、")}`);
-          }
-          if (result.tutorial) {
-            // 存结构化 JSON，渲染成 Markdown 是展示层的事。
-            // 顺带把取证痕迹记进去：读者得能看出这份教程是查过资料的还是凭记忆写的。
-            tutorial = JSON.stringify(attachEvidence(result.tutorial, result.toolCalls));
-            steps.push({ fullName: r.full_name, kind: "generated" });
+        if (!tutorial) {
+          if (!hasApiKey()) {
+            console.warn(`  ⚠️ 未配置 SILICONFLOW_API_KEY，跳过教程生成：${r.full_name}`);
+            steps.push({ fullName: r.full_name, kind: "skipped" });
           } else {
-            console.warn(`  ⚠️ 教程生成失败：${r.full_name} - ${result.error}`);
-            failure = { tutorialError: result.error ?? "未知原因", tutorialFailedAt: new Date() };
-            steps.push({ fullName: r.full_name, kind: "failed", error: failure.tutorialError });
+            console.log(`  ✍️ 生成教程 ${i + 1}/${top.length}：${r.full_name}（模式 ${tutorialMode}）`);
+            const result = await generateStructuredTutorial(toTutorialMeta(r), {
+              mode: tutorialMode,
+              log: (msg) => console.log(msg),
+            });
+            for (const w of result.warnings) console.warn(`     ⚠️ ${w}`);
+            if (result.toolCalls?.length) {
+              console.log(`     🔧 取证 ${result.toolCalls.length} 次：${result.toolCalls.map((c) => c.name).join("、")}`);
+            }
+            if (result.tutorial) {
+              // 存结构化 JSON，渲染成 Markdown 是展示层的事。
+              // 顺带把取证痕迹记进去：读者得能看出这份教程是查过资料的还是凭记忆写的。
+              tutorial = JSON.stringify(attachEvidence(result.tutorial, result.toolCalls));
+              steps.push({ fullName: r.full_name, kind: "generated" });
+            } else {
+              console.warn(`  ⚠️ 教程生成失败：${r.full_name} - ${result.error}`);
+              failure = { tutorialError: result.error ?? "未知原因", tutorialFailedAt: new Date() };
+              steps.push({ fullName: r.full_name, kind: "failed", error: failure.tutorialError });
+            }
           }
+        } else {
+          console.log(`  ♻️ 复用已有教程 ${i + 1}/${top.length}：${r.full_name}`);
+          steps.push({ fullName: r.full_name, kind: "reused" });
         }
-      } else {
-        console.log(`  ♻️ 复用已有教程 ${i + 1}/${top.length}：${r.full_name}`);
-        steps.push({ fullName: r.full_name, kind: "reused" });
-      }
 
-      await prisma.repository.upsert({
-        where: { fullName: r.full_name },
-        update: {
-          name: r.name,
-          description: r.description,
-          url: r.html_url,
-          language: r.language,
-          stars: r.stargazers_count,
-          forks: r.forks_count,
-          fetchedAt: new Date(),
-          // 有教程就顺手清掉历史失败记录：这一项的语义是「当前缺教程的原因」
-          ...(tutorial ? { tutorial, tutorialError: null, tutorialFailedAt: null } : {}),
-          // 失败则记下原因并把跨期尝试次数 +1，供下期补做时挑出它
-          ...(failure ? { ...failure, tutorialAttempts: { increment: 1 } } : {}),
-        },
-        create: {
-          githubId: r.id,
-          name: r.name,
-          fullName: r.full_name,
-          description: r.description,
-          url: r.html_url,
-          language: r.language,
-          stars: r.stargazers_count,
-          forks: r.forks_count,
-          fetchedAt: new Date(),
-          ...(tutorial ? { tutorial } : {}),
-          ...(failure ? { ...failure, tutorialAttempts: 1 } : {}),
-        },
-      });
+        await saveRepository(r, existing, tutorial, failure);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.error(`  ❌ 处理 ${r.full_name} 时出错，跳过这一项：${msg}`);
+        tutorial = null;
+        steps.push({ fullName: r.full_name, kind: "failed", error: `写库/生成异常：${msg}` });
+      }
 
       picks.push({
         rank: i + 1,
@@ -324,6 +366,14 @@ async function main() {
         reason: r.reasons.join("；"),
         tutorial,
       });
+    }
+
+    // 逐项兜底不能变成「全挂了也照样发布」：一个都没处理成功时不写快照，
+    // 直接失败退出 —— 让今天的缺口显式存在，而不是拿一期没教程的稿子糊过去。
+    if (steps.length > 0 && steps.every((s) => s.kind === "failed")) {
+      throw new Error(
+        `本期 ${top.length} 个项目全部处理失败，未写快照。首个错误：${steps[0].error ?? "未知"}`,
+      );
     }
 
     // 用带教程的 picks 生成每期 Markdown 稿
@@ -490,7 +540,23 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error("失败：", err instanceof Error ? err.message : err);
+main().catch(async (err) => {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("失败：", msg);
+
+  // 失败原因不能只留在控制台里：Actions 的原始日志要 admin 权限才下得到，
+  // 而 step summary 和 ::error:: 注解在运行页面上能直接看见（也读得到）。
+  // 之前「每天挂一次、但没人知道为什么」就是卡在这一步。
+  if (process.env.GITHUB_STEP_SUMMARY) {
+    await fs
+      .appendFile(
+        process.env.GITHUB_STEP_SUMMARY,
+        `## ❌ 日更失败\n\n\`\`\`\n${msg.slice(0, 4000)}\n\`\`\`\n`,
+        "utf8",
+      )
+      .catch(() => {});
+  }
+  // 单行化：注解里换行会截断，只保留第一屏能看全的部分
+  console.log(`::error::日更失败：${msg.replace(/\s+/g, " ").slice(0, 300)}`);
   process.exit(1);
 });

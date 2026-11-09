@@ -2,14 +2,22 @@ name: Daily GitHub Hot Picks
 
 on:
   schedule:
-    # 每天 00:00 UTC（北京时间 08:00）自动跑一次，生成当天推荐
+    # 名义上 00:00 UTC（北京时间 08:00）跑一次，生成当天推荐。
+    # 实测 GitHub 的定时队列经常把这次执行往后压几个小时（日志里 05:4x UTC 才开跑），
+    # 所以再来一次晚些的兜底：前一次挂了或被队列拖没了，这次补上。
     - cron: "0 0 * * *"
+    - cron: "0 4 * * *"
   # 也支持在 GitHub 网页上手动点「Run workflow」
   workflow_dispatch: {}
 
 # 需要写权限，才能把生成的快照提交回仓库
 permissions:
   contents: write
+
+# 两个定时点 + 手动触发可能撞车：同时跑会抢同一个 dev.db 缓存，串起来更安全
+concurrency:
+  group: daily
+  cancel-in-progress: false
 
 jobs:
   generate:
@@ -68,7 +76,28 @@ jobs:
             npx tsx scripts/import-snapshot.ts
           fi
 
+      - name: 今天是否已经出过一期
+        # 兜底定时点跑起来时，上午那次可能已经成功了：这时整条管线没必要再跑
+        # （重跑会重新生成教程、花钱，还会多提交一个只有 star 数变化的 commit）。
+        # 只读 public/data/latest.json 判断，不碰数据库。
+        id: today
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Shanghai" }).format(new Date());
+            let have = "";
+            try {
+              have = JSON.parse(fs.readFileSync("public/data/latest.json", "utf8")).dateKey || "";
+            } catch {}
+            const needed = have === today ? "false" : "true";
+            console.log(`北京时间今天 ${today}，仓库里最新一期 ${have || "（无）"}，需要跑=${needed}`);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, `needed=${needed}\n`);
+          '
+
       - name: Run daily update (fetch → filter → generate)
+        # 用 != 'false' 而不是 == 'true'：守卫步骤自己出错时（node 异常、输出没写进去）
+        # 宁可照常跑一遍，也不要静默跳过、把「今天没更新」变成一件无声的事。
+        if: steps.today.outputs.needed != 'false'
         run: npm run update:daily
         env:
           # 用 GitHub 自带 token 提高 API 限流额度
