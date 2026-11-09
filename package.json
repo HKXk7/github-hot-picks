@@ -12,6 +12,7 @@
     "db:seed": "prisma db seed",
     "db:import": "tsx scripts/import-snapshot.ts",
     "update:daily": "tsx scripts/update-daily.ts",
+    "daily:trigger": "node --use-system-ca scripts/trigger-daily.mjs",
     "verify:tutorials": "tsx scripts/verify-tutorials.ts",
     "rag:build": "tsx scripts/build-rag-index.ts",
     "eval": "tsx scripts/eval-run.ts",
