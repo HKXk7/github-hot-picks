@@ -5,127 +5,127 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Mon, 09 Nov 2026 15:50:10 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 10 Nov 2026 06:07:46 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. anefzaoui/misterdownloadmanager</title>
-      <link>https://github.com/anefzaoui/misterdownloadmanager</link>
-      <guid isPermaLink="false">anefzaoui/misterdownloadmanager@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[misterdownloadmanager: The ultimate open-source, clean-room download manager written from scratch in pure Rust for Windows, Mac, and Linux
-
-语言：Rust | Star：3338 | 分类：后端
-
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
-    </item>
-    <item>
-      <title>2. NotRexed/Hookshot</title>
-      <link>https://github.com/NotRexed/Hookshot</link>
-      <guid isPermaLink="false">NotRexed/Hookshot@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. jhaizhou-ops/S2Arm</title>
+      <link>https://github.com/jhaizhou-ops/S2Arm</link>
+      <guid isPermaLink="false">jhaizhou-ops/S2Arm@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[A Native Recompilation Of The Legend Of Zelda: Ocarina Of Time Nintendo Switch 2 Remake
+      <description><![CDATA[Run your own Switch games natively on iPhone, iPad and Mac: game code rewritten to ARM64, graphics direct to Metal, one app for the whole library. Bring your own games and keys. 把你自己的 Switch 游戏原生带到 iPhone / iPad / Mac。
 
-语言：C++ | Star：4208 | 分类：其他
+语言：C# | Star：2068 | 分类：其他
 
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
     </item>
     <item>
-      <title>3. reacher-z/Awesome-REA</title>
-      <link>https://github.com/reacher-z/Awesome-REA</link>
-      <guid isPermaLink="false">reacher-z/Awesome-REA@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Curated tools, case studies and papers for reverse engineering websites, games, apps, binaries, firmware and protocols. Source-reviewed, English and Chinese.
-
-语言：Python | Star：2270 | 分类：AI
-
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
-    </item>
-    <item>
-      <title>4. wquguru/cicada</title>
-      <link>https://github.com/wquguru/cicada</link>
-      <guid isPermaLink="false">wquguru/cicada@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[知了 Cicada · 任何会议和直播的实时字幕、同声传译、AI 会议纪要，Mac、Windows、Linux、Android 免费开源。Live subtitles, interpreting and meeting notes for any call or stream, on Mac, Windows, Linux and Android.
-
-语言：Swift | Star：2065 | 分类：AI
-
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
-    </item>
-    <item>
-      <title>5. Ansub/tv-detox</title>
-      <link>https://github.com/Ansub/tv-detox</link>
-      <guid isPermaLink="false">Ansub/tv-detox@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. huamidev/GestaltX</title>
+      <link>https://github.com/huamidev/GestaltX</link>
+      <guid isPermaLink="false">huamidev/GestaltX@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Make an old Android TV fast again with Claude Code or Codex: a tiny ad-free home screen plus the prompt to clean it up
+      <description><![CDATA[An MobileGestalt editor for iOS 27.x, featuring region-code tweaks, device presets, backups, and support for 7 languages.
 
-语言：Java | Star：2295 | 分类：其他
+语言：Swift | Star：2855 | 分类：其他
 
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
     </item>
     <item>
-      <title>6. DenisSergeevitch/ex-ussr-kinship-research</title>
-      <link>https://github.com/DenisSergeevitch/ex-ussr-kinship-research</link>
-      <guid isPermaLink="false">DenisSergeevitch/ex-ussr-kinship-research@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Evidence-first genealogy skill for AI agents (Codex, Claude Code): church books, civil, military, deportation and repression records across the former USSR. Replies in your language.
+      <title>3. D3voz/openjutsu</title>
+      <link>https://github.com/D3voz/openjutsu</link>
+      <guid isPermaLink="false">D3voz/openjutsu@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[One-click character swap for videos: an open-source, local Higgsfield Genjutsu alternative built on ComfyUI and MiniMax H3, with FLUX.3 Klein relighting.
 
-语言：Python | Star：2249 | 分类：AI
+语言：TypeScript | Star：2060 | 分类：前端
 
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
     </item>
     <item>
-      <title>7. mmparko/dsh-purge</title>
-      <link>https://github.com/mmparko/dsh-purge</link>
-      <guid isPermaLink="false">mmparko/dsh-purge@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[DeepSeek Harness 破甲 (mirror of YuJunZhiXue/dsh-purge) — 上游即将删库，此为本仓库全量镜像：含全部分支/73 个 tag/完整提交历史。原作者署名与二开要求见 README 署名章节。
-
-语言：JavaScript | Star：3836 | 分类：AI
-
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
-    </item>
-    <item>
-      <title>8. Revivedx/SavageWindRecomp</title>
-      <link>https://github.com/Revivedx/SavageWindRecomp</link>
-      <guid isPermaLink="false">Revivedx/SavageWindRecomp@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <title>4. Jakeschincariol/day-trader-skill</title>
+      <link>https://github.com/Jakeschincariol/day-trader-skill</link>
+      <guid isPermaLink="false">Jakeschincariol/day-trader-skill@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Work-in-progress static recompilation of The Legend of Zelda: Breath of the Wild (Switch, v1.9.0) for Windows and Linux. Bring your own dump: no game files, keys or dumping tools included.
+      <description><![CDATA[11 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, and replay every outcome before you risk a dollar.
 
-语言：C | Star：3666 | 分类：其他
+语言：Python | Star：6454 | 分类：其他
 
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
     </item>
     <item>
-      <title>9. UniXNU/UniXNU</title>
-      <link>https://github.com/UniXNU/UniXNU</link>
-      <guid isPermaLink="false">UniXNU/UniXNU@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Run iOS and macOS on non-Apple ARM64 hardware through UEFI.
-
-语言：Python | Star：2148 | 分类：其他
-
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
-    </item>
-    <item>
-      <title>10. zhuyansen/new-term-radar</title>
-      <link>https://github.com/zhuyansen/new-term-radar</link>
-      <guid isPermaLink="false">zhuyansen/new-term-radar@2026-11-09</guid>
-      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <title>5. cranebeaker/coop-anything</title>
+      <link>https://github.com/cranebeaker/coop-anything</link>
+      <guid isPermaLink="false">cranebeaker/coop-anything@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[Daily radar for new AI terms: names of new models, products and repos, caught on X, Hugging Face, GitHub and sitemaps before keyword tools list them.
+      <description><![CDATA[Co-op Anything: point your AI agent at any single-player game and play it with friends (online and/or splitscreen!). MCP server and playbook to let you reverse engineer, fix, test, ship and share what it learns.
 
-语言：Python | Star：2145 | 分类：AI
+语言：Python | Star：2025 | 分类：AI
 
-第 14 期（2026-11-09）推荐 · 原文 /history/2026-11-09]]></description>
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+    </item>
+    <item>
+      <title>6. CopilotKit/OpenDuet</title>
+      <link>https://github.com/CopilotKit/OpenDuet</link>
+      <guid isPermaLink="false">CopilotKit/OpenDuet@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[An Open Source template for a proactive AI agent that gets your work done and keeps you in the loop.
+
+语言：TypeScript | Star：2013 | 分类：AI
+
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+    </item>
+    <item>
+      <title>7. lyramakesmusic/neuron-explorer</title>
+      <link>https://github.com/lyramakesmusic/neuron-explorer</link>
+      <guid isPermaLink="false">lyramakesmusic/neuron-explorer@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Steering-first neuron explorer for Qwen3.5-4B: push every MLP neuron, keep every rollout, browse the results
+
+语言：Python | Star：1960 | 分类：其他
+
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+    </item>
+    <item>
+      <title>8. ikow/php2shell-poc</title>
+      <link>https://github.com/ikow/php2shell-poc</link>
+      <guid isPermaLink="false">ikow/php2shell-poc@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[CVE-2026-109618/109619 — 5 RCE chains + detection rules (Suricata, Sigma, ModSecurity). PHP session.upload_progress pre-auth exploit research.
+
+语言：Python | Star：1959 | 分类：其他
+
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+    </item>
+    <item>
+      <title>9. sarpstar/cinecode</title>
+      <link>https://github.com/sarpstar/cinecode</link>
+      <guid isPermaLink="false">sarpstar/cinecode@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Films made with code. Short films, long YouTube videos, ads, explainers and music videos: an AI coding agent writes the script, builds every frame in code, designs the sound and hands you an MP4.
+
+语言：Python | Star：1946 | 分类：AI
+
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+    </item>
+    <item>
+      <title>10. t3dotgg/tstack</title>
+      <link>https://github.com/t3dotgg/tstack</link>
+      <guid isPermaLink="false">t3dotgg/tstack@2026-11-10</guid>
+      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[The agent skills I use every day. Works with Claude Code and Codex.
+
+语言：Python | Star：3395 | 分类：AI
+
+第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
     </item>
   </channel>
 </rss>
