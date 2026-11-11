@@ -5,127 +5,127 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 10 Nov 2026 06:07:46 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 11 Nov 2026 04:54:33 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. jhaizhou-ops/S2Arm</title>
-      <link>https://github.com/jhaizhou-ops/S2Arm</link>
-      <guid isPermaLink="false">jhaizhou-ops/S2Arm@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Run your own Switch games natively on iPhone, iPad and Mac: game code rewritten to ARM64, graphics direct to Metal, one app for the whole library. Bring your own games and keys. 把你自己的 Switch 游戏原生带到 iPhone / iPad / Mac。
-
-语言：C# | Star：2068 | 分类：其他
-
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
-    </item>
-    <item>
-      <title>2. huamidev/GestaltX</title>
-      <link>https://github.com/huamidev/GestaltX</link>
-      <guid isPermaLink="false">huamidev/GestaltX@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[An MobileGestalt editor for iOS 27.x, featuring region-code tweaks, device presets, backups, and support for 7 languages.
-
-语言：Swift | Star：2855 | 分类：其他
-
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
-    </item>
-    <item>
-      <title>3. D3voz/openjutsu</title>
-      <link>https://github.com/D3voz/openjutsu</link>
-      <guid isPermaLink="false">D3voz/openjutsu@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. shinyobjectz/raea</title>
+      <link>https://github.com/shinyobjectz/raea</link>
+      <guid isPermaLink="false">shinyobjectz/raea@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>前端</category>
-      <description><![CDATA[One-click character swap for videos: an open-source, local Higgsfield Genjutsu alternative built on ComfyUI and MiniMax H3, with FLUX.3 Klein relighting.
+      <description><![CDATA[Render Anything Engine: tell your AI what to make. Videos, motion graphics, 3D and games as React and TypeScript, rendered on your own GPU. Rust + Bevy, macOS, Linux and Windows.
 
-语言：TypeScript | Star：2060 | 分类：前端
+语言：Rust | Star：2013 | 分类：前端
 
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
     </item>
     <item>
-      <title>4. Jakeschincariol/day-trader-skill</title>
-      <link>https://github.com/Jakeschincariol/day-trader-skill</link>
-      <guid isPermaLink="false">Jakeschincariol/day-trader-skill@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. expo/exact</title>
+      <link>https://github.com/expo/exact</link>
+      <guid isPermaLink="false">expo/exact@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[Write an app once. It runs natively on the web, macOS, iOS, and Linux, and an AI agent can build it, run it, see it, and test it on every one of them.
+
+语言：Rust | Star：2317 | 分类：前端
+
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
+    </item>
+    <item>
+      <title>3. udhaykumarbala/cleanyourtv-app</title>
+      <link>https://github.com/udhaykumarbala/cleanyourtv-app</link>
+      <guid isPermaLink="false">udhaykumarbala/cleanyourtv-app@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[A community-built phone app for Clean Your TV: clean up an Android TV from your phone. No laptop, no coding agent, nothing uninstalled.
+
+语言：Kotlin | Star：1941 | 分类：AI
+
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
+    </item>
+    <item>
+      <title>4. janestreet/agent_skills</title>
+      <link>https://github.com/janestreet/agent_skills</link>
+      <guid isPermaLink="false">janestreet/agent_skills@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Agent skills
+
+语言：— | Star：4032 | 分类：AI
+
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
+    </item>
+    <item>
+      <title>5. benjitaylor/skills</title>
+      <link>https://github.com/benjitaylor/skills</link>
+      <guid isPermaLink="false">benjitaylor/skills@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Skills for AI coding agents.
+
+语言：TypeScript | Star：3021 | 分类：AI
+
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
+    </item>
+    <item>
+      <title>6. elvarofficial/teardown</title>
+      <link>https://github.com/elvarofficial/teardown</link>
+      <guid isPermaLink="false">elvarofficial/teardown@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[11 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, and replay every outcome before you risk a dollar.
+      <description><![CDATA[A Claude Code skill that turns any machine into a 3D simulator you can take apart
 
-语言：Python | Star：6454 | 分类：其他
+语言：JavaScript | Star：3014 | 分类：其他
 
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
     </item>
     <item>
-      <title>5. cranebeaker/coop-anything</title>
-      <link>https://github.com/cranebeaker/coop-anything</link>
-      <guid isPermaLink="false">cranebeaker/coop-anything@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Co-op Anything: point your AI agent at any single-player game and play it with friends (online and/or splitscreen!). MCP server and playbook to let you reverse engineer, fix, test, ship and share what it learns.
-
-语言：Python | Star：2025 | 分类：AI
-
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
-    </item>
-    <item>
-      <title>6. CopilotKit/OpenDuet</title>
-      <link>https://github.com/CopilotKit/OpenDuet</link>
-      <guid isPermaLink="false">CopilotKit/OpenDuet@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[An Open Source template for a proactive AI agent that gets your work done and keeps you in the loop.
-
-语言：TypeScript | Star：2013 | 分类：AI
-
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
-    </item>
-    <item>
-      <title>7. lyramakesmusic/neuron-explorer</title>
-      <link>https://github.com/lyramakesmusic/neuron-explorer</link>
-      <guid isPermaLink="false">lyramakesmusic/neuron-explorer@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <title>7. EthanArbuckle/fairplay-decrypt</title>
+      <link>https://github.com/EthanArbuckle/fairplay-decrypt</link>
+      <guid isPermaLink="false">EthanArbuckle/fairplay-decrypt@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Steering-first neuron explorer for Qwen3.5-4B: push every MLP neuron, keep every rollout, browse the results
+      <description><![CDATA[Offline FairPlay App Store IPA decryption with independent key derivation
 
-语言：Python | Star：1960 | 分类：其他
+语言：C | Star：2411 | 分类：其他
 
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
     </item>
     <item>
-      <title>8. ikow/php2shell-poc</title>
-      <link>https://github.com/ikow/php2shell-poc</link>
-      <guid isPermaLink="false">ikow/php2shell-poc@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
+      <title>8. physicsdolphin/nv-uefi-unlocker</title>
+      <link>https://github.com/physicsdolphin/nv-uefi-unlocker</link>
+      <guid isPermaLink="false">physicsdolphin/nv-uefi-unlocker@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>后端</category>
+      <description><![CDATA[UEFI pre-driver NVIDIA GPU unlocker for Windows Linux Hackintosh and all EFI-bootable system (Rust): SEC2 scrubber -> FWSEC/WPR2 -> signed Booter -> V67 four-write payload, read-back verified. Verified on most RTX 20 30 40 Series.
+
+语言：Rust | Star：2273 | 分类：后端
+
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
+    </item>
+    <item>
+      <title>9. Supermedo/uncharted_pc</title>
+      <link>https://github.com/Supermedo/uncharted_pc</link>
+      <guid isPermaLink="false">Supermedo/uncharted_pc@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[CVE-2026-109618/109619 — 5 RCE chains + detection rules (Suricata, Sigma, ModSecurity). PHP session.upload_progress pre-auth exploit research.
+      <description><![CDATA[Uncharted: The Nathan Drake Collection running natively on Windows - by SuperMedo
 
-语言：Python | Star：1959 | 分类：其他
+语言：C++ | Star：2261 | 分类：其他
 
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
     </item>
     <item>
-      <title>9. sarpstar/cinecode</title>
-      <link>https://github.com/sarpstar/cinecode</link>
-      <guid isPermaLink="false">sarpstar/cinecode@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Films made with code. Short films, long YouTube videos, ads, explainers and music videos: an AI coding agent writes the script, builds every frame in code, designs the sound and hands you an MP4.
+      <title>10. windows-GPU-UNLOCK/Windows-GPU-UNLOCK</title>
+      <link>https://github.com/windows-GPU-UNLOCK/Windows-GPU-UNLOCK</link>
+      <guid isPermaLink="false">windows-GPU-UNLOCK/Windows-GPU-UNLOCK@2026-11-11</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Windows GPU UNLOCK: RTX3090 UEFI port, Korean no-reset Windows boot guide, verified source and benchmark evidence
 
-语言：Python | Star：1946 | 分类：AI
+语言：C | Star：2070 | 分类：其他
 
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
-    </item>
-    <item>
-      <title>10. t3dotgg/tstack</title>
-      <link>https://github.com/t3dotgg/tstack</link>
-      <guid isPermaLink="false">t3dotgg/tstack@2026-11-10</guid>
-      <pubDate>Tue, 10 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[The agent skills I use every day. Works with Claude Code and Codex.
-
-语言：Python | Star：3395 | 分类：AI
-
-第 15 期（2026-11-10）推荐 · 原文 /history/2026-11-10]]></description>
+第 16 期（2026-11-11）推荐 · 原文 /history/2026-11-11]]></description>
     </item>
   </channel>
 </rss>
