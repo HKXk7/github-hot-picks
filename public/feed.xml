@@ -5,125 +5,123 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 12 Nov 2026 05:56:51 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 13 Nov 2026 05:19:01 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. IainKay/ram-altman</title>
-      <link>https://github.com/IainKay/ram-altman</link>
-      <guid isPermaLink="false">IainKay/ram-altman@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. vercel-labs/ui</title>
+      <link>https://github.com/vercel-labs/ui</link>
+      <guid isPermaLink="false">vercel-labs/ui@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[Monitors your RAM and reports any "quite terrible" unused capacity directly to the CEO of OpenAI.
+      <description><![CDATA[A library of behaviors for agents to build the next generation of user interfaces.
 
-语言：Shell | Star：1960 | 分类：AI
+语言：TypeScript | Star：2071 | 分类：AI
 
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
     <item>
-      <title>2. Lee-xeo/Claude-Cage</title>
-      <link>https://github.com/Lee-xeo/Claude-Cage</link>
-      <guid isPermaLink="false">Lee-xeo/Claude-Cage@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. man15h/tellyscope</title>
+      <link>https://github.com/man15h/tellyscope</link>
+      <guid isPermaLink="false">man15h/tellyscope@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Cage：为 Claude 特化的轻量化虚拟机，彻底杜绝网络泄露。多平台适配，支持多账号管理、远程部署、移动端操控。
+      <description><![CDATA[Debloat your Android TV, install apps, browse and transfer files on it, all from your phone. Just 3 MB, no tracking, no root, no PC.
 
-语言：Go | Star：3794 | 分类：其他
+语言：Kotlin | Star：1986 | 分类：其他
 
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
     <item>
-      <title>3. jamesondh/chimera-vocal-synth</title>
-      <link>https://github.com/jamesondh/chimera-vocal-synth</link>
-      <guid isPermaLink="false">jamesondh/chimera-vocal-synth@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[the ultimate vocal synthesizer - sing, speak, beatbox, and more
-
-语言：Rust | Star：2017 | 分类：其他
-
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
-    </item>
-    <item>
-      <title>4. N1nEmAn/sapper-v2</title>
-      <link>https://github.com/N1nEmAn/sapper-v2</link>
-      <guid isPermaLink="false">N1nEmAn/sapper-v2@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
+      <title>3. Sandflow-ai/sand3d</title>
+      <link>https://github.com/Sandflow-ai/sand3d</link>
+      <guid isPermaLink="false">Sandflow-ai/sand3d@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[The first fruit of the Nüwa tree — an autonomous AI pentest legion (634-team champion, 8h unattended, 1B tokens beat 4.5B). Not just a tool: evolvable by design. Grow your own fruit on the Nüwa Foundation (Create/Language/History).
+      <description><![CDATA[3D modeling in Python, built for LLMs.
 
-语言：Python | Star：1998 | 分类：AI
+语言：HTML | Star：1928 | 分类：AI
 
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
     <item>
-      <title>5. ctresb/leis</title>
-      <link>https://github.com/ctresb/leis</link>
-      <guid isPermaLink="false">ctresb/leis@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Todas as leis do Brasil
-
-语言：— | Star：2766 | 分类：其他
-
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
-    </item>
-    <item>
-      <title>6. shanselman/gputaskman</title>
-      <link>https://github.com/shanselman/gputaskman</link>
-      <guid isPermaLink="false">shanselman/gputaskman@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
+      <title>4. DIYgod/pinky</title>
+      <link>https://github.com/DIYgod/pinky</link>
+      <guid isPermaLink="false">DIYgod/pinky@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[A GPU task manager for Windows, Linux, and WSL: per-process VRAM, GPU activity, and LLM model/KV-cache insights (Windows AMD and NVIDIA).
+      <description><![CDATA[Let AI agents use your phone, with you in the loop.
 
-语言：Python | Star：2144 | 分类：AI
+语言：Go | Star：2024 | 分类：AI
 
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
     <item>
-      <title>7. Leviidev/Henge</title>
-      <link>https://github.com/Leviidev/Henge</link>
-      <guid isPermaLink="false">Leviidev/Henge@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
+      <title>5. tangerineturtle1/NX2navi</title>
+      <link>https://github.com/tangerineturtle1/NX2navi</link>
+      <guid isPermaLink="false">tangerineturtle1/NX2navi@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Emulate macOS on iOS and iPadOS
+      <description><![CDATA[语言：C | Star：3623 | 分类：其他
 
-语言：C | Star：2057 | 分类：其他
-
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
     <item>
-      <title>8. Pika-Labs/Pika-H3-Flex</title>
-      <link>https://github.com/Pika-Labs/Pika-H3-Flex</link>
-      <guid isPermaLink="false">Pika-Labs/Pika-H3-Flex@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Pika H3 Flex: video and audio generation inference
+      <title>6. aicodeking/leanrea</title>
+      <link>https://github.com/aicodeking/leanrea</link>
+      <guid isPermaLink="false">aicodeking/leanrea@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <category>工具</category>
+      <description><![CDATA[One 8 KB skill that replaces REA (Reverse Engineer Anything): plain CLI tools, no MCP. Benchmarked: 38% faster, 35% cheaper.
 
-语言：Python | Star：1961 | 分类：其他
+语言：Python | Star：4239 | 分类：工具
 
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
     <item>
-      <title>9. andyhuo520/digital-human-koubo</title>
-      <link>https://github.com/andyhuo520/digital-human-koubo</link>
-      <guid isPermaLink="false">andyhuo520/digital-human-koubo@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
+      <title>7. chenglou/handwired</title>
+      <link>https://github.com/chenglou/handwired</link>
+      <guid isPermaLink="false">chenglou/handwired@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[AI digital-human talking-head videos from one photo: Renoise MCP generation + 5 editing styles + 48 creator-grade packaging components. Agent skill for Claude Code / Codex / OpenClaw / WorkBuddy …
+      <description><![CDATA[Turn your regular JavaScript code into a neural net.
 
-语言：TypeScript | Star：1945 | 分类：AI
+语言：TypeScript | Star：2150 | 分类：AI
 
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
     <item>
-      <title>10. unclebob/ub-mode</title>
-      <link>https://github.com/unclebob/ub-mode</link>
-      <guid isPermaLink="false">unclebob/ub-mode@2026-11-12</guid>
-      <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[语言：— | Star：7782 | 分类：其他
+      <title>8. enesozturk/dimensional-drawing</title>
+      <link>https://github.com/enesozturk/dimensional-drawing</link>
+      <guid isPermaLink="false">enesozturk/dimensional-drawing@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[Create Apple style dimensional drawings of UI components.
 
-第 17 期（2026-11-12）推荐 · 原文 /history/2026-11-12]]></description>
+语言：HTML | Star：2084 | 分类：前端
+
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+    </item>
+    <item>
+      <title>9. Motionsites-AI/claude-skill</title>
+      <link>https://github.com/Motionsites-AI/claude-skill</link>
+      <guid isPermaLink="false">Motionsites-AI/claude-skill@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Free Claude skill: make Claude build award-level, cinematic landing pages. By MotionSites.
+
+语言：Python | Star：2038 | 分类：其他
+
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+    </item>
+    <item>
+      <title>10. JenkinWoo/sheeridVerify</title>
+      <link>https://github.com/JenkinWoo/sheeridVerify</link>
+      <guid isPermaLink="false">JenkinWoo/sheeridVerify@2026-11-13</guid>
+      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[语言：JavaScript | Star：2106 | 分类：其他
+
+第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
     </item>
   </channel>
 </rss>
