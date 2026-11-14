@@ -5,123 +5,101 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 13 Nov 2026 05:19:01 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 14 Nov 2026 05:08:09 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. vercel-labs/ui</title>
-      <link>https://github.com/vercel-labs/ui</link>
-      <guid isPermaLink="false">vercel-labs/ui@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. libracoder/kiri</title>
+      <link>https://github.com/libracoder/kiri</link>
+      <guid isPermaLink="false">libracoder/kiri@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <category>后端</category>
+      <description><![CDATA[A small, fast container runtime for macOS, Windows and Linux
+
+语言：Rust | Star：2359 | 分类：后端
+
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+    </item>
+    <item>
+      <title>2. morganlinton/BeautifulRust</title>
+      <link>https://github.com/morganlinton/BeautifulRust</link>
+      <guid isPermaLink="false">morganlinton/BeautifulRust@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[A library of behaviors for agents to build the next generation of user interfaces.
+      <description><![CDATA[Agent Skills that teach coding agents to write, review, and port idiomatic Rust, plus a tested clippy config. Works with Claude Code, Codex, Copilot, Cursor, and Gemini CLI.
 
-语言：TypeScript | Star：2071 | 分类：AI
+语言：Python | Star：1808 | 分类：AI
 
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
     </item>
     <item>
-      <title>2. man15h/tellyscope</title>
-      <link>https://github.com/man15h/tellyscope</link>
-      <guid isPermaLink="false">man15h/tellyscope@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <title>3. Kianuni/Erosion-CN</title>
+      <link>https://github.com/Kianuni/Erosion-CN</link>
+      <guid isPermaLink="false">Kianuni/Erosion-CN@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Debloat your Android TV, install apps, browse and transfer files on it, all from your phone. Just 3 MB, no tracking, no root, no PC.
+      <description><![CDATA[iOS / iPadOS 系统配置与 MobileGestalt 研究工具箱（简体中文防白苹果安全加固版）
 
-语言：Kotlin | Star：1986 | 分类：其他
+语言：Swift | Star：1956 | 分类：其他
 
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
     </item>
     <item>
-      <title>3. Sandflow-ai/sand3d</title>
-      <link>https://github.com/Sandflow-ai/sand3d</link>
-      <guid isPermaLink="false">Sandflow-ai/sand3d@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <title>4. daveebbelaar/bama</title>
+      <link>https://github.com/daveebbelaar/bama</link>
+      <guid isPermaLink="false">daveebbelaar/bama@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[3D modeling in Python, built for LLMs.
+      <description><![CDATA[BAMA: Build Any Mac App. Agent skills to research, clone, design, build, optimize, and test native macOS apps with Swift and SwiftUI.
 
-语言：HTML | Star：1928 | 分类：AI
+语言：Swift | Star：1810 | 分类：AI
 
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
     </item>
     <item>
-      <title>4. DIYgod/pinky</title>
-      <link>https://github.com/DIYgod/pinky</link>
-      <guid isPermaLink="false">DIYgod/pinky@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <title>5. s1dashu/quiet-md</title>
+      <link>https://github.com/s1dashu/quiet-md</link>
+      <guid isPermaLink="false">s1dashu/quiet-md@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <category>后端</category>
+      <description><![CDATA[Blazing-fast native notes app and rich-text editor for macOS, Windows, and Linux. Built with Rust + GPUI. Local-first and beautifully designed.
+
+语言：Rust | Star：1800 | 分类：后端
+
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+    </item>
+    <item>
+      <title>6. jacke-pp/open-yoki</title>
+      <link>https://github.com/jacke-pp/open-yoki</link>
+      <guid isPermaLink="false">jacke-pp/open-yoki@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[Let AI agents use your phone, with you in the loop.
+      <description><![CDATA[An AI live-stream host that runs on one server: voice, face, chat, memory, posts. The base yoki runs on. By Jacke_pp · contact: DM @Jacke_pp on X
 
-语言：Go | Star：2024 | 分类：AI
+语言：JavaScript | Star：1840 | 分类：AI
 
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
     </item>
     <item>
-      <title>5. tangerineturtle1/NX2navi</title>
-      <link>https://github.com/tangerineturtle1/NX2navi</link>
-      <guid isPermaLink="false">tangerineturtle1/NX2navi@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <title>7. mmdoctor/google-pro-helper</title>
+      <link>https://github.com/mmdoctor/google-pro-helper</link>
+      <guid isPermaLink="false">mmdoctor/google-pro-helper@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[语言：C | Star：3623 | 分类：其他
+      <description><![CDATA[语言：Python | Star：1862 | 分类：其他
 
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
     </item>
     <item>
-      <title>6. aicodeking/leanrea</title>
-      <link>https://github.com/aicodeking/leanrea</link>
-      <guid isPermaLink="false">aicodeking/leanrea@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[One 8 KB skill that replaces REA (Reverse Engineer Anything): plain CLI tools, no MCP. Benchmarked: 38% faster, 35% cheaper.
-
-语言：Python | Star：4239 | 分类：工具
-
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
-    </item>
-    <item>
-      <title>7. chenglou/handwired</title>
-      <link>https://github.com/chenglou/handwired</link>
-      <guid isPermaLink="false">chenglou/handwired@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Turn your regular JavaScript code into a neural net.
-
-语言：TypeScript | Star：2150 | 分类：AI
-
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
-    </item>
-    <item>
-      <title>8. enesozturk/dimensional-drawing</title>
-      <link>https://github.com/enesozturk/dimensional-drawing</link>
-      <guid isPermaLink="false">enesozturk/dimensional-drawing@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
-      <category>前端</category>
-      <description><![CDATA[Create Apple style dimensional drawings of UI components.
-
-语言：HTML | Star：2084 | 分类：前端
-
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
-    </item>
-    <item>
-      <title>9. Motionsites-AI/claude-skill</title>
-      <link>https://github.com/Motionsites-AI/claude-skill</link>
-      <guid isPermaLink="false">Motionsites-AI/claude-skill@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
+      <title>8. aschmelyun/print-my-profile-pic</title>
+      <link>https://github.com/aschmelyun/print-my-profile-pic</link>
+      <guid isPermaLink="false">aschmelyun/print-my-profile-pic@2026-11-14</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Free Claude skill: make Claude build award-level, cinematic landing pages. By MotionSites.
+      <description><![CDATA[Say cheese! Star this repo and your profile picture gets printed out on a receipt printer.
 
-语言：Python | Star：2038 | 分类：其他
+语言：— | Star：1855 | 分类：其他
 
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
-    </item>
-    <item>
-      <title>10. JenkinWoo/sheeridVerify</title>
-      <link>https://github.com/JenkinWoo/sheeridVerify</link>
-      <guid isPermaLink="false">JenkinWoo/sheeridVerify@2026-11-13</guid>
-      <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[语言：JavaScript | Star：2106 | 分类：其他
-
-第 18 期（2026-11-13）推荐 · 原文 /history/2026-11-13]]></description>
+第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
     </item>
   </channel>
 </rss>
