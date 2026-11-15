@@ -5,101 +5,103 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sat, 14 Nov 2026 05:08:09 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 15 Nov 2026 05:00:22 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. libracoder/kiri</title>
-      <link>https://github.com/libracoder/kiri</link>
-      <guid isPermaLink="false">libracoder/kiri@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[A small, fast container runtime for macOS, Windows and Linux
-
-语言：Rust | Star：2359 | 分类：后端
-
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
-    </item>
-    <item>
-      <title>2. morganlinton/BeautifulRust</title>
-      <link>https://github.com/morganlinton/BeautifulRust</link>
-      <guid isPermaLink="false">morganlinton/BeautifulRust@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Agent Skills that teach coding agents to write, review, and port idiomatic Rust, plus a tested clippy config. Works with Claude Code, Codex, Copilot, Cursor, and Gemini CLI.
-
-语言：Python | Star：1808 | 分类：AI
-
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
-    </item>
-    <item>
-      <title>3. Kianuni/Erosion-CN</title>
-      <link>https://github.com/Kianuni/Erosion-CN</link>
-      <guid isPermaLink="false">Kianuni/Erosion-CN@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. RoutineMiku/apkstart</title>
+      <link>https://github.com/RoutineMiku/apkstart</link>
+      <guid isPermaLink="false">RoutineMiku/apkstart@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[iOS / iPadOS 系统配置与 MobileGestalt 研究工具箱（简体中文防白苹果安全加固版）
+      <description><![CDATA[Windows 上的安卓应用运行器：双击 APK 即装，应用以独立窗口与桌面图标运行，自持 QEMU 运行时
 
-语言：Swift | Star：1956 | 分类：其他
+语言：JavaScript | Star：4014 | 分类：其他
 
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
     </item>
     <item>
-      <title>4. daveebbelaar/bama</title>
-      <link>https://github.com/daveebbelaar/bama</link>
-      <guid isPermaLink="false">daveebbelaar/bama@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. apex-compute/ANR</title>
+      <link>https://github.com/apex-compute/ANR</link>
+      <guid isPermaLink="false">apex-compute/ANR@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[BAMA: Build Any Mac App. Agent skills to research, clone, design, build, optimize, and test native macOS apps with Swift and SwiftUI.
+      <description><![CDATA[Apex Neural Rendering (ANR) by Apex Compute
 
-语言：Swift | Star：1810 | 分类：AI
+语言：C++ | Star：1869 | 分类：AI
 
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
     </item>
     <item>
-      <title>5. s1dashu/quiet-md</title>
-      <link>https://github.com/s1dashu/quiet-md</link>
-      <guid isPermaLink="false">s1dashu/quiet-md@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[Blazing-fast native notes app and rich-text editor for macOS, Windows, and Linux. Built with Rust + GPUI. Local-first and beautifully designed.
+      <title>3. CzJam/gjgjxweb</title>
+      <link>https://github.com/CzJam/gjgjxweb</link>
+      <guid isPermaLink="false">CzJam/gjgjxweb@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[《搞机工具箱》Web移植版
 
-语言：Rust | Star：1800 | 分类：后端
+语言：HTML | Star：1860 | 分类：前端
 
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
     </item>
     <item>
-      <title>6. jacke-pp/open-yoki</title>
-      <link>https://github.com/jacke-pp/open-yoki</link>
-      <guid isPermaLink="false">jacke-pp/open-yoki@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <title>4. ZiChuanLan/agent-purge</title>
+      <link>https://github.com/ZiChuanLan/agent-purge</link>
+      <guid isPermaLink="false">ZiChuanLan/agent-purge@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[An AI live-stream host that runs on one server: voice, face, chat, memory, posts. The base yoki runs on. By Jacke_pp · contact: DM @Jacke_pp on X
+      <description><![CDATA[One persona, many coding agents. Replace or inject system prompts across codex, claude, opencode, grok, omp, hermes, pi, zcode - with a local web console.
 
-语言：JavaScript | Star：1840 | 分类：AI
+语言：JavaScript | Star：1787 | 分类：AI
 
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
     </item>
     <item>
-      <title>7. mmdoctor/google-pro-helper</title>
-      <link>https://github.com/mmdoctor/google-pro-helper</link>
-      <guid isPermaLink="false">mmdoctor/google-pro-helper@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[语言：Python | Star：1862 | 分类：其他
+      <title>5. yjid/kensaku</title>
+      <link>https://github.com/yjid/kensaku</link>
+      <guid isPermaLink="false">yjid/kensaku@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Search inside documents, code, and even screenshots - instantly and locally. A free, open-source file launcher with OCR, semantic search, and MCP agent access.
 
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+语言：Rust | Star：1786 | 分类：AI
+
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
     </item>
     <item>
-      <title>8. aschmelyun/print-my-profile-pic</title>
-      <link>https://github.com/aschmelyun/print-my-profile-pic</link>
-      <guid isPermaLink="false">aschmelyun/print-my-profile-pic@2026-11-14</guid>
-      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <title>6. WoYun520/gif-factory</title>
+      <link>https://github.com/WoYun520/gif-factory</link>
+      <guid isPermaLink="false">WoYun520/gif-factory@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Say cheese! Star this repo and your profile picture gets printed out on a receipt printer.
+      <description><![CDATA[GIF 工厂：按风格制作像素、人物与宠物、粘土吉祥物、光栅卡与动态海报的 GIF Skill。
 
-语言：— | Star：1855 | 分类：其他
+语言：Python | Star：1869 | 分类：其他
 
-第 19 期（2026-11-14）推荐 · 原文 /history/2026-11-14]]></description>
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
+    </item>
+    <item>
+      <title>7. deepseek-ai/chat-demo</title>
+      <link>https://github.com/deepseek-ai/chat-demo</link>
+      <guid isPermaLink="false">deepseek-ai/chat-demo@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Chat Demo
+
+语言：TypeScript | Star：1858 | 分类：AI
+
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
+    </item>
+    <item>
+      <title>8. BookracyFOS/bookracy</title>
+      <link>https://github.com/BookracyFOS/bookracy</link>
+      <guid isPermaLink="false">BookracyFOS/bookracy@2026-11-15</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Free, open-source book search, reader and library.
+
+语言：TypeScript | Star：1769 | 分类：其他
+
+第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
     </item>
   </channel>
 </rss>
