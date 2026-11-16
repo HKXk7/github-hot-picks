@@ -5,103 +5,43 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sun, 15 Nov 2026 05:00:22 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 16 Nov 2026 04:57:28 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. RoutineMiku/apkstart</title>
-      <link>https://github.com/RoutineMiku/apkstart</link>
-      <guid isPermaLink="false">RoutineMiku/apkstart@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Windows 上的安卓应用运行器：双击 APK 即装，应用以独立窗口与桌面图标运行，自持 QEMU 运行时
+      <title>1. oinkvm/oink</title>
+      <link>https://github.com/oinkvm/oink</link>
+      <guid isPermaLink="false">oinkvm/oink@2026-11-16</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 GMT</pubDate>
+      <category>工具</category>
+      <description><![CDATA[Your computers, working as one. Share keyboard, mouse, trackpad, clipboard, drag and drop and audio across Macs and PCs.
 
-语言：JavaScript | Star：4014 | 分类：其他
+语言：Rust | Star：1862 | 分类：工具
 
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
+第 21 期（2026-11-16）推荐 · 原文 /history/2026-11-16]]></description>
     </item>
     <item>
-      <title>2. apex-compute/ANR</title>
-      <link>https://github.com/apex-compute/ANR</link>
-      <guid isPermaLink="false">apex-compute/ANR@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Apex Neural Rendering (ANR) by Apex Compute
-
-语言：C++ | Star：1869 | 分类：AI
-
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
-    </item>
-    <item>
-      <title>3. CzJam/gjgjxweb</title>
-      <link>https://github.com/CzJam/gjgjxweb</link>
-      <guid isPermaLink="false">CzJam/gjgjxweb@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. Arjun-Ingole/hop</title>
+      <link>https://github.com/Arjun-Ingole/hop</link>
+      <guid isPermaLink="false">Arjun-Ingole/hop@2026-11-16</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 GMT</pubDate>
       <category>前端</category>
-      <description><![CDATA[《搞机工具箱》Web移植版
+      <description><![CDATA[Install Linux next to Windows without a USB stick
 
-语言：HTML | Star：1860 | 分类：前端
+语言：PowerShell | Star：1715 | 分类：前端
 
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
+第 21 期（2026-11-16）推荐 · 原文 /history/2026-11-16]]></description>
     </item>
     <item>
-      <title>4. ZiChuanLan/agent-purge</title>
-      <link>https://github.com/ZiChuanLan/agent-purge</link>
-      <guid isPermaLink="false">ZiChuanLan/agent-purge@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[One persona, many coding agents. Replace or inject system prompts across codex, claude, opencode, grok, omp, hermes, pi, zcode - with a local web console.
+      <title>3. NiazMorshed2007/reanimate</title>
+      <link>https://github.com/NiazMorshed2007/reanimate</link>
+      <guid isPermaLink="false">NiazMorshed2007/reanimate@2026-11-16</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[A Claude Code skill that reverse-engineers any animation frame by frame, then proves the copy moves the same.
 
-语言：JavaScript | Star：1787 | 分类：AI
+语言：JavaScript | Star：1700 | 分类：前端
 
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
-    </item>
-    <item>
-      <title>5. yjid/kensaku</title>
-      <link>https://github.com/yjid/kensaku</link>
-      <guid isPermaLink="false">yjid/kensaku@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Search inside documents, code, and even screenshots - instantly and locally. A free, open-source file launcher with OCR, semantic search, and MCP agent access.
-
-语言：Rust | Star：1786 | 分类：AI
-
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
-    </item>
-    <item>
-      <title>6. WoYun520/gif-factory</title>
-      <link>https://github.com/WoYun520/gif-factory</link>
-      <guid isPermaLink="false">WoYun520/gif-factory@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[GIF 工厂：按风格制作像素、人物与宠物、粘土吉祥物、光栅卡与动态海报的 GIF Skill。
-
-语言：Python | Star：1869 | 分类：其他
-
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
-    </item>
-    <item>
-      <title>7. deepseek-ai/chat-demo</title>
-      <link>https://github.com/deepseek-ai/chat-demo</link>
-      <guid isPermaLink="false">deepseek-ai/chat-demo@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Chat Demo
-
-语言：TypeScript | Star：1858 | 分类：AI
-
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
-    </item>
-    <item>
-      <title>8. BookracyFOS/bookracy</title>
-      <link>https://github.com/BookracyFOS/bookracy</link>
-      <guid isPermaLink="false">BookracyFOS/bookracy@2026-11-15</guid>
-      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Free, open-source book search, reader and library.
-
-语言：TypeScript | Star：1769 | 分类：其他
-
-第 20 期（2026-11-15）推荐 · 原文 /history/2026-11-15]]></description>
+第 21 期（2026-11-16）推荐 · 原文 /history/2026-11-16]]></description>
     </item>
   </channel>
 </rss>

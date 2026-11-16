@@ -1,0 +1,59 @@
+{
+  "issue": 21,
+  "title": "11月16日 · GitHub 热门项目推荐",
+  "summary": "今天从 GitHub 新项目中挑选出 3 个值得关注的项目，涵盖不同领域，每个项目都附有一份小白也能看懂的上手教程。",
+  "content": "# 11月16日 · GitHub 热门项目推荐\n\n> 今天从 GitHub 新项目中挑选出 3 个值得关注的项目，涵盖不同领域，每个项目都附有一份小白也能看懂的上手教程。\n\n## 1. oinkvm/oink\n\nYour computers, working as one. Share keyboard, mouse, trackpad, clipboard, drag and drop and audio across Macs and PCs.\n\n- Stars：1862 | 语言：Rust\n- 仓库：https://github.com/oinkvm/oink\n- 推荐理由：最近仍在活跃更新；短时间收获大量 star\n\n**📖 小白教程**\n\n### 它是干什么的\n\nOink 是一款跨 Mac 与 Windows 的点对点软件 KVM：用任意一台电脑的键鼠控制附近其他电脑，并同步剪贴板、拖拽文件和音频。\n\n### 怎么安装 / 快速开始\n\n```bash\n打开 https://github.com/oinkvm/oink/releases ，下载对应平台的安装包（macOS arm64/x64 或 Windows x64）\nWindows 10 LTSC 用户先安装 Microsoft Edge WebView2 Runtime（Evergreen）：https://developer.microsoft.com/microsoft-edge/webview2/\n```\n\n### 核心功能怎么用\n\n- 键鼠共享：在每台电脑上安装并运行 Oink，让它们处于同一局域网，即可用任意一台设备的键盘、鼠标、触控板控制其他设备，无需指定哪台是「主机」。\n- 剪贴板同步：连接后剪贴板内容会自动在设备间同步，复制粘贴跨机器直接可用。\n- 拖拽传输：把文字、图片或文件从一台电脑直接拖到另一台，甚至可以直接拖进 Chrome 等应用窗口。\n- 音频共享：把多台设备的音频统一输出到其中一台电脑连接的音箱或耳机上。\n\n### 适合谁 / 常见坑\n\n适合人群：同时使用 Mac 和 Windows 多台电脑、想省掉一套键鼠和切换器的普通用户与开发者\n\n常见坑：\n- Oink 与 Deskflow/Synergy/Barrier 等软件 KVM 协议不兼容，不能混用，必须所有设备都装 Oink。\n- Windows 上首次运行可能弹出 SmartScreen「Windows 已保护你的电脑」和未知发布者的 UAC 提示，README 说明只有出现「更多信息」时才可选择「仍要运行」。\n- 系统版本有硬性门槛：macOS 需 14.2 及以上，Windows 需 10 1809（build 17763）及以上；Windows 10 LTSC 2019/2021 不自带 WebView2 运行时，需先手动安装。\n\n### 注意事项\n\n这份教程 AI 的把握程度为「中」；以下细节未经确认，请以官方 README 为准：具体版本号与各平台安装包文件名（README 只指向 GitHub Releases，未列出）、项目未发布到 crates.io / npm：查到的 oink 包分别是 Pig Latin 转换器和测试运行器，与本项目无关，因此没有包管理器安装命令、从源码自行构建的具体步骤（README 未给出构建命令，仅提到可从 Releases 获取匹配的源码）、设备配对/连接的具体操作界面流程（README 未描述）、Intel Mac 版本标注为未测试，实际可用性无法确认。\n## 2. Arjun-Ingole/hop\n\nInstall Linux next to Windows without a USB stick\n\n- Stars：1715 | 语言：PowerShell\n- 仓库：https://github.com/Arjun-Ingole/hop\n- 推荐理由：最近仍在活跃更新；短时间收获大量 star\n\n**📖 小白教程**\n\n### 它是干什么的\n\nhop 是一个 Windows 桌面小工具，帮你在不找 U 盘的情况下，把 Linux 装到 Windows 旁边的空闲分区里。\n\n### 怎么安装 / 快速开始\n\n```bash\n从 Releases 页面下载 hop.exe 并双击运行（Windows 会请求管理员权限）\ndotnet build -c Release\n```\n\n### 核心功能怎么用\n\n- 选系统与 ISO：在 hop 里挑一个支持的发行版，它会从官方服务器或官方镜像下载 ISO 并校验校验和；你也可以直接指定自己已有的 ISO 文件。\n- 拖拽分配空间：选好目标磁盘后，拖动滑块决定给 Linux 多少空间，hop 会优先用空闲空间，不够才收缩分区。\n- Make room 一键腾空间：当磁盘显示有空间却无法收缩时，用它清理 Windows 挪不动的文件，事后会把你的设置还原。\n- 按提示装完并善后：hop 会列出 Linux 安装器里该点哪些选项；装完可用 Undo 把空间还给原分区，也能移除已有的另一个 Linux。\n\n### 适合谁 / 常见坑\n\n适合人群：想在 Windows 电脑上体验双系统、但手头没有 U 盘或不想折腾启动盘的新手。\n\n常见坑：\n- hop.exe 目前没有代码签名，SmartScreen 会拦截，需要点「更多信息 → 运行 anyway」；同时必须允许管理员权限，否则无法改分区。\n- 硬件门槛是硬性的：需要 Windows 10（1803 及以上）或 11、UEFI 启动、GPT 磁盘，且 Linux 只能装到机器内置磁盘上，不能装到 U 盘。\n- 部分系统有额外限制：CachyOS、Arch、Omarchy、Pop!_OS 需要关闭 Secure Boot；Omarchy 还要求其所在磁盘的 BitLocker 完全关闭（不是暂停），hop 不会替你关；Kubuntu 不支持，Lubuntu 和 Ubuntu Unity 目前会被拒绝。\n\n### 注意事项\n\n这份教程 AI 的把握程度为「中」；以下细节未经确认，请以官方 README 为准：hop 未发布到 npm/PyPI/crates 等包管理器，README 只给出从 Releases 下载 hop.exe 与源码 dotnet build 两种方式，具体版本号未核实、README 未说明 .NET SDK 的最低版本要求、「替换掉整个 Windows」模式所需内存的具体数值未给出（只说需大于 ISO 体积）、Releases 页面中 hop.exe 的实际文件名与最新版本号未核实。\n## 3. NiazMorshed2007/reanimate\n\nA Claude Code skill that reverse-engineers any animation frame by frame, then proves the copy moves the same.\n\n- Stars：1700 | 语言：JavaScript\n- 仓库：https://github.com/NiazMorshed2007/reanimate\n- 推荐理由：短时间收获大量 star\n\n**📖 小白教程**\n\n### 它是干什么的\n\n一个 Claude Code 技能：把你看中的网页动画逐帧录下来、反推出时间与缓动参数，再在你的代码里重建，并用同样的方式录制副本、逐帧比对，直到两边动得一样。\n\n### 怎么安装 / 快速开始\n\n```bash\nnpx skills add NiazMorshed2007/reanimate -g\nnpx skills add NiazMorshed2007/reanimate -g -a claude-code\n```\n\n### 核心功能怎么用\n\n- 在 Claude Code 里用 /reanimate 描述「要哪个动画、在哪、放到哪」，例如 /reanimate the hero entrance on https://example.com, into components/Hero.tsx，它会自动录制、写代码、再录制比对。\n- 素材不限于网址：也可以给屏幕录制、mp4、gif 或 Lottie 文件，并用时间区间指定片段，例如 /reanimate this loader, 0:03 to 0:05 of ~/Downloads/loader.mov。\n- 用一句话切换还原精度：默认只对齐「动得一样」（触发、顺序、错峰、80ms 内的时间、缓动族、位移）；说 match it exactly / pixel-perfect 会连字体、尺寸、颜色、间距一起对齐；说 clone X and add Y 则在克隆基础上加自己的改动。\n- 遇到 canvas / WebGL / three.js 动画时，它会追踪 GPU 调用（着色器、uniform、绘制调用、场景图），把动画参数还原成可拟合的曲线，再逐通道比对副本。\n\n### 适合谁 / 常见坑\n\n适合人群：会用 Claude Code、想复刻别人网站动效的前端新手；需要 macOS 或 Linux 环境。\n\n常见坑：\n- 它依赖 Bun 1.1 或更高版本，且只在 macOS / Linux 上测试过，Windows 未验证；第一次运行还会下载静态 ffmpeg 和 Playwright 的 Chromium，合计约 250MB，别以为卡住了。\n- 登录后的页面、YouTube、Loom 无法直接录制，需要你自己先录屏再交给它；iframe 里的 canvas 要提供 iframe 自己的 URL。\n- 它不是一次成型的：通常要 2 到 5 轮修正，5 轮后仍不一致的部分会写进报告并说明原因；弹簧类物理动画是从过冲和稳定时间拟合出来的，不是读源码得到的，别指望 100% 一致。\n\n### 注意事项\n\n这份教程 AI 的把握程度为「中」；以下细节未经确认，请以官方 README 为准：README 被截断，未看到完整的 Limits 段落结尾与更多 CLI 参数说明（如 --gl、--clock virtual、--gpu hardware 的完整用法）、未确认项目是否在 npm / PyPI / crates.io 上发布了同名包；安装走的是 skills CLI 从 GitHub 仓库拉取，而非包管理器、未确认具体支持的 Claude Code 版本要求，以及除 Claude Code 外其他 agent 的实际可用性（README 称仅测试过 Claude Code）。",
+  "dateKey": "2026-11-16",
+  "updatedAt": "2026-11-16T04:57:28.242Z",
+  "totalStars": 5277,
+  "languageCount": 3,
+  "picks": [
+    {
+      "rank": 1,
+      "fullName": "oinkvm/oink",
+      "name": "oink",
+      "description": "Your computers, working as one. Share keyboard, mouse, trackpad, clipboard, drag and drop and audio across Macs and PCs.",
+      "url": "https://github.com/oinkvm/oink",
+      "language": "Rust",
+      "stars": 1862,
+      "forks": 149,
+      "category": "工具",
+      "reason": "最近仍在活跃更新；短时间收获大量 star",
+      "tutorial": "{\"v\":2,\"oneLiner\":\"Oink 是一款跨 Mac 与 Windows 的点对点软件 KVM：用任意一台电脑的键鼠控制附近其他电脑，并同步剪贴板、拖拽文件和音频。\",\"audience\":\"同时使用 Mac 和 Windows 多台电脑、想省掉一套键鼠和切换器的普通用户与开发者\",\"installCommands\":[\"打开 https://github.com/oinkvm/oink/releases ，下载对应平台的安装包（macOS arm64/x64 或 Windows x64）\",\"Windows 10 LTSC 用户先安装 Microsoft Edge WebView2 Runtime（Evergreen）：https://developer.microsoft.com/microsoft-edge/webview2/\"],\"features\":[\"键鼠共享：在每台电脑上安装并运行 Oink，让它们处于同一局域网，即可用任意一台设备的键盘、鼠标、触控板控制其他设备，无需指定哪台是「主机」。\",\"剪贴板同步：连接后剪贴板内容会自动在设备间同步，复制粘贴跨机器直接可用。\",\"拖拽传输：把文字、图片或文件从一台电脑直接拖到另一台，甚至可以直接拖进 Chrome 等应用窗口。\",\"音频共享：把多台设备的音频统一输出到其中一台电脑连接的音箱或耳机上。\"],\"pitfalls\":[\"Oink 与 Deskflow/Synergy/Barrier 等软件 KVM 协议不兼容，不能混用，必须所有设备都装 Oink。\",\"Windows 上首次运行可能弹出 SmartScreen「Windows 已保护你的电脑」和未知发布者的 UAC 提示，README 说明只有出现「更多信息」时才可选择「仍要运行」。\",\"系统版本有硬性门槛：macOS 需 14.2 及以上，Windows 需 10 1809（build 17763）及以上；Windows 10 LTSC 2019/2021 不自带 WebView2 运行时，需先手动安装。\"],\"confidence\":\"medium\",\"missingInfo\":[\"具体版本号与各平台安装包文件名（README 只指向 GitHub Releases，未列出）\",\"项目未发布到 crates.io / npm：查到的 oink 包分别是 Pig Latin 转换器和测试运行器，与本项目无关，因此没有包管理器安装命令\",\"从源码自行构建的具体步骤（README 未给出构建命令，仅提到可从 Releases 获取匹配的源码）\",\"设备配对/连接的具体操作界面流程（README 未描述）\",\"Intel Mac 版本标注为未测试，实际可用性无法确认\"],\"evidence\":[{\"tool\":\"fetch_package_info\",\"calls\":2},{\"tool\":\"fetch_readme\",\"calls\":1},{\"tool\":\"fetch_repo_meta\",\"calls\":1}]}"
+    },
+    {
+      "rank": 2,
+      "fullName": "Arjun-Ingole/hop",
+      "name": "hop",
+      "description": "Install Linux next to Windows without a USB stick",
+      "url": "https://github.com/Arjun-Ingole/hop",
+      "language": "PowerShell",
+      "stars": 1715,
+      "forks": 60,
+      "category": "前端",
+      "reason": "最近仍在活跃更新；短时间收获大量 star",
+      "tutorial": "{\"v\":2,\"oneLiner\":\"hop 是一个 Windows 桌面小工具，帮你在不找 U 盘的情况下，把 Linux 装到 Windows 旁边的空闲分区里。\",\"audience\":\"想在 Windows 电脑上体验双系统、但手头没有 U 盘或不想折腾启动盘的新手。\",\"installCommands\":[\"从 Releases 页面下载 hop.exe 并双击运行（Windows 会请求管理员权限）\",\"dotnet build -c Release\"],\"features\":[\"选系统与 ISO：在 hop 里挑一个支持的发行版，它会从官方服务器或官方镜像下载 ISO 并校验校验和；你也可以直接指定自己已有的 ISO 文件。\",\"拖拽分配空间：选好目标磁盘后，拖动滑块决定给 Linux 多少空间，hop 会优先用空闲空间，不够才收缩分区。\",\"Make room 一键腾空间：当磁盘显示有空间却无法收缩时，用它清理 Windows 挪不动的文件，事后会把你的设置还原。\",\"按提示装完并善后：hop 会列出 Linux 安装器里该点哪些选项；装完可用 Undo 把空间还给原分区，也能移除已有的另一个 Linux。\"],\"pitfalls\":[\"hop.exe 目前没有代码签名，SmartScreen 会拦截，需要点「更多信息 → 运行 anyway」；同时必须允许管理员权限，否则无法改分区。\",\"硬件门槛是硬性的：需要 Windows 10（1803 及以上）或 11、UEFI 启动、GPT 磁盘，且 Linux 只能装到机器内置磁盘上，不能装到 U 盘。\",\"部分系统有额外限制：CachyOS、Arch、Omarchy、Pop!_OS 需要关闭 Secure Boot；Omarchy 还要求其所在磁盘的 BitLocker 完全关闭（不是暂停），hop 不会替你关；Kubuntu 不支持，Lubuntu 和 Ubuntu Unity 目前会被拒绝。\"],\"confidence\":\"medium\",\"missingInfo\":[\"hop 未发布到 npm/PyPI/crates 等包管理器，README 只给出从 Releases 下载 hop.exe 与源码 dotnet build 两种方式，具体版本号未核实\",\"README 未说明 .NET SDK 的最低版本要求\",\"「替换掉整个 Windows」模式所需内存的具体数值未给出（只说需大于 ISO 体积）\",\"Releases 页面中 hop.exe 的实际文件名与最新版本号未核实\"],\"evidence\":[{\"tool\":\"fetch_readme\",\"calls\":1},{\"tool\":\"fetch_repo_meta\",\"calls\":1}]}"
+    },
+    {
+      "rank": 3,
+      "fullName": "NiazMorshed2007/reanimate",
+      "name": "reanimate",
+      "description": "A Claude Code skill that reverse-engineers any animation frame by frame, then proves the copy moves the same.",
+      "url": "https://github.com/NiazMorshed2007/reanimate",
+      "language": "JavaScript",
+      "stars": 1700,
+      "forks": 146,
+      "category": "前端",
+      "reason": "短时间收获大量 star",
+      "tutorial": "{\"v\":2,\"oneLiner\":\"一个 Claude Code 技能：把你看中的网页动画逐帧录下来、反推出时间与缓动参数，再在你的代码里重建，并用同样的方式录制副本、逐帧比对，直到两边动得一样。\",\"audience\":\"会用 Claude Code、想复刻别人网站动效的前端新手；需要 macOS 或 Linux 环境。\",\"installCommands\":[\"npx skills add NiazMorshed2007/reanimate -g\",\"npx skills add NiazMorshed2007/reanimate -g -a claude-code\"],\"features\":[\"在 Claude Code 里用 /reanimate 描述「要哪个动画、在哪、放到哪」，例如 /reanimate the hero entrance on https://example.com, into components/Hero.tsx，它会自动录制、写代码、再录制比对。\",\"素材不限于网址：也可以给屏幕录制、mp4、gif 或 Lottie 文件，并用时间区间指定片段，例如 /reanimate this loader, 0:03 to 0:05 of ~/Downloads/loader.mov。\",\"用一句话切换还原精度：默认只对齐「动得一样」（触发、顺序、错峰、80ms 内的时间、缓动族、位移）；说 match it exactly / pixel-perfect 会连字体、尺寸、颜色、间距一起对齐；说 clone X and add Y 则在克隆基础上加自己的改动。\",\"遇到 canvas / WebGL / three.js 动画时，它会追踪 GPU 调用（着色器、uniform、绘制调用、场景图），把动画参数还原成可拟合的曲线，再逐通道比对副本。\"],\"pitfalls\":[\"它依赖 Bun 1.1 或更高版本，且只在 macOS / Linux 上测试过，Windows 未验证；第一次运行还会下载静态 ffmpeg 和 Playwright 的 Chromium，合计约 250MB，别以为卡住了。\",\"登录后的页面、YouTube、Loom 无法直接录制，需要你自己先录屏再交给它；iframe 里的 canvas 要提供 iframe 自己的 URL。\",\"它不是一次成型的：通常要 2 到 5 轮修正，5 轮后仍不一致的部分会写进报告并说明原因；弹簧类物理动画是从过冲和稳定时间拟合出来的，不是读源码得到的，别指望 100% 一致。\"],\"confidence\":\"medium\",\"missingInfo\":[\"README 被截断，未看到完整的 Limits 段落结尾与更多 CLI 参数说明（如 --gl、--clock virtual、--gpu hardware 的完整用法）\",\"未确认项目是否在 npm / PyPI / crates.io 上发布了同名包；安装走的是 skills CLI 从 GitHub 仓库拉取，而非包管理器\",\"未确认具体支持的 Claude Code 版本要求，以及除 Claude Code 外其他 agent 的实际可用性（README 称仅测试过 Claude Code）\"],\"evidence\":[{\"tool\":\"fetch_readme\",\"calls\":2},{\"tool\":\"fetch_repo_meta\",\"calls\":1},{\"tool\":\"fetch_package_info\",\"calls\":1}]}"
+    }
+  ],
+  "runStatus": {
+    "status": "success",
+    "startedAt": "2026-11-16T04:56:53.415Z",
+    "endedAt": "2026-11-16T04:57:28.242Z",
+    "log": null
+  },
+  "source": "snapshot",
+  "dateLabel": "2026年11月16日"
+}
