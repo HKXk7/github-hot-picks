@@ -5,89 +5,67 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 18 Nov 2026 06:05:37 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 19 Nov 2026 06:05:37 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. erkamyaman/rust-anything</title>
-      <link>https://github.com/erkamyaman/rust-anything</link>
-      <guid isPermaLink="false">erkamyaman/rust-anything@2026-11-18</guid>
-      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[Rewrite your whole app in Rust, one piece at a time, checked against the original's recorded behavior at every step. CLIs, HTTP servers and libraries in TypeScript, Python, C, Go, Ruby and Java.
+      <title>1. HolyArrs/HolyArrs</title>
+      <link>https://github.com/HolyArrs/HolyArrs</link>
+      <guid isPermaLink="false">HolyArrs/HolyArrs@2026-11-19</guid>
+      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
+      <category>后端</category>
+      <description><![CDATA[One self-hosted app for your shows, movies and music.
 
-语言：Rust | Star：1778 | 分类：工具
+语言：Go | Star：2052 | 分类：后端
 
-第 23 期（2026-11-18）推荐 · 原文 /history/2026-11-18]]></description>
+第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
     </item>
     <item>
-      <title>2. mdiri-ai/SoduWork</title>
-      <link>https://github.com/mdiri-ai/SoduWork</link>
-      <guid isPermaLink="false">mdiri-ai/SoduWork@2026-11-18</guid>
-      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[The AI-native engine for teams and their agents. Multi-harness, multi-agent, self-hosted.
+      <title>2. chadyi/StudyOnTV</title>
+      <link>https://github.com/chadyi/StudyOnTV</link>
+      <guid isPermaLink="false">chadyi/StudyOnTV@2026-11-19</guid>
+      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
+      <category>后端</category>
+      <description><![CDATA[StudyOnTV (Tiledaoti TV) — open-source Android TV app where kids unlock screen time by answering questions. Runs fully on the TV: no server, no account. Parents scan a QR code and manage questions from the LAN. Learn first. Watch later.
 
-语言：JavaScript | Star：2119 | 分类：AI
+语言：Kotlin | Star：1701 | 分类：后端
 
-第 23 期（2026-11-18）推荐 · 原文 /history/2026-11-18]]></description>
+第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
     </item>
     <item>
-      <title>3. Immortal-Protocols/lastbook</title>
-      <link>https://github.com/Immortal-Protocols/lastbook</link>
-      <guid isPermaLink="false">Immortal-Protocols/lastbook@2026-11-18</guid>
-      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Offline knowledge AI, maps and videos for survival and rebuilding
-
-语言：Python | Star：1885 | 分类：AI
-
-第 23 期（2026-11-18）推荐 · 原文 /history/2026-11-18]]></description>
-    </item>
-    <item>
-      <title>4. krisgfx9/Wireless-Device-Battery-Monitor</title>
-      <link>https://github.com/krisgfx9/Wireless-Device-Battery-Monitor</link>
-      <guid isPermaLink="false">krisgfx9/Wireless-Device-Battery-Monitor@2026-11-18</guid>
-      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
+      <title>3. Eynnzerr/TelemetryCleaner</title>
+      <link>https://github.com/Eynnzerr/TelemetryCleaner</link>
+      <guid isPermaLink="false">Eynnzerr/TelemetryCleaner@2026-11-19</guid>
+      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Show the battery level of wireless mice, headsets, keyboards and controllers on the Windows 10/11 taskbar. Lightweight tray app, no vendor software needed. Supports Logitech, Razer, SteelSeries, Corsair, HyperX, Glorious, PS4/PS5 DualSense, Xbox and Bluetooth devices.
+      <description><![CDATA[基于 Shizuku 免 Root 清除国产安卓 SystemHelper、RegService 等系统预装隐私数据收集模块
 
-语言：C++ | Star：3061 | 分类：其他
+语言：Kotlin | Star：1756 | 分类：其他
 
-第 23 期（2026-11-18）推荐 · 原文 /history/2026-11-18]]></description>
+第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
     </item>
     <item>
-      <title>5. agentes-chat/agentes-chat</title>
-      <link>https://github.com/agentes-chat/agentes-chat</link>
-      <guid isPermaLink="false">agentes-chat/agentes-chat@2026-11-18</guid>
-      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Open-source, self-hosted Slack alternative where your team and AI agents work together in channels and DMs. Agents run on Claude, ChatGPT/Codex, Gemini or Grok, with MCP tools, their own computer and browser, routines, memory and approvals. Web, desktop and phone apps. Docker Compose + Postgres. AGPL-3.0.
-
-语言：TypeScript | Star：1694 | 分类：AI
-
-第 23 期（2026-11-18）推荐 · 原文 /history/2026-11-18]]></description>
-    </item>
-    <item>
-      <title>6. anonnerdfrenzy/survival-llm</title>
-      <link>https://github.com/anonnerdfrenzy/survival-llm</link>
-      <guid isPermaLink="false">anonnerdfrenzy/survival-llm@2026-11-18</guid>
-      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[A free AI assistant and survival library that runs on your own computer, with no internet needed. Shows the source of every answer.
-
-语言：Python | Star：1696 | 分类：AI
-
-第 23 期（2026-11-18）推荐 · 原文 /history/2026-11-18]]></description>
-    </item>
-    <item>
-      <title>7. gylive/google-ultra</title>
-      <link>https://github.com/gylive/google-ultra</link>
-      <guid isPermaLink="false">gylive/google-ultra@2026-11-18</guid>
-      <pubDate>Wed, 18 Nov 2026 00:00:00 GMT</pubDate>
+      <title>4. toyxyz/toyxyz_RGBMocap</title>
+      <link>https://github.com/toyxyz/toyxyz_RGBMocap</link>
+      <guid isPermaLink="false">toyxyz/toyxyz_RGBMocap@2026-11-19</guid>
+      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[语言：Python | Star：2101 | 分类：其他
+      <description><![CDATA[Native Windows video motion capture with ExMR, FlowHMR and GVHMR, contact correction, humanoid retargeting, and FBX/VMD export.
 
-第 23 期（2026-11-18）推荐 · 原文 /history/2026-11-18]]></description>
+语言：Python | Star：1745 | 分类：其他
+
+第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
+    </item>
+    <item>
+      <title>5. HRuiCcc/RuiC-PoseAtlas</title>
+      <link>https://github.com/HRuiCcc/RuiC-PoseAtlas</link>
+      <guid isPermaLink="false">HRuiCcc/RuiC-PoseAtlas@2026-11-19</guid>
+      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[RuiC-PoseAtlas｜姿态 + 衣装双图鉴：288 组人体姿态 × 5 视角 × 1,439 张人台线稿，加 1,407 套无人物衣装 × 8 分类 × 86 个三语标签。中/英/日切换、搜索筛选、键盘浏览、原图下载，纯静态零依赖。
+
+语言：JavaScript | Star：1697 | 分类：AI
+
+第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
     </item>
   </channel>
 </rss>
