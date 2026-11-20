@@ -5,67 +5,91 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 19 Nov 2026 06:05:37 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 20 Nov 2026 05:54:17 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. HolyArrs/HolyArrs</title>
-      <link>https://github.com/HolyArrs/HolyArrs</link>
-      <guid isPermaLink="false">HolyArrs/HolyArrs@2026-11-19</guid>
-      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[One self-hosted app for your shows, movies and music.
-
-语言：Go | Star：2052 | 分类：后端
-
-第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
-    </item>
-    <item>
-      <title>2. chadyi/StudyOnTV</title>
-      <link>https://github.com/chadyi/StudyOnTV</link>
-      <guid isPermaLink="false">chadyi/StudyOnTV@2026-11-19</guid>
-      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
-      <category>后端</category>
-      <description><![CDATA[StudyOnTV (Tiledaoti TV) — open-source Android TV app where kids unlock screen time by answering questions. Runs fully on the TV: no server, no account. Parents scan a QR code and manage questions from the LAN. Learn first. Watch later.
-
-语言：Kotlin | Star：1701 | 分类：后端
-
-第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
-    </item>
-    <item>
-      <title>3. Eynnzerr/TelemetryCleaner</title>
-      <link>https://github.com/Eynnzerr/TelemetryCleaner</link>
-      <guid isPermaLink="false">Eynnzerr/TelemetryCleaner@2026-11-19</guid>
-      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[基于 Shizuku 免 Root 清除国产安卓 SystemHelper、RegService 等系统预装隐私数据收集模块
-
-语言：Kotlin | Star：1756 | 分类：其他
-
-第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
-    </item>
-    <item>
-      <title>4. toyxyz/toyxyz_RGBMocap</title>
-      <link>https://github.com/toyxyz/toyxyz_RGBMocap</link>
-      <guid isPermaLink="false">toyxyz/toyxyz_RGBMocap@2026-11-19</guid>
-      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Native Windows video motion capture with ExMR, FlowHMR and GVHMR, contact correction, humanoid retargeting, and FBX/VMD export.
-
-语言：Python | Star：1745 | 分类：其他
-
-第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
-    </item>
-    <item>
-      <title>5. HRuiCcc/RuiC-PoseAtlas</title>
-      <link>https://github.com/HRuiCcc/RuiC-PoseAtlas</link>
-      <guid isPermaLink="false">HRuiCcc/RuiC-PoseAtlas@2026-11-19</guid>
-      <pubDate>Thu, 19 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. simplexai-labs/linger</title>
+      <link>https://github.com/simplexai-labs/linger</link>
+      <guid isPermaLink="false">simplexai-labs/linger@2026-11-20</guid>
+      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[RuiC-PoseAtlas｜姿态 + 衣装双图鉴：288 组人体姿态 × 5 视角 × 1,439 张人台线稿，加 1,407 套无人物衣装 × 8 分类 × 86 个三语标签。中/英/日切换、搜索筛选、键盘浏览、原图下载，纯静态零依赖。
+      <description><![CDATA[Linger is An Open-Source Personal Agent That Runs Fully on Your PC.  We aim to break Big Tech’s grip on AI by bringing powerful local AI to everyday computers through efficient model–harness co-design, so everyone can run their own.
 
-语言：JavaScript | Star：1697 | 分类：AI
+语言：TypeScript | Star：2025 | 分类：AI
 
-第 24 期（2026-11-19）推荐 · 原文 /history/2026-11-19]]></description>
+第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+    </item>
+    <item>
+      <title>2. kevinraymond/florilegium</title>
+      <link>https://github.com/kevinraymond/florilegium</link>
+      <guid isPermaLink="false">kevinraymond/florilegium@2026-11-20</guid>
+      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[Procedurally generated Delft-blue page margins for LuaLaTeX, with plants, visitors, shells and Gothic tracery sampled from genomes, and a TikZ library that draws them in pure TikZ under pdfLaTeX.
+
+语言：TeX | Star：1686 | 分类：其他
+
+第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+    </item>
+    <item>
+      <title>3. JosssphZhou/poki</title>
+      <link>https://github.com/JosssphZhou/poki</link>
+      <guid isPermaLink="false">JosssphZhou/poki@2026-11-20</guid>
+      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <category>工具</category>
+      <description><![CDATA[Poki uses your iPhone like you do. An open-source agent app that runs on your iPhone, reads the screen, and taps, types and swipes in real apps with your own model account.
+
+语言：Swift | Star：1671 | 分类：工具
+
+第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+    </item>
+    <item>
+      <title>4. Hut-hzf/ung220z-tool</title>
+      <link>https://github.com/Hut-hzf/ung220z-tool</link>
+      <guid isPermaLink="false">Hut-hzf/ung220z-tool@2026-11-20</guid>
+      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <category>工具</category>
+      <description><![CDATA[ung220z-tool 是一个针对 UNG220Z（九联/Unionman 中国移动光猫）的一键凭据提取工具，仅限在你自己的设备上用于找回忘记的管理密码、迁移宽带配置或安全自查。
+
+语言：Python | Star：1822 | 分类：工具
+
+第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+    </item>
+    <item>
+      <title>5. sqlpxc/airhand</title>
+      <link>https://github.com/sqlpxc/airhand</link>
+      <guid isPermaLink="false">sqlpxc/airhand@2026-11-20</guid>
+      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[High-performance, low-latency remote desktop QUIC transport · hardware encoding and decoding · up to 120 fps Windows · macOS · Linux · Android · browser
+
+语言：Rust | Star：1873 | 分类：前端
+
+第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+    </item>
+    <item>
+      <title>6. ZiChuanLan/freebie-radar</title>
+      <link>https://github.com/ZiChuanLan/freebie-radar</link>
+      <guid isPermaLink="false">ZiChuanLan/freebie-radar@2026-11-20</guid>
+      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[白嫖与资讯资源聚合雷达：100+个源定时采集 + AI 二审过滤假福利 + 获取方式分级隔离抽奖/试用/推广 + Telegram 即时推送
+
+语言：TypeScript | Star：1835 | 分类：AI
+
+第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+    </item>
+    <item>
+      <title>7. elripalda/RecompLauncher</title>
+      <link>https://github.com/elripalda/RecompLauncher</link>
+      <guid isPermaLink="false">elripalda/RecompLauncher@2026-11-20</guid>
+      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <category>其他</category>
+      <description><![CDATA[PC recomps, all in one place. Find, install, update and play PC recomps from one launcher.
+
+语言：Rust | Star：1718 | 分类：其他
+
+第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
     </item>
   </channel>
 </rss>
