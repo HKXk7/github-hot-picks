@@ -5,91 +5,55 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 20 Nov 2026 05:54:17 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 21 Nov 2026 05:48:10 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. simplexai-labs/linger</title>
-      <link>https://github.com/simplexai-labs/linger</link>
-      <guid isPermaLink="false">simplexai-labs/linger@2026-11-20</guid>
-      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[Linger is An Open-Source Personal Agent That Runs Fully on Your PC.  We aim to break Big Tech’s grip on AI by bringing powerful local AI to everyday computers through efficient model–harness co-design, so everyone can run their own.
-
-语言：TypeScript | Star：2025 | 分类：AI
-
-第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
-    </item>
-    <item>
-      <title>2. kevinraymond/florilegium</title>
-      <link>https://github.com/kevinraymond/florilegium</link>
-      <guid isPermaLink="false">kevinraymond/florilegium@2026-11-20</guid>
-      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-      <category>其他</category>
-      <description><![CDATA[Procedurally generated Delft-blue page margins for LuaLaTeX, with plants, visitors, shells and Gothic tracery sampled from genomes, and a TikZ library that draws them in pure TikZ under pdfLaTeX.
-
-语言：TeX | Star：1686 | 分类：其他
-
-第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
-    </item>
-    <item>
-      <title>3. JosssphZhou/poki</title>
-      <link>https://github.com/JosssphZhou/poki</link>
-      <guid isPermaLink="false">JosssphZhou/poki@2026-11-20</guid>
-      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. CzzzzzzJ/mdldm-maitian</title>
+      <link>https://github.com/CzzzzzzJ/mdldm-maitian</link>
+      <guid isPermaLink="false">CzzzzzzJ/mdldm-maitian@2026-11-21</guid>
+      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
       <category>工具</category>
-      <description><![CDATA[Poki uses your iPhone like you do. An open-source agent app that runs on your iPhone, reads the screen, and taps, types and swipes in real apps with your own model account.
+      <description><![CDATA[麦田：自媒体多平台发布中控与数据监控（B站/抖音/小红书/视频号/YouTube/X），飞书卡片通知 + 数据大屏
 
-语言：Swift | Star：1671 | 分类：工具
+语言：JavaScript | Star：1735 | 分类：工具
 
-第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
     </item>
     <item>
-      <title>4. Hut-hzf/ung220z-tool</title>
-      <link>https://github.com/Hut-hzf/ung220z-tool</link>
-      <guid isPermaLink="false">Hut-hzf/ung220z-tool@2026-11-20</guid>
-      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[ung220z-tool 是一个针对 UNG220Z（九联/Unionman 中国移动光猫）的一键凭据提取工具，仅限在你自己的设备上用于找回忘记的管理密码、迁移宽带配置或安全自查。
-
-语言：Python | Star：1822 | 分类：工具
-
-第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
-    </item>
-    <item>
-      <title>5. sqlpxc/airhand</title>
-      <link>https://github.com/sqlpxc/airhand</link>
-      <guid isPermaLink="false">sqlpxc/airhand@2026-11-20</guid>
-      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
-      <category>前端</category>
-      <description><![CDATA[High-performance, low-latency remote desktop QUIC transport · hardware encoding and decoding · up to 120 fps Windows · macOS · Linux · Android · browser
-
-语言：Rust | Star：1873 | 分类：前端
-
-第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
-    </item>
-    <item>
-      <title>6. ZiChuanLan/freebie-radar</title>
-      <link>https://github.com/ZiChuanLan/freebie-radar</link>
-      <guid isPermaLink="false">ZiChuanLan/freebie-radar@2026-11-20</guid>
-      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. bookwjitchieni1986/blender-ai-mcp-addon</title>
+      <link>https://github.com/bookwjitchieni1986/blender-ai-mcp-addon</link>
+      <guid isPermaLink="false">bookwjitchieni1986/blender-ai-mcp-addon@2026-11-21</guid>
+      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[白嫖与资讯资源聚合雷达：100+个源定时采集 + AI 二审过滤假福利 + 获取方式分级隔离抽奖/试用/推广 + Telegram 即时推送
+      <description><![CDATA[AI assistant and MCP server for Blender: visual chat, scene tools, multi-agent workflows. Works with ChatGPT/GPT, Claude, Gemini, Ollama, OpenCode. Blender AI addon, copilot for 3D, bpy Python scripting, MCP integration.
 
-语言：TypeScript | Star：1835 | 分类：AI
+语言：— | Star：1839 | 分类：AI
 
-第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
     </item>
     <item>
-      <title>7. elripalda/RecompLauncher</title>
-      <link>https://github.com/elripalda/RecompLauncher</link>
-      <guid isPermaLink="false">elripalda/RecompLauncher@2026-11-20</guid>
-      <pubDate>Fri, 20 Nov 2026 00:00:00 GMT</pubDate>
+      <title>3. imxieyi/Kernarium</title>
+      <link>https://github.com/imxieyi/Kernarium</link>
+      <guid isPermaLink="false">imxieyi/Kernarium@2026-11-21</guid>
+      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[PC recomps, all in one place. Find, install, update and play PC recomps from one launcher.
+      <description><![CDATA[Run real Linux kernel natively on iOS
 
-语言：Rust | Star：1718 | 分类：其他
+语言：C++ | Star：2137 | 分类：其他
 
-第 25 期（2026-11-20）推荐 · 原文 /history/2026-11-20]]></description>
+第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
+    </item>
+    <item>
+      <title>4. duwqijlk/muse-protocol</title>
+      <link>https://github.com/duwqijlk/muse-protocol</link>
+      <guid isPermaLink="false">duwqijlk/muse-protocol@2026-11-21</guid>
+      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[muse.ai 注册与邀请码兑换协议研究（纯 HTTP Python 实现）
+
+语言：Python | Star：1706 | 分类：AI
+
+第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
     </item>
   </channel>
 </rss>
