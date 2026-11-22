@@ -5,55 +5,55 @@
     <link></link>
     <description>每天从 GitHub 新项目中挑选值得关注的开源项目，并给每个项目配一篇小白教程。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sat, 21 Nov 2026 05:48:10 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 22 Nov 2026 05:18:28 GMT</lastBuildDate>
     <atom:link href="/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>1. CzzzzzzJ/mdldm-maitian</title>
-      <link>https://github.com/CzzzzzzJ/mdldm-maitian</link>
-      <guid isPermaLink="false">CzzzzzzJ/mdldm-maitian@2026-11-21</guid>
-      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
-      <category>工具</category>
-      <description><![CDATA[麦田：自媒体多平台发布中控与数据监控（B站/抖音/小红书/视频号/YouTube/X），飞书卡片通知 + 数据大屏
-
-语言：JavaScript | Star：1735 | 分类：工具
-
-第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
-    </item>
-    <item>
-      <title>2. bookwjitchieni1986/blender-ai-mcp-addon</title>
-      <link>https://github.com/bookwjitchieni1986/blender-ai-mcp-addon</link>
-      <guid isPermaLink="false">bookwjitchieni1986/blender-ai-mcp-addon@2026-11-21</guid>
-      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <description><![CDATA[AI assistant and MCP server for Blender: visual chat, scene tools, multi-agent workflows. Works with ChatGPT/GPT, Claude, Gemini, Ollama, OpenCode. Blender AI addon, copilot for 3D, bpy Python scripting, MCP integration.
-
-语言：— | Star：1839 | 分类：AI
-
-第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
-    </item>
-    <item>
-      <title>3. imxieyi/Kernarium</title>
-      <link>https://github.com/imxieyi/Kernarium</link>
-      <guid isPermaLink="false">imxieyi/Kernarium@2026-11-21</guid>
-      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
+      <title>1. ItsNotRexed/Leonida</title>
+      <link>https://github.com/ItsNotRexed/Leonida</link>
+      <guid isPermaLink="false">ItsNotRexed/Leonida@2026-11-22</guid>
+      <pubDate>Sun, 22 Nov 2026 00:00:00 GMT</pubDate>
       <category>其他</category>
-      <description><![CDATA[Run real Linux kernel natively on iOS
+      <description><![CDATA[Leonida Is A Native PC Recompilation Of The Xbox Version Of Grand Theft Auto 6
 
-语言：C++ | Star：2137 | 分类：其他
+语言：Python | Star：7174 | 分类：其他
 
-第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
+第 27 期（2026-11-22）推荐 · 原文 /history/2026-11-22]]></description>
     </item>
     <item>
-      <title>4. duwqijlk/muse-protocol</title>
-      <link>https://github.com/duwqijlk/muse-protocol</link>
-      <guid isPermaLink="false">duwqijlk/muse-protocol@2026-11-21</guid>
-      <pubDate>Sat, 21 Nov 2026 00:00:00 GMT</pubDate>
+      <title>2. iamajmeena/neonclipping</title>
+      <link>https://github.com/iamajmeena/neonclipping</link>
+      <guid isPermaLink="false">iamajmeena/neonclipping@2026-11-22</guid>
+      <pubDate>Sun, 22 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
-      <description><![CDATA[muse.ai 注册与邀请码兑换协议研究（纯 HTTP Python 实现）
+      <description><![CDATA[Paste a link, get captioned 9:16 clips in ~2 min. Free, local, open-source clipping engine (audio-first, YouTube captions, local LLM).
 
-语言：Python | Star：1706 | 分类：AI
+语言：Python | Star：1784 | 分类：AI
 
-第 26 期（2026-11-21）推荐 · 原文 /history/2026-11-21]]></description>
+第 27 期（2026-11-22）推荐 · 原文 /history/2026-11-22]]></description>
+    </item>
+    <item>
+      <title>3. sybil-solutions/inference-optimisation-skill</title>
+      <link>https://github.com/sybil-solutions/inference-optimisation-skill</link>
+      <guid isPermaLink="false">sybil-solutions/inference-optimisation-skill@2026-11-22</guid>
+      <pubDate>Sun, 22 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <description><![CDATA[Agent skill for hill-climbing local LLM serving speed (decode, speculative decoding, prefill, KV, startup, TTFT) on any hardware and quantization
+
+语言：Python | Star：1742 | 分类：AI
+
+第 27 期（2026-11-22）推荐 · 原文 /history/2026-11-22]]></description>
+    </item>
+    <item>
+      <title>4. havenicec/google-qr-sms-helper</title>
+      <link>https://github.com/havenicec/google-qr-sms-helper</link>
+      <guid isPermaLink="false">havenicec/google-qr-sms-helper@2026-11-22</guid>
+      <pubDate>Sun, 22 Nov 2026 00:00:00 GMT</pubDate>
+      <category>前端</category>
+      <description><![CDATA[Chrome Extension (MV3) to switch Google's mandatory QR code verification back to standard 6-digit SMS verification via iPad Mini profile & [3,null,4] RPC fallback.
+
+语言：JavaScript | Star：2091 | 分类：前端
+
+第 27 期（2026-11-22）推荐 · 原文 /history/2026-11-22]]></description>
     </item>
   </channel>
 </rss>
