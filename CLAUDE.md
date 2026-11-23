@@ -33,6 +33,7 @@ npm run lint       # ESLint
 npm test           # vitest 单测（183 项）
 npm run update:daily   # 手动跑「抓取→筛选→AI教程→入库→快照→订阅源」全流程（本机库，会写本地 public/data）
 npm run daily:trigger  # 从终端触发一次云端日更并等结果（GH_TOKEN=… 必须有 Actions:write；不动本地库）
+npm run sync:cloud     # 把云端 public/data 拉下来并逐期灌进本地库（本机页面追平线上；--pull-only / --import-only）
 npm run eval       # 教程质量评测（真调模型，花钱）；--gate 卡质量、--limit/--mode/--concurrency/--judge
 npm run data:static # 从数据库回填静态数据包（history.json + issues/*.json），部署前跑
 npm run usage      # LLM 用量报告（与站内 /usage 看板同一套口径）
@@ -143,3 +144,8 @@ github-hot-picks/
     - 本机开了 GitHub 加速器/代理时，它会用自签 CA 重签证书，Node 只信自带 CA 列表 → `fetch failed` / `UNABLE_TO_VERIFY_LEAF_SIGNATURE`。加 `--use-system-ca`（`trigger-daily.ps1` / `push-via-api.ps1` 里已经带了）。
     - `.ps1` 脚本**必须存成 UTF-8 with BOM**：Windows PowerShell 5.1 读无 BOM 的 UTF-8 会按 ANSI 解码，中文注释能把整个文件解析搞崩（`trigger-daily.ps1` 就是这么崩过一次）。
     - `push-via-api.mjs` 末尾的 `fatal: update_ref failed ... nonexistent object` 是**预期现象**（API 建的 commit 本地不存在），不是推送失败，看上面那行「🎉 已推送」即可。
+
+15. **本机库和云端库是两条历史**：云端日更只更新仓库里的 `public/data`，**不会回流到 `prisma/dev.db`**。所以「云端已经到 11-09、本机页面还停在 10-29」是常态，不是 bug —— 页面显示「数据来源：数据库」就说明它读的是本地库。
+    - 追平只需一条命令：`npm run sync:cloud`（拉 `public/data` + `feed.xml`，再把每一期导入本地库；`--pull-only` / `--import-only` 可分开做）。导入逻辑在 `src/lib/pipeline/import-snapshot.ts`，`npm run db:import` 是它的单文件入口。
+    - 这台机器只放通了 `api.github.com`：`raw.githubusercontent.com`、`cdn.jsdelivr.net` 都连不上，所以脚本走「raw 优先 → API 兜底」，实际总是走 API（未鉴权 60 次/小时，一次同步约 15 次请求）。**建议带 token**：`$env:GH_TOKEN="..."; npm run sync:cloud`。
+    - 导入是幂等的（按 `issue` upsert、推荐关系整期重建），可以反复跑；`Article.weekStart` 取快照的 `updatedAt`，所以往期页顺序也正确。
