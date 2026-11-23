@@ -135,3 +135,11 @@ github-hot-picks/
 12. **git push 到 github.com 不通**（连接被 reset），但 `api.github.com` 正常。推送用 `scripts/push-via-api.mjs`（`GH_BASE=<远端 sha>` + `GH_LOCAL_BASE=<本地 sha>`）；推送前记得先把远端更新的 `public/data/latest.json` 拉回来，否则会把云端数据推成旧版本。
 13. **日更的失败必须看得见**：`update-daily.ts` 里每个项目都单独 try/catch，单项写库/生成抛错只会记成 `failed` 进报告，不会再把整轮带走（只有「全部项目都失败」才 exit 1、不写快照）。fatal 错误会写进 `GITHUB_STEP_SUMMARY` 并发一行 `::error::` —— 运行页面上能直接看到原因；Actions 的原始日志要 admin 权限才下得到，这也是之前「挂了但不知道为啥」的原因。
     - 历史去重在 `src/lib/pipeline/candidates.ts`：`fullName` 和 `githubId` 都要比。只看名字的话，作者一改名项目就会重新上榜；而 `Repository.githubId` 是唯一约束，随后的 upsert 会走 create 分支撞 P2002。写库一律走 `saveRepository()`（先按两个维度找，找到就按主键更新并刷新 fullName/githubId），别直接 `upsert({ where: { fullName } })`。
+14. **「今天没更新」的排查顺序**（2026-11-09 那次事故总结，三个坑各不相同，别混为一谈）：
+    - 先看**哪一步挂**。`npm ci` 挂 ≠ 管线挂：那次 run#28 是装依赖跑了 819 秒才失败，管线一步都没跑到。现在装依赖带 `--no-audit --no-fund` + `timeout-minutes: 10`，真卡住会快速失败而不是白占 runner。
+    - 再看**有没有产出**。`public/data/latest.json` 的 `dateKey` 就是「更新到哪一天」的唯一事实来源；没提交就等于没更新（站点读的就是它）。
+    - 想立刻补一期，用 `.\scripts\trigger-daily.ps1`（token 从剪贴板取；`-NoWait` 只触发不等）。**不要**在本机跑 `npm run update:daily` 补线上：本地 `dev.db` 是另一条历史（期号对不上），会把本地 `public/data` 覆盖成错版本。
+    - 本机两个反复踩的坑：① 必须在项目目录里跑（`npm` 只认当前目录的 `package.json`，在 `C:\windows\system32` 里敲就是 ENOENT）；② 从聊天框复制命令时引号会被换成全角「“ ”」，PowerShell 当成未闭合字符串、冒一堆 `>>` 续行把后续命令吞掉 —— 所以 token 走剪贴板，别手打引号。
+    - 本机开了 GitHub 加速器/代理时，它会用自签 CA 重签证书，Node 只信自带 CA 列表 → `fetch failed` / `UNABLE_TO_VERIFY_LEAF_SIGNATURE`。加 `--use-system-ca`（`trigger-daily.ps1` / `push-via-api.ps1` 里已经带了）。
+    - `.ps1` 脚本**必须存成 UTF-8 with BOM**：Windows PowerShell 5.1 读无 BOM 的 UTF-8 会按 ANSI 解码，中文注释能把整个文件解析搞崩（`trigger-daily.ps1` 就是这么崩过一次）。
+    - `push-via-api.mjs` 末尾的 `fatal: update_ref failed ... nonexistent object` 是**预期现象**（API 建的 commit 本地不存在），不是推送失败，看上面那行「🎉 已推送」即可。
