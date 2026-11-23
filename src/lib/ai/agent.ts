@@ -16,6 +16,8 @@ export interface AgentResult {
    * 让模型照着已经查到的证据改 JSON 就行，不必把工具再调一遍。
    */
   messages: ChatMessage[];
+  /** 上游余额/凭证类错误：这次取证不可能成功，调用方应立刻停手而不是继续重试 */
+  fatalError?: string;
 }
 
 export interface AgentOptions {
@@ -86,6 +88,11 @@ export async function runToolAgent(opts: AgentOptions): Promise<AgentResult> {
 
     if (!outcome.ok) {
       warnings.push(`第 ${step} 轮 LLM 调用失败：${outcome.error.slice(0, 200)}`);
+      // 欠费 / Key 失效：再重试、再发一次「收尾调用」都只会多烧配额
+      if (outcome.fatal) {
+        warnings.push("上游拒绝服务（余额或凭证问题），已中止本轮取证");
+        return { finalText: "", steps, llmRounds, warnings, messages, fatalError: outcome.error };
+      }
       break;
     }
 

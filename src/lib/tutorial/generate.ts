@@ -37,6 +37,8 @@ export interface GenerateResult {
   warnings: string[];
   /** 全部轮次失败时的原因汇总 */
   error?: string;
+  /** 上游余额/凭证类错误：不是模型输出质量问题，重试无意义 */
+  fatal?: boolean;
   /** 用了哪些工具（仅 tools 模式有值） */
   toolCalls?: ToolCallRecord[];
   /** 实际使用的模式 */
@@ -303,6 +305,8 @@ async function generateTutorialOnce(
   let messages: ChatMessage[] = mode === "tools" ? buildToolMessages(meta) : [];
   let toolCalls: ToolCallRecord[] = [];
   let repairNote: string | undefined;
+  // 保留最后一次真实失败原因：全部轮次失败时不能只说「未通过校验」，那会把欠费说成模型不行
+  let lastError: string | undefined;
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     let raw = "";
@@ -324,6 +328,18 @@ async function generateTutorialOnce(
       toolCalls = agent.steps;
       warnings.push(...agent.warnings);
       messages = agent.messages;
+      if (agent.fatalError) {
+        // 余额/凭证问题：换下一轮也是同样的 402，直接带着真实原因退出
+        return {
+          tutorial: null,
+          attempts: attempt,
+          warnings,
+          toolCalls,
+          mode,
+          fatal: true,
+          error: agent.fatalError,
+        };
+      }
       raw = agent.finalText;
       if (!raw.trim()) {
         warnings.push(`第 ${attempt} 轮：agent 返回空内容`);
@@ -352,7 +368,19 @@ async function generateTutorialOnce(
       });
 
       if (!outcome.ok) {
+        lastError = outcome.error;
         warnings.push(`第 ${attempt} 轮调用失败：${outcome.error.slice(0, 200)}`);
+        if (outcome.fatal) {
+          return {
+            tutorial: null,
+            attempts: attempt,
+            warnings,
+            toolCalls,
+            mode,
+            fatal: true,
+            error: outcome.error,
+          };
+        }
         repairNote = `接口调用失败：${outcome.error.slice(0, 200)}`;
         continue;
       }
@@ -384,6 +412,6 @@ async function generateTutorialOnce(
     warnings,
     toolCalls,
     mode,
-    error: `连续 ${maxAttempts} 轮未通过校验`,
+    error: lastError ?? `连续 ${maxAttempts} 轮未通过校验`,
   };
 }

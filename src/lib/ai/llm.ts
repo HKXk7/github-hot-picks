@@ -75,9 +75,16 @@ export type ChatOutcome =
       /** 上游报的 token 用量；流式/部分模型不给时是 0，不是错误 */
       usage: TokenUsage;
     }
-  | { ok: false; error: string; status?: number };
+  | {
+      ok: false;
+      error: string;
+      status?: number;
+      /** 余额/凭证类错误，重试无意义，上层应立刻停手 */
+      fatal?: boolean;
+    };
 
 import { currentTrace, emitCall, type TraceContext } from "./usage-sink";
+import { describeHttpError, isFatalLlmStatus } from "./http-error";
 import { EMPTY_USAGE, extractUsage, type TokenUsage } from "./usage";
 
 function sleep(ms: number) {
@@ -189,9 +196,15 @@ export async function chat(opts: ChatOptions): Promise<ChatOutcome> {
       }
       const retryable = res.status === 429 || (res.status >= 500 && res.status < 600);
       if (!retryable || attempt === maxRetries) {
-        const error = `HTTP ${res.status} ${text.slice(0, 300)}`;
+        // 402/401/403 走 describeHttpError，让日志直接写出「余额不足 / Key 失效」
+        const error = describeHttpError(res.status, text);
         emit(false, EMPTY_USAGE, error);
-        return { ok: false, error, status: res.status };
+        return {
+          ok: false,
+          error,
+          status: res.status,
+          ...(isFatalLlmStatus(res.status) ? { fatal: true } : {}),
+        };
       }
       const wait = 800 * 2 ** attempt + Math.floor(Math.random() * 300);
       onRetry?.({ attempt: attempt + 1, reason: `HTTP ${res.status}`, waitMs: wait });

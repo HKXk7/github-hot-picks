@@ -295,6 +295,9 @@ async function main() {
     // 本期每个项目的教程结果，跑完汇总成报告 ——
     // 之前失败只打一行 warn，10 个项目里挂 1 个照样打印「✅ 已更新第 N 期」
     const steps: StepOutcome[] = [];
+    // 上游欠费 / Key 失效时整期都不可能成功：记下原因后立刻跳出，
+    // 别再对剩下的项目各跑 3 轮（之前 7 个项目会白打 21 次 402）
+    let fatalError: string | null = null;
 
     for (let i = 0; i < top.length; i++) {
       const r = top[i];
@@ -335,6 +338,10 @@ async function main() {
               tutorial = JSON.stringify(attachEvidence(result.tutorial, result.toolCalls));
               steps.push({ fullName: r.full_name, kind: "generated" });
             } else {
+              if (result.fatal) {
+                fatalError = result.error ?? "上游拒绝服务";
+                break;
+              }
               console.warn(`  ⚠️ 教程生成失败：${r.full_name} - ${result.error}`);
               failure = { tutorialError: result.error ?? "未知原因", tutorialFailedAt: new Date() };
               steps.push({ fullName: r.full_name, kind: "failed", error: failure.tutorialError });
@@ -366,6 +373,13 @@ async function main() {
         reason: r.reasons.join("；"),
         tutorial,
       });
+    }
+
+    if (fatalError) {
+      throw new Error(
+        `上游拒绝服务，本期已中止：${fatalError}\n` +
+          `通常是硅基流动账户余额不足或 API Key 失效，处理后重新运行即可（已有教程会复用，不会重复花钱）。`,
+      );
     }
 
     // 逐项兜底不能变成「全挂了也照样发布」：一个都没处理成功时不写快照，
