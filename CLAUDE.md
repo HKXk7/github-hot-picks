@@ -31,7 +31,8 @@ npm run build      # 生产构建
 npm run start      # 生产启动
 npm run lint       # ESLint
 npm test           # vitest 单测（183 项）
-npm run update:daily   # 手动跑「抓取→筛选→AI教程→入库→快照→订阅源」全流程
+npm run update:daily   # 手动跑「抓取→筛选→AI教程→入库→快照→订阅源」全流程（本机库，会写本地 public/data）
+npm run daily:trigger  # 从终端触发一次云端日更并等结果（GH_TOKEN=… 必须有 Actions:write；不动本地库）
 npm run eval       # 教程质量评测（真调模型，花钱）；--gate 卡质量、--limit/--mode/--concurrency/--judge
 npm run data:static # 从数据库回填静态数据包（history.json + issues/*.json），部署前跑
 npm run usage      # LLM 用量报告（与站内 /usage 看板同一套口径）
@@ -108,7 +109,7 @@ github-hot-picks/
 - `scripts/update-daily.ts` —— **一天一更核心管线**：抓 GitHub → 筛选 → 给每个项目调 `generateTutorial()` 生成教程 → 写 Prisma → 生成 `public/data/latest.json` 快照。教程幂等（`repository.tutorial` 已存在就复用）。
 - `github-hot-recommend/src/filter.ts` —— 旧版推荐评分逻辑（`scoreRepo`，含作者去重 + 历史去重），改推荐规则看这里。
 - `github-hot-recommend/src/history.ts` —— 历史去重：读写 `data/recommended.json`。
-- `.github/workflows/daily.yml` —— 自动跑主项目管线并提交快照回仓库。**两个定时点**：`0 0 * * *`（北京时间 08:00）是正点，`0 4 * * *` 是兜底 —— GitHub 的定时队列实测会把正点那次往后压好几个小时（日志里经常 05:4x UTC 才开跑），甚至偶发不跑。兜底那次先跑「今天是否已经出过一期」：读 `public/data/latest.json` 的 `dateKey` 和北京日期比对，已出过就跳过整条管线，所以不会重复烧钱、也不会多提交一个只有 star 数变化的 commit。`concurrency: daily` 用来防止两个定时点与手动触发撞车抢同一个 `dev.db` 缓存。
+- `.github/workflows/daily.yml` —— 自动跑主项目管线并提交快照回仓库。**定时点 `0 0,2,4,6 * * *`**（4 个 UTC 时点）：00:00 是正点，02/04/06 是重试位 —— GitHub 的定时队列实测会把正点那次往后压好几个小时（日志里经常 05:4x UTC 才开跑），甚至偶发不跑。每个时点进场先跑「今天是否已经出过一期」：读 `public/data/latest.json` 的 `dateKey` 和北京日期比对，已出过就跳过整条管线，所以不会重复烧钱、也不会多提交一个只有 star 数变化的 commit。`concurrency: daily` 用来防止两个定时点与手动触发撞车抢同一个 `dev.db` 缓存。
 
 ## 约定与注意事项（重点）
 
