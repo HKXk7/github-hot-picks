@@ -35,7 +35,11 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm ci
+        # --no-audit --no-fund：这两个请求会额外打 registry，网络差的时候能把
+        # `npm ci` 从 40 秒拖到十几分钟（2026-11-09 的 run#28 就是 819 秒后失败）。
+        # timeout-minutes：真卡住时快速失败，而不是白占一个 runner 十几分钟。
+        run: npm ci --no-audit --no-fund
+        timeout-minutes: 10
 
       - name: Generate Prisma client
         # generated/prisma 已被 .gitignore 忽略，CI checkout 后不存在，必须现生成。
